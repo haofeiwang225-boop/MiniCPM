@@ -1,0 +1,16 @@
+model: /home/hongchang/whf/models/MiniCPM5-2B
+data_path: benchmarks/ifeval/validation/diagnostic50/data.jsonl
+output_dir: benchmarks/ifeval/outputs/sampling_4096
+max_samples: 50
+num_fewshot: 0
+enable_thinking: true
+seed: 42
+response_processing: final_only
+nltk_data: /home/hongchang/whf/nltk_data
+generation:
+  do_sample: true
+  max_new_tokens: 4096
+  num_beams: 1
+  num_return_sequences: 1
+  temperature: 1.0
+  top_p: 0.95

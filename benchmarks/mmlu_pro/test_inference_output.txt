@@ -1,0 +1,168 @@
+=== DATA SCHEMA ===
+question_id: int64
+question: string
+options: list<element: string>
+  child 0, element: string
+answer: string
+answer_index: int64
+cot_content: string
+category: string
+src: string
+-- schema metadata --
+huggingface: '{"info": {"features": {"question_id": {"dtype": "int64", "_' + 407
+=== SAMPLE ===
+{
+  "question_id": 70,
+  "question": "Typical advertising regulatory bodies suggest, for example that adverts must not: encourage _________, cause unnecessary ________ or _____, and must not cause _______ offence.",
+  "options": [
+    "Safe practices, Fear, Jealousy, Trivial",
+    "Unsafe practices, Distress, Joy, Trivial",
+    "Safe practices, Wants, Jealousy, Trivial",
+    "Safe practices, Distress, Fear, Trivial",
+    "Unsafe practices, Wants, Jealousy, Serious",
+    "Safe practices, Distress, Jealousy, Serious",
+    "Safe practices, Wants, Fear, Serious",
+    "Unsafe practices, Wants, Fear, Trivial",
+    "Unsafe practices, Distress, Fear, Serious"
+  ],
+  "answer": "I",
+  "answer_index": 8,
+  "cot_content": "",
+  "category": "business",
+  "src": "ori_mmlu-business_ethics"
+}
+=== RENDERED PROMPT ===
+<s><|im_start|>system
+You are an knowledge expert, you are supposed to answer the multi-choice question to derive your final answer as `The answer is ...`.<|im_end|>
+<|im_start|>user
+Q: In contrast to _______, _______ aim to reward favourable behaviour by companies. The success of such campaigns have been heightened through the use of ___________, which allow campaigns to facilitate the company in achieving _________ .
+Options are:
+(A): Boycotts, Buyalls, Blockchain technology, Increased Sales
+(B): Buycotts, Boycotts, Digital technology, Decreased Sales
+(C): Boycotts, Buycotts, Digital technology, Decreased Sales
+(D): Buycotts, Boycotts, Blockchain technology, Charitable donations
+(E): Boycotts, Buyalls, Blockchain technology, Charitable donations
+(F): Boycotts, Buycotts, Digital technology, Increased Sales
+(G): Buycotts, Boycotts, Digital technology, Increased Sales
+(H): Boycotts, Buycotts, Physical technology, Increased Sales
+(I): Buycotts, Buyalls, Blockchain technology, Charitable donations
+(J): Boycotts, Buycotts, Blockchain technology, Decreased Sales
+
+A: Let's think step by step. We refer to Wikipedia articles on business ethics for help. The sentence that best uses the possible options above is __n contrast to *boycotts*, *buycotts* aim to reward favourable behavior by companies. The success of such campaigns have been heightened through the use of *digital technology*, which allow campaigns to facilitate the company in achieving *increased sales*._ The answer is (F).
+
+Q: _______ is the direct attempt to formally or informally manage ethical issues or problems, through specific policies, practices and programmes.
+Options are:
+(A): Operational management
+(B): Corporate governance
+(C): Environmental management
+(D): Business ethics management
+(E): Sustainability
+(F): Stakeholder management
+(G): Social marketing
+(H): Human resource management
+(I): N/A
+(J): N/A
+
+A: Let's think step by step. We refer to Wikipedia articles on business ethics for help. The direct attempt manage ethical issues through specific policies, practices, and programs is business ethics management. The answer is (D).
+
+Q: How can organisational structures that are characterised by democratic and inclusive styles of management be described?
+Options are:
+(A): Flat
+(B): Bureaucratic
+(C): Autocratic
+(D): Hierarchical
+(E): Functional
+(F): Decentralized
+(G): Matrix
+(H): Network
+(I): Divisional
+(J): Centralized
+
+A: Let's think step by step. We refer to Wikipedia articles on management for help. Flat organizational structures are characterized by democratic and inclusive styles of management, and have few (if any) levels of management between the workers and managers.  The answer is (A).
+
+Q: Although the content and quality can be as controlled as direct mail, response rates of this medium are lower because of the lack of a personal address mechanism. This media format is known as:
+Options are:
+(A): Online banners.
+(B): Television advertising.
+(C): Email marketing.
+(D): Care lines.
+(E): Direct mail.
+(F): Inserts.
+(G): Door to door.
+(H): Radio advertising.
+(I): Billboards.
+(J): Social media advertising.
+
+A: Let's think step by step. We refer to Wikipedia articles on marketing for help. Door to door marketing delivers non-addressed items within all buildings within a geographic area. While it can control the content and quality as well as direct mail marketing, its response rate is lower because of the lack of a personal address mechanism. The answer is (G).
+
+Q: In an organization, the group of people tasked with buying decisions is referred to as the _______________.
+Options are:
+(A): Procurement centre.
+(B): Chief executive unit.
+(C): Resources allocation group.
+(D): Marketing department.
+(E): Purchasing department.
+(F): Supply chain management team.
+(G): Outsourcing unit.
+(H): Decision-making unit.
+(I): Operations unit.
+(J): Financial management team.
+
+A: Let's think step by step. We refer to Wikipedia articles on marketing for help. In an organization, the group of the people tasked with buying decision is referred to as the decision-making unit. The answer is (H).
+
+Q: Typical advertising regulatory bodies suggest, for example that adverts must not: encourage _________, cause unnecessary ________ or _____, and must not cause _______ offence.
+Options are:
+(A): Safe practices, Fear, Jealousy, Trivial
+(B): Unsafe practices, Distress, Joy, Trivial
+(C): Safe practices, Wants, Jealousy, Trivial
+(D): Safe practices, Distress, Fear, Trivial
+(E): Unsafe practices, Wants, Jealousy, Serious
+(F): Safe practices, Distress, Jealousy, Serious
+(G): Safe practices, Wants, Fear, Serious
+(H): Unsafe practices, Wants, Fear, Trivial
+(I): Unsafe practices, Distress, Fear, Serious
+
+<|im_end|>
+<|im_start|>assistant
+<think>
+
+=== GENERATION CONFIG ===
+GenerationConfig {
+  "bos_token_id": 0,
+  "do_sample": true,
+  "eos_token_id": [
+    1,
+    130073
+  ],
+  "pad_token_id": 1,
+  "temperature": 1.0,
+  "top_p": 0.95
+}
+
+=== FULL GENERATED TOKENS (think opener is in prompt) ===
+We need to answer the final question: "Typical advertising regulatory bodies suggest, for example that adverts must not: encourage _________, cause unnecessary ________ or _____, and must not cause _______ offence."
+Options are given. We need to choose the correct one.
+
+Let's think step by step. This is about advertising regulations. Typically, advertising rules encourage safe practices, avoid causing distress, fear, or trivial offense. I recall that advertising should not encourage unsafe practices, cause unnecessary distress, fear, or trivial offense. But let's see the options.
+
+Options:
+(A) Safe practices, Fear, Jealousy, Trivial
+(B) Unsafe practices, Distress, Joy, Trivial
+(C) Safe practices, Wants, Jealousy, Trivial
+(D) Safe practices, Distress, Fear, Trivial
+(E) Unsafe practices, Wants, Jealousy, Serious
+(F) Safe practices, Distress, Jealousy, Serious
+(G) Safe practices, Wants, Fear, Serious
+(H) Unsafe practices, Distress, Fear, Trivial
+(I) Unsafe practices, Distress, Fear, Serious
+
+I think the correct answer is (D) Safe practices, Distress, Fear, Trivial. That sounds like typical advertising regulations: encourage safe practices, avoid causing unnecessary distress, fear, or trivial offense. Yes, that seems plausible.
+
+Let me double-check: In many advertising standards, they say ads should not cause unnecessary distress, fear, or trivial offense. And they should encourage safe practices. So (D) matches.
+
+Thus, the answer is (D).
+</think>
+
+The answer is (D).<|im_end|>
+=== STOP STATUS ===
+{"generated_tokens": 342, "ended_with_eos": true, "max_new_tokens": 1024}

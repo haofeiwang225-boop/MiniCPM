@@ -1,0 +1,258 @@
+actual_generate_kwargs:
+  do_sample: true
+  max_new_tokens: 8192
+  num_beams: 1
+  num_return_sequences: 1
+  temperature: 1.0
+  top_p: 0.95
+chat_template: "{{- bos_token }}{%- if tools %}\n    {%- set tool_definitions %}\n\
+  \        {{- \"# Tools\\n\\nYou are provided with function signatures within <tools></tools>\
+  \ XML tags:\\n<tools>\" }}\n        {%- for tool in tools %}\n            {{- \"\
+  \\n\" }}\n            {{- tool | tojson(ensure_ascii=False) }}\n        {%- endfor\
+  \ %}\n        {{- '\\n</tools>\\n\\nTool usage guidelines:\\n- You may call zero\
+  \ or more functions. If no function calls are needed, just answer normally and do\
+  \ not include any <function ... </function>.\\n- When calling a function, return\
+  \ an XML object within <function ... </function> using:\\n<function name=\"function-name\"\
+  ><param name=\"param-name\">param-value</param></function>\\n- param-value may be\
+  \ multi-line. If it contains <, & or newline characters, wrap it in a CDATA block:\
+  \ <param name=\"param-name\"><![CDATA[...multi-line value...]]></param>' }}\n  \
+  \  {%- endset %}\n    \n    {{- '<|im_start|>system\\n' }}\n    {%- if messages[0].role\
+  \ == 'system' %}\n        {%- if '<tool_def_sep>' in messages[0].content %}\n  \
+  \          {{- messages[0].content.replace('<tool_def_sep>', tool_definitions) }}\n\
+  \        {%- else %}\n            {{- messages[0].content + '\\n\\n' + tool_definitions\
+  \ }}\n        {%- endif %}\n    {%- else %}\n        {{- tool_definitions.lstrip()\
+  \ }}\n    {%- endif %}\n    {{- '<|im_end|>\\n' }}\n{%- else %}\n    {%- if messages[0].role\
+  \ == 'system' %}\n        {{- '<|im_start|>system\\n' + messages[0].content + '<|im_end|>\\\
+  n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true,\
+  \ last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n\
+  \    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool\
+  \ and message.role == \"user\" and message.content is string and not(message.content.startswith('<tool_response>')\
+  \ and message.content.endswith('</tool_response>')) %}\n        {%- set ns.multi_step_tool\
+  \ = false %}\n        {%- set ns.last_query_index = index %}\n    {%- endif %}\n\
+  {%- endfor %}\n{%- for message in messages %}\n    {%- if message.content is string\
+  \ %}\n        {%- set content = message.content %}\n    {%- else %}\n        {%-\
+  \ set content = '' %}\n    {%- endif %}\n    {%- if (message.role == \"user\") or\
+  \ (message.role == \"system\" and not loop.first) %}\n        {{- '<|im_start|>'\
+  \ + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role\
+  \ == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if\
+  \ message.reasoning_content is string %}\n            {%- set reasoning_content\
+  \ = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>'\
+  \ in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\\
+  n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\\
+  n') %}\n            {%- endif %}\n        {%- endif %}\n        \n        {%- if\
+  \ message.tool_calls %}\n            {%- set content_parts = content.split('<tool_sep>')\
+  \ %}\n            {%- set processed_content = content_parts[0] %}\n            {%-\
+  \ set tool_calls_count = message.tool_calls|length %}\n            {%- set tool_sep_count\
+  \ = content_parts|length - 1 %}\n            {%- set min_count = [tool_calls_count,\
+  \ tool_sep_count]|min %}\n            \n            {%- for i in range(1, content_parts|length)\
+  \ %}\n                {%- set tool_index = i - 1 %}\n                {%- if tool_index\
+  \ < tool_calls_count %}\n                    {%- set tool_call = message.tool_calls[tool_index]\
+  \ %}\n                    {%- if tool_call.function %}\n                       \
+  \ {%- set tool_call = tool_call.function %}\n                    {%- endif %}\n\
+  \                    {%- set single_tool_xml %}\n                        {{- '<function\
+  \ name=\"' ~ tool_call.name ~ '\">' }}\n                        {%- if tool_call.arguments\
+  \ %}\n                            {%- set args_dict = tool_call.arguments %}\n \
+  \                           {%- for param_name, param_value in args_dict.items()\
+  \ %}\n                                {{- '<param name=\"' ~ param_name ~ '\">'\
+  \ }}\n                                {%- if param_value is string and ('<' in param_value\
+  \ or '&' in param_value or '\\n' in param_value) %}\n                          \
+  \          {{- '<![CDATA[' + param_value + ']]>' }}\n                          \
+  \      {%- else %}\n                                    {{- param_value }}\n   \
+  \                             {%- endif %}\n                                {{-\
+  \ '</param>' }}\n                            {%- endfor %}\n                   \
+  \     {%- endif %}\n                        {{- '</function>' }}\n             \
+  \       {%- endset %}\n                    {%- set processed_content = processed_content\
+  \ + single_tool_xml + content_parts[i] %}\n                {%- else %}\n       \
+  \             {%- set processed_content = processed_content + content_parts[i] %}\n\
+  \                {%- endif %}\n            {%- endfor %}\n            \n       \
+  \     {%- if tool_calls_count > tool_sep_count %}\n                {%- for remaining_index\
+  \ in range(tool_sep_count, tool_calls_count) %}\n                    {%- set tool_call\
+  \ = message.tool_calls[remaining_index] %}\n                    {%- if tool_call.function\
+  \ %}\n                        {%- set tool_call = tool_call.function %}\n      \
+  \              {%- endif %}\n                    {%- set remaining_tool_xml %}\n\
+  \                        {{- '<function name=\"' ~ tool_call.name ~ '\">' }}\n \
+  \                       {%- if tool_call.arguments %}\n                        \
+  \    {%- set args_dict = tool_call.arguments %}\n                            {%-\
+  \ for param_name, param_value in args_dict.items() %}\n                        \
+  \        {{- '<param name=\"' ~ param_name ~ '\">' }}\n                        \
+  \        {%- if param_value is string and ('<' in param_value or '&' in param_value\
+  \ or '\\n' in param_value) %}\n                                    {{- '<![CDATA['\
+  \ + param_value + ']]>' }}\n                                {%- else %}\n      \
+  \                              {{- param_value }}\n                            \
+  \    {%- endif %}\n                                {{- '</param>' }}\n         \
+  \                   {%- endfor %}\n                        {%- endif %}\n      \
+  \                  {{- '</function>' }}\n                    {%- endset %}\n   \
+  \                 {%- set processed_content = processed_content + remaining_tool_xml\
+  \ %}\n                {%- endfor %}\n            {%- endif %}\n            \n  \
+  \          {%- set content = processed_content %}\n        {%- endif %}\n      \
+  \  \n        {%- if reasoning_content %}\n            {{- '<|im_start|>' + message.role\
+  \ + '\\n<think>\\n' + reasoning_content.strip('\\n') + '\\n</think>\\n\\n' + content.lstrip('\\\
+  n') }}\n        {%- elif '<think>' not in content and '</think>' not in content\
+  \ %}\n            {{- '<|im_start|>' + message.role + '\\n<think>\\n\\n</think>\\\
+  n\\n' + content.lstrip('\\n') }}\n        {%- else %}\n            {{- '<|im_start|>'\
+  \ + message.role + '\\n' + content }}\n        {%- endif %}\n        \n        {%-\
+  \ if message.tool_calls and not has_tool_sep %}\n            {%- for tool_call in\
+  \ message.tool_calls %}\n                {%- if (loop.first and content) or (not\
+  \ loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n\
+  \                {%- if tool_call.function %}\n                    {%- set tool_call\
+  \ = tool_call.function %}\n                {%- endif %}\n                {{- '<function\
+  \ name=\"' ~ tool_call.name ~ '\">' }}\n                {%- if tool_call.arguments\
+  \ %}\n                    {%- set args_dict = tool_call.arguments %}\n         \
+  \           {%- for param_name, param_value in args_dict.items() %}\n          \
+  \              {{- '<param name=\"' ~ param_name ~ '\">' }}\n                  \
+  \      {%- if param_value is string and ('<' in param_value or '&' in param_value\
+  \ or '\\n' in param_value) %}\n                            {{- '<![CDATA[' + param_value\
+  \ + ']]>' }}\n                        {%- else %}\n                            {{-\
+  \ param_value }}\n                        {%- endif %}\n                       \
+  \ {{- '</param>' }}\n                    {%- endfor %}\n                {%- endif\
+  \ %}\n                {{- '</function>' }}\n            {%- endfor %}\n        {%-\
+  \ endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\"\
+  \ %}\n        {%- if loop.first or (messages[loop.index0 - 1].role != \"tool\")\
+  \ %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\\
+  n<tool_response>\\n' }}\n        {%- if message.content is string %}\n         \
+  \   {{- content }}\n        {%- else %}\n            {{- message.content | tojson(ensure_ascii=False)\
+  \ }}\n        {%- endif %}\n        {{- '\\n</tool_response>' }}\n        {%- if\
+  \ loop.last or (messages[loop.index0 + 1].role != \"tool\") %}\n            {{-\
+  \ '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%-\
+  \ if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if\
+  \ enable_thinking is defined %}\n        {%- if enable_thinking is false %}\n  \
+  \          {{- '<think>\\n\\n</think>\\n\\n' }}\n        {%- elif enable_thinking\
+  \ is true %}\n            {{- '<think>\\n' }}\n        {%- endif %}\n    {%- endif\
+  \ %}\n{%- endif %}\n"
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/IFEval/ifeval_input_data.jsonl
+data_sha256: 6a85310ca8ce15eff755aa08a3a4ff931c7e273e7515ebb3c492ea85fd8288f2
+effective_generation_config:
+  _from_model_config: true
+  assistant_confidence_threshold: null
+  assistant_early_exit: null
+  assistant_lookbehind: null
+  bad_words_ids: null
+  begin_suppress_tokens: null
+  bos_token_id: 0
+  cache_config: null
+  cache_implementation: null
+  compile_config: null
+  constraints: null
+  continuous_batching_config: null
+  decoder_start_token_id: null
+  disable_compile: null
+  diversity_penalty: null
+  do_sample: true
+  dola_layers: null
+  early_stopping: null
+  encoder_no_repeat_ngram_size: null
+  encoder_repetition_penalty: null
+  eos_token_id:
+  - 1
+  - 130073
+  epsilon_cutoff: null
+  eta_cutoff: null
+  exponential_decay_length_penalty: null
+  force_words_ids: null
+  forced_bos_token_id: null
+  forced_eos_token_id: null
+  guidance_scale: null
+  is_assistant: null
+  length_penalty: null
+  low_memory: null
+  max_length: null
+  max_matching_ngram_size: null
+  max_new_tokens: 8192
+  max_time: null
+  min_length: null
+  min_new_tokens: null
+  min_p: null
+  no_repeat_ngram_size: null
+  num_assistant_tokens: null
+  num_assistant_tokens_schedule: null
+  num_beam_groups: null
+  num_beams: 1
+  num_return_sequences: 1
+  output_attentions: null
+  output_hidden_states: null
+  output_logits: null
+  output_scores: null
+  pad_token_id: 1
+  penalty_alpha: null
+  prefill_chunk_size: null
+  prompt_lookup_num_tokens: null
+  remove_invalid_values: null
+  renormalize_logits: null
+  repetition_penalty: null
+  return_dict_in_generate: null
+  sequence_bias: null
+  stop_strings: null
+  suppress_tokens: null
+  target_lookbehind: null
+  temperature: 1.0
+  token_healing: null
+  top_h: null
+  top_k: null
+  top_p: 0.95
+  transformers_version: 5.6.2
+  typical_p: null
+  use_cache: null
+  watermarking_config: null
+enable_thinking: true
+evaluator:
+  commit: dd417662e5bda6a247489ec28d2ff46a45d1c42c
+  files:
+    README.md: 6759456b3130980616e16f63e7a088a7f9b0e743e9e470589e478209c6596425
+    ifeval.yaml: 3d8a3eb32de03f6a23ac87b46951d972a4ec7cb137e753365c0271594e38f84b
+    instructions.py: 511cc41a53787d818c292d8335c8e98aa833296a0789ac470db56bcd6496345e
+    instructions_registry.py: 9db1c062cdb70a91420d3789a588235a1064c2b9a1a66e09e5fb9df9e7584a6c
+    instructions_util.py: e8c4d9187bac1482d93941fb46469609c3ae78d896195bfcb300a0707d492567
+    utils.py: 1ab8f14808c826f93f2364883487ed63cf4267980bf4761fda8053899c013632
+  local_source: /tmp/tmp.AdGwhVzOgN/lm-eval
+  source_repository: https://github.com/EleutherAI/lm-evaluation-harness
+generation:
+  do_sample: true
+  max_new_tokens: 8192
+  num_beams: 1
+  num_return_sequences: 1
+  temperature: 1.0
+  top_p: 0.95
+langdetect_seed: 42
+max_samples: null
+model: /home/hongchang/whf/models/MiniCPM5-2B
+nltk_data: /home/hongchang/whf/nltk_data
+num_fewshot: 0
+num_generations_per_prompt: 1
+num_samples: 541
+output_dir: benchmarks/ifeval/outputs/sampling_8192_full_response_regrade
+protocol_generation_config:
+  do_sample: true
+  max_new_tokens: 8192
+  num_beams: 1
+  num_return_sequences: 1
+  temperature: 1.0
+  top_p: 0.95
+regrade:
+  evaluator:
+    commit: dd417662e5bda6a247489ec28d2ff46a45d1c42c
+    files:
+      README.md: 6759456b3130980616e16f63e7a088a7f9b0e743e9e470589e478209c6596425
+      ifeval.yaml: 3d8a3eb32de03f6a23ac87b46951d972a4ec7cb137e753365c0271594e38f84b
+      instructions.py: 511cc41a53787d818c292d8335c8e98aa833296a0789ac470db56bcd6496345e
+      instructions_registry.py: 9db1c062cdb70a91420d3789a588235a1064c2b9a1a66e09e5fb9df9e7584a6c
+      instructions_util.py: e8c4d9187bac1482d93941fb46469609c3ae78d896195bfcb300a0707d492567
+      utils.py: 1ab8f14808c826f93f2364883487ed63cf4267980bf4761fda8053899c013632
+    local_source: /tmp/tmp.AdGwhVzOgN/lm-eval
+    source_repository: https://github.com/EleutherAI/lm-evaluation-harness
+  nltk_data: /home/hongchang/whf/nltk_data
+  note: No thinking extraction, whitespace stripping, special-token removal, or model
+    generation.
+  num_samples: 541
+  raw_field: model_output
+  script_sha256: 9fec4aa10f3991dd6d117655b0956e8b01d20cdf582ea6cb0a6405e568b1aecf
+  source: /home/hongchang/whf/MiniCPM/benchmarks/ifeval/outputs/sampling_8192_final/results.jsonl
+  source_config_sha256: 1726d0931c352ab7b5162275f2819a2068b47577def2da0fb32839f3b659eb02
+  source_sha256: b0c1432cb3af02e36450798c56e46c13f863e9dfbda288ed59e56e2a23d66bfb
+response_processing: raw_model_output_verbatim
+seed: 42
+versions:
+  immutabledict: 4.3.1
+  langdetect: 1.0.9
+  nltk: 3.10.3
+  torch: 2.5.1+cu121
+  transformers: 5.6.2

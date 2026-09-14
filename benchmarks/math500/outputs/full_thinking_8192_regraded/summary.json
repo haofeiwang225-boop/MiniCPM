@@ -1,0 +1,72 @@
+{
+  "total": 136,
+  "correct": 109,
+  "accuracy": 0.8014705882352942,
+  "expected_total": 500,
+  "complete": false,
+  "model": "/home/hongchang/whf/models/MiniCPM5-2B",
+  "generation": {
+    "do_sample": true,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "max_new_tokens": 8192
+  },
+  "enable_thinking": true,
+  "seed": 42,
+  "unfinished_thinking": 27,
+  "length_limit_reached": 27,
+  "no_eos": 27,
+  "parse_reasons": {
+    "boxed": 107,
+    "unfinished_thinking": 27,
+    "final_text_fallback": 1,
+    "explicit_question_choice": 1
+  },
+  "grading_reasons": {
+    "symbolic_comparison": 106,
+    "text_comparison": 2,
+    "missing_answer": 27,
+    "string_fallback": 1
+  },
+  "failed_question_ids": [
+    9,
+    11,
+    17,
+    18,
+    24,
+    26,
+    43,
+    60,
+    61,
+    64,
+    68,
+    80,
+    82,
+    88,
+    94,
+    96,
+    100,
+    101,
+    103,
+    104,
+    108,
+    110,
+    119,
+    120,
+    123,
+    126,
+    128
+  ],
+  "regrade_complete": true,
+  "original_correct": 103,
+  "original_accuracy": 0.7573529411764706,
+  "false_to_true": [
+    23,
+    25,
+    31,
+    67,
+    97,
+    99
+  ],
+  "true_to_false": []
+}

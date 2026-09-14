@@ -1,0 +1,1007 @@
+model.generate kwargs: {"do_sample": true, "temperature": 1.0, "top_p": 0.95, "max_new_tokens": 16384, "repetition_penalty": 1.05}
+Loading weights:   0%|          | 0/381 [00:00<?, ?it/s]Loading weights:   0%|          | 1/381 [00:00<00:38,  9.79it/s]Loading weights:   1%|          | 2/381 [00:00<00:48,  7.83it/s]Loading weights:   8%|▊         | 31/381 [00:00<00:03, 116.47it/s]Loading weights:  12%|█▏        | 47/381 [00:00<00:02, 118.86it/s]Loading weights:  19%|█▉        | 72/381 [00:00<00:01, 159.46it/s]Loading weights:  25%|██▌       | 96/381 [00:00<00:01, 183.78it/s]Loading weights:  33%|███▎      | 126/381 [00:00<00:01, 217.98it/s]Loading weights:  39%|███▉      | 150/381 [00:00<00:01, 224.07it/s]Loading weights:  46%|████▋     | 177/381 [00:00<00:00, 237.38it/s]Loading weights:  54%|█████▎    | 204/381 [00:01<00:00, 246.59it/s]Loading weights:  61%|██████    | 231/381 [00:01<00:00, 251.28it/s]Loading weights:  68%|██████▊   | 258/381 [00:01<00:00, 250.57it/s]Loading weights:  75%|███████▍  | 285/381 [00:01<00:00, 253.03it/s]Loading weights:  82%|████████▏ | 312/381 [00:01<00:00, 253.41it/s]Loading weights:  89%|████████▊ | 338/381 [00:01<00:00, 217.29it/s]Loading weights:  96%|█████████▌| 365/381 [00:01<00:00, 222.94it/s]Loading weights: 100%|██████████| 381/381 [00:01<00:00, 207.55it/s]
+[1/500] prompt_tokens=59
+[1/500] question_id=0 correct=True generated_tokens=386 ended_with_eos=True parse_reason=boxed
+[2/500] prompt_tokens=112
+[2/500] question_id=1 correct=True generated_tokens=2557 ended_with_eos=True parse_reason=boxed
+[3/500] prompt_tokens=57
+[3/500] question_id=2 correct=True generated_tokens=692 ended_with_eos=True parse_reason=boxed
+[4/500] prompt_tokens=22
+[4/500] question_id=3 correct=True generated_tokens=436 ended_with_eos=True parse_reason=boxed
+[5/500] prompt_tokens=348
+[5/500] question_id=4 correct=True generated_tokens=3914 ended_with_eos=True parse_reason=boxed
+[6/500] prompt_tokens=48
+[6/500] question_id=5 correct=True generated_tokens=855 ended_with_eos=True parse_reason=boxed
+[7/500] prompt_tokens=30
+[7/500] question_id=6 correct=True generated_tokens=2497 ended_with_eos=True parse_reason=boxed
+[8/500] prompt_tokens=79
+[8/500] question_id=7 correct=True generated_tokens=3542 ended_with_eos=True parse_reason=boxed
+[9/500] prompt_tokens=44
+[9/500] question_id=8 correct=True generated_tokens=398 ended_with_eos=True parse_reason=boxed
+[10/500] prompt_tokens=145
+[10/500] question_id=9 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[11/500] prompt_tokens=35
+[11/500] question_id=10 correct=True generated_tokens=4788 ended_with_eos=True parse_reason=boxed
+[12/500] prompt_tokens=70
+[12/500] question_id=11 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[13/500] prompt_tokens=76
+[13/500] question_id=12 correct=True generated_tokens=2666 ended_with_eos=True parse_reason=boxed
+[14/500] prompt_tokens=193
+[14/500] question_id=13 correct=True generated_tokens=2402 ended_with_eos=True parse_reason=boxed
+[15/500] prompt_tokens=128
+[15/500] question_id=14 correct=True generated_tokens=2061 ended_with_eos=True parse_reason=boxed
+[16/500] prompt_tokens=200
+[16/500] question_id=15 correct=True generated_tokens=3649 ended_with_eos=True parse_reason=boxed
+[17/500] prompt_tokens=31
+[17/500] question_id=16 correct=True generated_tokens=747 ended_with_eos=True parse_reason=boxed
+[18/500] prompt_tokens=233
+[18/500] question_id=17 correct=True generated_tokens=10503 ended_with_eos=True parse_reason=boxed
+[19/500] prompt_tokens=159
+[19/500] question_id=18 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[20/500] prompt_tokens=58
+[20/500] question_id=19 correct=True generated_tokens=6645 ended_with_eos=True parse_reason=boxed
+[21/500] prompt_tokens=23
+[21/500] question_id=20 correct=True generated_tokens=460 ended_with_eos=True parse_reason=boxed
+[22/500] prompt_tokens=38
+[22/500] question_id=21 correct=True generated_tokens=8449 ended_with_eos=True parse_reason=boxed
+[23/500] prompt_tokens=133
+[23/500] question_id=22 correct=True generated_tokens=8238 ended_with_eos=True parse_reason=boxed
+[24/500] prompt_tokens=38
+[24/500] question_id=23 correct=True generated_tokens=1002 ended_with_eos=True parse_reason=boxed
+[25/500] prompt_tokens=106
+[25/500] question_id=24 correct=True generated_tokens=6009 ended_with_eos=True parse_reason=boxed
+[26/500] prompt_tokens=90
+[26/500] question_id=25 correct=True generated_tokens=7152 ended_with_eos=True parse_reason=boxed
+[27/500] prompt_tokens=63
+[27/500] question_id=26 correct=True generated_tokens=14072 ended_with_eos=True parse_reason=boxed
+[28/500] prompt_tokens=86
+[28/500] question_id=27 correct=True generated_tokens=1192 ended_with_eos=True parse_reason=boxed
+[29/500] prompt_tokens=45
+[29/500] question_id=28 correct=True generated_tokens=513 ended_with_eos=True parse_reason=boxed
+[30/500] prompt_tokens=86
+[30/500] question_id=29 correct=True generated_tokens=1184 ended_with_eos=True parse_reason=boxed
+[31/500] prompt_tokens=34
+[31/500] question_id=30 correct=True generated_tokens=1548 ended_with_eos=True parse_reason=boxed
+[32/500] prompt_tokens=17
+[32/500] question_id=31 correct=True generated_tokens=429 ended_with_eos=True parse_reason=boxed
+[33/500] prompt_tokens=62
+[33/500] question_id=32 correct=True generated_tokens=5090 ended_with_eos=True parse_reason=boxed
+[34/500] prompt_tokens=55
+[34/500] question_id=33 correct=True generated_tokens=1882 ended_with_eos=True parse_reason=boxed
+[35/500] prompt_tokens=40
+[35/500] question_id=34 correct=True generated_tokens=2291 ended_with_eos=True parse_reason=boxed
+[36/500] prompt_tokens=50
+[36/500] question_id=35 correct=True generated_tokens=322 ended_with_eos=True parse_reason=boxed
+[37/500] prompt_tokens=39
+[37/500] question_id=36 correct=True generated_tokens=2106 ended_with_eos=True parse_reason=boxed
+[38/500] prompt_tokens=41
+[38/500] question_id=37 correct=True generated_tokens=2135 ended_with_eos=True parse_reason=boxed
+[39/500] prompt_tokens=47
+[39/500] question_id=38 correct=True generated_tokens=509 ended_with_eos=True parse_reason=boxed
+[40/500] prompt_tokens=33
+[40/500] question_id=39 correct=True generated_tokens=894 ended_with_eos=True parse_reason=boxed
+[41/500] prompt_tokens=108
+[41/500] question_id=40 correct=True generated_tokens=1749 ended_with_eos=True parse_reason=boxed
+[42/500] prompt_tokens=59
+[42/500] question_id=41 correct=True generated_tokens=7388 ended_with_eos=True parse_reason=boxed
+[43/500] prompt_tokens=49
+[43/500] question_id=42 correct=True generated_tokens=295 ended_with_eos=True parse_reason=boxed
+[44/500] prompt_tokens=84
+[44/500] question_id=43 correct=True generated_tokens=16252 ended_with_eos=True parse_reason=boxed
+[45/500] prompt_tokens=74
+[45/500] question_id=44 correct=True generated_tokens=1377 ended_with_eos=True parse_reason=boxed
+[46/500] prompt_tokens=46
+[46/500] question_id=45 correct=True generated_tokens=954 ended_with_eos=True parse_reason=boxed
+[47/500] prompt_tokens=52
+[47/500] question_id=46 correct=True generated_tokens=5194 ended_with_eos=True parse_reason=boxed
+[48/500] prompt_tokens=59
+[48/500] question_id=47 correct=True generated_tokens=765 ended_with_eos=True parse_reason=boxed
+[49/500] prompt_tokens=30
+[49/500] question_id=48 correct=True generated_tokens=350 ended_with_eos=True parse_reason=boxed
+[50/500] prompt_tokens=36
+[50/500] question_id=49 correct=True generated_tokens=445 ended_with_eos=True parse_reason=boxed
+[51/500] prompt_tokens=107
+[51/500] question_id=50 correct=True generated_tokens=6796 ended_with_eos=True parse_reason=boxed
+[52/500] prompt_tokens=32
+[52/500] question_id=51 correct=True generated_tokens=1100 ended_with_eos=True parse_reason=boxed
+[53/500] prompt_tokens=38
+[53/500] question_id=52 correct=True generated_tokens=762 ended_with_eos=True parse_reason=boxed
+[54/500] prompt_tokens=36
+[54/500] question_id=53 correct=True generated_tokens=473 ended_with_eos=True parse_reason=boxed
+[55/500] prompt_tokens=23
+[55/500] question_id=54 correct=True generated_tokens=281 ended_with_eos=True parse_reason=boxed
+[56/500] prompt_tokens=60
+[56/500] question_id=55 correct=True generated_tokens=1734 ended_with_eos=True parse_reason=boxed
+[57/500] prompt_tokens=35
+[57/500] question_id=56 correct=True generated_tokens=295 ended_with_eos=True parse_reason=boxed
+[58/500] prompt_tokens=62
+[58/500] question_id=57 correct=True generated_tokens=433 ended_with_eos=True parse_reason=boxed
+[59/500] prompt_tokens=25
+[59/500] question_id=58 correct=True generated_tokens=697 ended_with_eos=True parse_reason=boxed
+[60/500] prompt_tokens=57
+[60/500] question_id=59 correct=True generated_tokens=611 ended_with_eos=True parse_reason=boxed
+[61/500] prompt_tokens=62
+[61/500] question_id=60 correct=True generated_tokens=7215 ended_with_eos=True parse_reason=boxed
+[62/500] prompt_tokens=79
+[62/500] question_id=61 correct=True generated_tokens=7560 ended_with_eos=True parse_reason=boxed
+[63/500] prompt_tokens=100
+[63/500] question_id=62 correct=True generated_tokens=3032 ended_with_eos=True parse_reason=boxed
+[64/500] prompt_tokens=97
+[64/500] question_id=63 correct=True generated_tokens=4505 ended_with_eos=True parse_reason=boxed
+[65/500] prompt_tokens=75
+[65/500] question_id=64 correct=True generated_tokens=11344 ended_with_eos=True parse_reason=boxed
+[66/500] prompt_tokens=23
+[66/500] question_id=65 correct=True generated_tokens=700 ended_with_eos=True parse_reason=boxed
+[67/500] prompt_tokens=43
+[67/500] question_id=66 correct=True generated_tokens=510 ended_with_eos=True parse_reason=boxed
+[68/500] prompt_tokens=55
+[68/500] question_id=67 correct=True generated_tokens=3645 ended_with_eos=True parse_reason=boxed
+[69/500] prompt_tokens=71
+[69/500] question_id=68 correct=True generated_tokens=5208 ended_with_eos=True parse_reason=boxed
+[70/500] prompt_tokens=66
+[70/500] question_id=69 correct=True generated_tokens=1551 ended_with_eos=True parse_reason=boxed
+[71/500] prompt_tokens=30
+[71/500] question_id=70 correct=True generated_tokens=685 ended_with_eos=True parse_reason=boxed
+[72/500] prompt_tokens=31
+[72/500] question_id=71 correct=True generated_tokens=3894 ended_with_eos=True parse_reason=boxed
+[73/500] prompt_tokens=44
+[73/500] question_id=72 correct=True generated_tokens=1330 ended_with_eos=True parse_reason=boxed
+[74/500] prompt_tokens=73
+[74/500] question_id=73 correct=True generated_tokens=669 ended_with_eos=True parse_reason=final_display_math
+[75/500] prompt_tokens=35
+[75/500] question_id=74 correct=True generated_tokens=1860 ended_with_eos=True parse_reason=boxed
+[76/500] prompt_tokens=49
+[76/500] question_id=75 correct=True generated_tokens=1066 ended_with_eos=True parse_reason=boxed
+[77/500] prompt_tokens=50
+[77/500] question_id=76 correct=True generated_tokens=3206 ended_with_eos=True parse_reason=boxed
+[78/500] prompt_tokens=29
+[78/500] question_id=77 correct=True generated_tokens=260 ended_with_eos=True parse_reason=boxed
+[79/500] prompt_tokens=80
+[79/500] question_id=78 correct=True generated_tokens=2187 ended_with_eos=True parse_reason=boxed
+[80/500] prompt_tokens=30
+[80/500] question_id=79 correct=True generated_tokens=239 ended_with_eos=True parse_reason=boxed
+[81/500] prompt_tokens=52
+[81/500] question_id=80 correct=True generated_tokens=15605 ended_with_eos=True parse_reason=boxed
+[82/500] prompt_tokens=60
+[82/500] question_id=81 correct=True generated_tokens=1436 ended_with_eos=True parse_reason=boxed
+[83/500] prompt_tokens=96
+[83/500] question_id=82 correct=True generated_tokens=3130 ended_with_eos=True parse_reason=final_display_math
+[84/500] prompt_tokens=30
+[84/500] question_id=83 correct=True generated_tokens=6861 ended_with_eos=True parse_reason=boxed
+[85/500] prompt_tokens=64
+[85/500] question_id=84 correct=True generated_tokens=1669 ended_with_eos=True parse_reason=boxed
+[86/500] prompt_tokens=70
+[86/500] question_id=85 correct=True generated_tokens=936 ended_with_eos=True parse_reason=boxed
+[87/500] prompt_tokens=49
+[87/500] question_id=86 correct=True generated_tokens=220 ended_with_eos=True parse_reason=boxed
+[88/500] prompt_tokens=33
+[88/500] question_id=87 correct=True generated_tokens=1125 ended_with_eos=True parse_reason=boxed
+[89/500] prompt_tokens=90
+[89/500] question_id=88 correct=True generated_tokens=13765 ended_with_eos=True parse_reason=boxed
+[90/500] prompt_tokens=30
+[90/500] question_id=89 correct=True generated_tokens=2189 ended_with_eos=True parse_reason=boxed
+[91/500] prompt_tokens=51
+[91/500] question_id=90 correct=True generated_tokens=1202 ended_with_eos=True parse_reason=boxed
+[92/500] prompt_tokens=52
+[92/500] question_id=91 correct=True generated_tokens=894 ended_with_eos=True parse_reason=boxed
+[93/500] prompt_tokens=51
+[93/500] question_id=92 correct=False generated_tokens=1778 ended_with_eos=True parse_reason=boxed
+[94/500] prompt_tokens=53
+[94/500] question_id=93 correct=True generated_tokens=1107 ended_with_eos=True parse_reason=boxed
+[95/500] prompt_tokens=376
+[95/500] question_id=94 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[96/500] prompt_tokens=78
+[96/500] question_id=95 correct=True generated_tokens=1040 ended_with_eos=True parse_reason=boxed
+[97/500] prompt_tokens=112
+[97/500] question_id=96 correct=False generated_tokens=12625 ended_with_eos=True parse_reason=final_display_math
+[98/500] prompt_tokens=54
+[98/500] question_id=97 correct=False generated_tokens=1917 ended_with_eos=True parse_reason=boxed
+[99/500] prompt_tokens=26
+[99/500] question_id=98 correct=True generated_tokens=246 ended_with_eos=True parse_reason=boxed
+[100/500] prompt_tokens=86
+[100/500] question_id=99 correct=False generated_tokens=2633 ended_with_eos=True parse_reason=boxed
+[101/500] prompt_tokens=190
+[101/500] question_id=100 correct=True generated_tokens=15121 ended_with_eos=True parse_reason=boxed
+[102/500] prompt_tokens=161
+[102/500] question_id=101 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[103/500] prompt_tokens=25
+[103/500] question_id=102 correct=True generated_tokens=423 ended_with_eos=True parse_reason=boxed
+[104/500] prompt_tokens=117
+[104/500] question_id=103 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[105/500] prompt_tokens=86
+[105/500] question_id=104 correct=True generated_tokens=7429 ended_with_eos=True parse_reason=boxed
+[106/500] prompt_tokens=237
+[106/500] question_id=105 correct=True generated_tokens=1457 ended_with_eos=True parse_reason=boxed
+[107/500] prompt_tokens=60
+[107/500] question_id=106 correct=True generated_tokens=1082 ended_with_eos=True parse_reason=boxed
+[108/500] prompt_tokens=42
+[108/500] question_id=107 correct=True generated_tokens=487 ended_with_eos=True parse_reason=boxed
+[109/500] prompt_tokens=93
+[109/500] question_id=108 correct=True generated_tokens=9561 ended_with_eos=True parse_reason=boxed
+[110/500] prompt_tokens=139
+[110/500] question_id=109 correct=True generated_tokens=6148 ended_with_eos=True parse_reason=boxed
+[111/500] prompt_tokens=119
+[111/500] question_id=110 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[112/500] prompt_tokens=63
+[112/500] question_id=111 correct=True generated_tokens=361 ended_with_eos=True parse_reason=boxed
+[113/500] prompt_tokens=80
+[113/500] question_id=112 correct=True generated_tokens=12176 ended_with_eos=True parse_reason=boxed
+[114/500] prompt_tokens=37
+[114/500] question_id=113 correct=True generated_tokens=602 ended_with_eos=True parse_reason=boxed
+[115/500] prompt_tokens=79
+[115/500] question_id=114 correct=True generated_tokens=1147 ended_with_eos=True parse_reason=boxed
+[116/500] prompt_tokens=27
+[116/500] question_id=115 correct=True generated_tokens=820 ended_with_eos=True parse_reason=boxed
+[117/500] prompt_tokens=33
+[117/500] question_id=116 correct=True generated_tokens=412 ended_with_eos=True parse_reason=boxed
+[118/500] prompt_tokens=30
+[118/500] question_id=117 correct=True generated_tokens=507 ended_with_eos=True parse_reason=boxed
+[119/500] prompt_tokens=35
+[119/500] question_id=118 correct=True generated_tokens=3772 ended_with_eos=True parse_reason=boxed
+[120/500] prompt_tokens=162
+[120/500] question_id=119 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[121/500] prompt_tokens=64
+[121/500] question_id=120 correct=True generated_tokens=8201 ended_with_eos=True parse_reason=boxed
+[122/500] prompt_tokens=32
+[122/500] question_id=121 correct=True generated_tokens=308 ended_with_eos=True parse_reason=boxed
+[123/500] prompt_tokens=75
+[123/500] question_id=122 correct=True generated_tokens=557 ended_with_eos=True parse_reason=boxed
+[124/500] prompt_tokens=262
+[124/500] question_id=123 correct=True generated_tokens=12648 ended_with_eos=True parse_reason=boxed
+[125/500] prompt_tokens=42
+[125/500] question_id=124 correct=True generated_tokens=2595 ended_with_eos=True parse_reason=boxed
+[126/500] prompt_tokens=36
+[126/500] question_id=125 correct=True generated_tokens=642 ended_with_eos=True parse_reason=boxed
+[127/500] prompt_tokens=76
+[127/500] question_id=126 correct=True generated_tokens=11275 ended_with_eos=True parse_reason=boxed
+[128/500] prompt_tokens=22
+[128/500] question_id=127 correct=False generated_tokens=1362 ended_with_eos=True parse_reason=boxed
+[129/500] prompt_tokens=34
+[129/500] question_id=128 correct=True generated_tokens=13847 ended_with_eos=True parse_reason=boxed
+[130/500] prompt_tokens=63
+[130/500] question_id=129 correct=True generated_tokens=5523 ended_with_eos=True parse_reason=boxed
+[131/500] prompt_tokens=42
+[131/500] question_id=130 correct=True generated_tokens=3588 ended_with_eos=True parse_reason=boxed
+[132/500] prompt_tokens=47
+[132/500] question_id=131 correct=True generated_tokens=989 ended_with_eos=True parse_reason=boxed
+[133/500] prompt_tokens=56
+[133/500] question_id=132 correct=True generated_tokens=989 ended_with_eos=True parse_reason=boxed
+[134/500] prompt_tokens=50
+[134/500] question_id=133 correct=True generated_tokens=685 ended_with_eos=True parse_reason=boxed
+[135/500] prompt_tokens=120
+[135/500] question_id=134 correct=True generated_tokens=1962 ended_with_eos=True parse_reason=boxed
+[136/500] prompt_tokens=72
+[136/500] question_id=135 correct=True generated_tokens=925 ended_with_eos=True parse_reason=boxed
+[137/500] prompt_tokens=104
+[137/500] question_id=136 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[138/500] prompt_tokens=30
+[138/500] question_id=137 correct=True generated_tokens=1928 ended_with_eos=True parse_reason=boxed
+[139/500] prompt_tokens=92
+[139/500] question_id=138 correct=True generated_tokens=8903 ended_with_eos=True parse_reason=boxed
+[140/500] prompt_tokens=59
+[140/500] question_id=139 correct=True generated_tokens=6345 ended_with_eos=True parse_reason=boxed
+[141/500] prompt_tokens=44
+[141/500] question_id=140 correct=True generated_tokens=1079 ended_with_eos=True parse_reason=boxed
+[142/500] prompt_tokens=70
+[142/500] question_id=141 correct=True generated_tokens=4207 ended_with_eos=True parse_reason=boxed
+[143/500] prompt_tokens=71
+[143/500] question_id=142 correct=True generated_tokens=12767 ended_with_eos=True parse_reason=boxed
+[144/500] prompt_tokens=80
+[144/500] question_id=143 correct=True generated_tokens=1335 ended_with_eos=True parse_reason=boxed
+[145/500] prompt_tokens=60
+[145/500] question_id=144 correct=True generated_tokens=442 ended_with_eos=True parse_reason=boxed
+[146/500] prompt_tokens=66
+[146/500] question_id=145 correct=True generated_tokens=7216 ended_with_eos=True parse_reason=boxed
+[147/500] prompt_tokens=24
+[147/500] question_id=146 correct=True generated_tokens=406 ended_with_eos=True parse_reason=boxed
+[148/500] prompt_tokens=59
+[148/500] question_id=147 correct=True generated_tokens=6977 ended_with_eos=True parse_reason=boxed
+[149/500] prompt_tokens=41
+[149/500] question_id=148 correct=True generated_tokens=293 ended_with_eos=True parse_reason=boxed
+[150/500] prompt_tokens=68
+[150/500] question_id=149 correct=True generated_tokens=2945 ended_with_eos=True parse_reason=boxed
+[151/500] prompt_tokens=226
+[151/500] question_id=150 correct=True generated_tokens=8742 ended_with_eos=True parse_reason=boxed
+[152/500] prompt_tokens=174
+[152/500] question_id=151 correct=True generated_tokens=4753 ended_with_eos=True parse_reason=boxed
+[153/500] prompt_tokens=90
+[153/500] question_id=152 correct=True generated_tokens=10500 ended_with_eos=True parse_reason=boxed
+[154/500] prompt_tokens=98
+[154/500] question_id=153 correct=True generated_tokens=8616 ended_with_eos=True parse_reason=boxed
+[155/500] prompt_tokens=151
+[155/500] question_id=154 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[156/500] prompt_tokens=65
+[156/500] question_id=155 correct=True generated_tokens=934 ended_with_eos=True parse_reason=boxed
+[157/500] prompt_tokens=218
+[157/500] question_id=156 correct=True generated_tokens=13659 ended_with_eos=True parse_reason=boxed
+[158/500] prompt_tokens=56
+[158/500] question_id=157 correct=True generated_tokens=2936 ended_with_eos=True parse_reason=boxed
+[159/500] prompt_tokens=30
+[159/500] question_id=158 correct=True generated_tokens=1207 ended_with_eos=True parse_reason=boxed
+[160/500] prompt_tokens=62
+[160/500] question_id=159 correct=True generated_tokens=924 ended_with_eos=True parse_reason=boxed
+[161/500] prompt_tokens=32
+[161/500] question_id=160 correct=True generated_tokens=912 ended_with_eos=True parse_reason=boxed
+[162/500] prompt_tokens=17
+[162/500] question_id=161 correct=True generated_tokens=2019 ended_with_eos=True parse_reason=boxed
+[163/500] prompt_tokens=57
+[163/500] question_id=162 correct=True generated_tokens=843 ended_with_eos=True parse_reason=boxed
+[164/500] prompt_tokens=74
+[164/500] question_id=163 correct=True generated_tokens=2973 ended_with_eos=True parse_reason=boxed
+[165/500] prompt_tokens=28
+[165/500] question_id=164 correct=True generated_tokens=11913 ended_with_eos=True parse_reason=boxed
+[166/500] prompt_tokens=84
+[166/500] question_id=165 correct=True generated_tokens=1419 ended_with_eos=True parse_reason=boxed
+[167/500] prompt_tokens=208
+[167/500] question_id=166 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[168/500] prompt_tokens=86
+[168/500] question_id=167 correct=True generated_tokens=378 ended_with_eos=True parse_reason=boxed
+[169/500] prompt_tokens=621
+[169/500] question_id=168 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[170/500] prompt_tokens=37
+[170/500] question_id=169 correct=True generated_tokens=471 ended_with_eos=True parse_reason=boxed
+[171/500] prompt_tokens=52
+[171/500] question_id=170 correct=True generated_tokens=6534 ended_with_eos=True parse_reason=boxed
+[172/500] prompt_tokens=60
+[172/500] question_id=171 correct=True generated_tokens=1321 ended_with_eos=True parse_reason=boxed
+[173/500] prompt_tokens=37
+[173/500] question_id=172 correct=True generated_tokens=554 ended_with_eos=True parse_reason=boxed
+[174/500] prompt_tokens=61
+[174/500] question_id=173 correct=True generated_tokens=7116 ended_with_eos=True parse_reason=boxed
+[175/500] prompt_tokens=40
+[175/500] question_id=174 correct=True generated_tokens=1376 ended_with_eos=True parse_reason=boxed
+[176/500] prompt_tokens=51
+[176/500] question_id=175 correct=True generated_tokens=2498 ended_with_eos=True parse_reason=boxed
+[177/500] prompt_tokens=32
+[177/500] question_id=176 correct=True generated_tokens=4272 ended_with_eos=True parse_reason=boxed
+[178/500] prompt_tokens=258
+[178/500] question_id=177 correct=True generated_tokens=8836 ended_with_eos=True parse_reason=boxed
+[179/500] prompt_tokens=32
+[179/500] question_id=178 correct=True generated_tokens=285 ended_with_eos=True parse_reason=boxed
+[180/500] prompt_tokens=110
+[180/500] question_id=179 correct=True generated_tokens=2222 ended_with_eos=True parse_reason=boxed
+[181/500] prompt_tokens=27
+[181/500] question_id=180 correct=True generated_tokens=1170 ended_with_eos=True parse_reason=boxed
+[182/500] prompt_tokens=37
+[182/500] question_id=181 correct=True generated_tokens=1775 ended_with_eos=True parse_reason=boxed
+[183/500] prompt_tokens=42
+[183/500] question_id=182 correct=True generated_tokens=288 ended_with_eos=True parse_reason=boxed
+[184/500] prompt_tokens=95
+[184/500] question_id=183 correct=True generated_tokens=2833 ended_with_eos=True parse_reason=boxed
+[185/500] prompt_tokens=62
+[185/500] question_id=184 correct=True generated_tokens=10683 ended_with_eos=True parse_reason=boxed
+[186/500] prompt_tokens=28
+[186/500] question_id=185 correct=True generated_tokens=383 ended_with_eos=True parse_reason=boxed
+[187/500] prompt_tokens=41
+[187/500] question_id=186 correct=True generated_tokens=3387 ended_with_eos=True parse_reason=boxed
+[188/500] prompt_tokens=43
+[188/500] question_id=187 correct=True generated_tokens=410 ended_with_eos=True parse_reason=boxed
+[189/500] prompt_tokens=195
+[189/500] question_id=188 correct=True generated_tokens=4854 ended_with_eos=True parse_reason=boxed
+[190/500] prompt_tokens=468
+[190/500] question_id=189 correct=True generated_tokens=8372 ended_with_eos=True parse_reason=boxed
+[191/500] prompt_tokens=41
+[191/500] question_id=190 correct=True generated_tokens=2433 ended_with_eos=True parse_reason=boxed
+[192/500] prompt_tokens=52
+[192/500] question_id=191 correct=True generated_tokens=242 ended_with_eos=True parse_reason=boxed
+[193/500] prompt_tokens=45
+[193/500] question_id=192 correct=True generated_tokens=2207 ended_with_eos=True parse_reason=boxed
+[194/500] prompt_tokens=65
+[194/500] question_id=193 correct=True generated_tokens=5403 ended_with_eos=True parse_reason=boxed
+[195/500] prompt_tokens=47
+[195/500] question_id=194 correct=True generated_tokens=3892 ended_with_eos=True parse_reason=boxed
+[196/500] prompt_tokens=60
+[196/500] question_id=195 correct=True generated_tokens=1589 ended_with_eos=True parse_reason=boxed
+[197/500] prompt_tokens=28
+[197/500] question_id=196 correct=True generated_tokens=510 ended_with_eos=True parse_reason=boxed
+[198/500] prompt_tokens=75
+[198/500] question_id=197 correct=True generated_tokens=2612 ended_with_eos=True parse_reason=boxed
+[199/500] prompt_tokens=40
+[199/500] question_id=198 correct=True generated_tokens=809 ended_with_eos=True parse_reason=boxed
+[200/500] prompt_tokens=40
+[200/500] question_id=199 correct=True generated_tokens=265 ended_with_eos=True parse_reason=boxed
+[201/500] prompt_tokens=43
+[201/500] question_id=200 correct=True generated_tokens=4061 ended_with_eos=True parse_reason=boxed
+[202/500] prompt_tokens=84
+[202/500] question_id=201 correct=True generated_tokens=2558 ended_with_eos=True parse_reason=boxed
+[203/500] prompt_tokens=89
+[203/500] question_id=202 correct=True generated_tokens=4867 ended_with_eos=True parse_reason=boxed
+[204/500] prompt_tokens=61
+[204/500] question_id=203 correct=True generated_tokens=1388 ended_with_eos=True parse_reason=boxed
+[205/500] prompt_tokens=97
+[205/500] question_id=204 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[206/500] prompt_tokens=130
+[206/500] question_id=205 correct=True generated_tokens=3390 ended_with_eos=True parse_reason=boxed
+[207/500] prompt_tokens=88
+[207/500] question_id=206 correct=True generated_tokens=796 ended_with_eos=True parse_reason=boxed
+[208/500] prompt_tokens=43
+[208/500] question_id=207 correct=True generated_tokens=374 ended_with_eos=True parse_reason=boxed
+[209/500] prompt_tokens=34
+[209/500] question_id=208 correct=True generated_tokens=783 ended_with_eos=True parse_reason=boxed
+[210/500] prompt_tokens=44
+[210/500] question_id=209 correct=True generated_tokens=1160 ended_with_eos=True parse_reason=boxed
+[211/500] prompt_tokens=212
+[211/500] question_id=210 correct=True generated_tokens=12794 ended_with_eos=True parse_reason=boxed
+[212/500] prompt_tokens=38
+[212/500] question_id=211 correct=True generated_tokens=677 ended_with_eos=True parse_reason=boxed
+[213/500] prompt_tokens=70
+[213/500] question_id=212 correct=True generated_tokens=764 ended_with_eos=True parse_reason=boxed
+[214/500] prompt_tokens=74
+[214/500] question_id=213 correct=True generated_tokens=3041 ended_with_eos=True parse_reason=boxed
+[215/500] prompt_tokens=90
+[215/500] question_id=214 correct=False generated_tokens=9522 ended_with_eos=True parse_reason=boxed
+[216/500] prompt_tokens=43
+[216/500] question_id=215 correct=True generated_tokens=1026 ended_with_eos=True parse_reason=boxed
+[217/500] prompt_tokens=65
+[217/500] question_id=216 correct=True generated_tokens=1988 ended_with_eos=True parse_reason=boxed
+[218/500] prompt_tokens=28
+[218/500] question_id=217 correct=True generated_tokens=7761 ended_with_eos=True parse_reason=boxed
+[219/500] prompt_tokens=42
+[219/500] question_id=218 correct=True generated_tokens=309 ended_with_eos=True parse_reason=boxed
+[220/500] prompt_tokens=713
+[220/500] question_id=219 correct=False generated_tokens=14441 ended_with_eos=True parse_reason=boxed
+[221/500] prompt_tokens=92
+[221/500] question_id=220 correct=True generated_tokens=1650 ended_with_eos=True parse_reason=boxed
+[222/500] prompt_tokens=38
+[222/500] question_id=221 correct=True generated_tokens=2170 ended_with_eos=True parse_reason=boxed
+[223/500] prompt_tokens=150
+[223/500] question_id=222 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[224/500] prompt_tokens=41
+[224/500] question_id=223 correct=True generated_tokens=6062 ended_with_eos=True parse_reason=boxed
+[225/500] prompt_tokens=61
+[225/500] question_id=224 correct=True generated_tokens=4761 ended_with_eos=True parse_reason=boxed
+[226/500] prompt_tokens=46
+[226/500] question_id=225 correct=True generated_tokens=1291 ended_with_eos=True parse_reason=boxed
+[227/500] prompt_tokens=37
+[227/500] question_id=226 correct=True generated_tokens=2768 ended_with_eos=True parse_reason=boxed
+[228/500] prompt_tokens=74
+[228/500] question_id=227 correct=True generated_tokens=481 ended_with_eos=True parse_reason=boxed
+[229/500] prompt_tokens=125
+[229/500] question_id=228 correct=True generated_tokens=8063 ended_with_eos=True parse_reason=boxed
+[230/500] prompt_tokens=86
+[230/500] question_id=229 correct=True generated_tokens=719 ended_with_eos=True parse_reason=boxed
+[231/500] prompt_tokens=85
+[231/500] question_id=230 correct=True generated_tokens=3662 ended_with_eos=True parse_reason=boxed
+[232/500] prompt_tokens=75
+[232/500] question_id=231 correct=True generated_tokens=1970 ended_with_eos=True parse_reason=boxed
+[233/500] prompt_tokens=76
+[233/500] question_id=232 correct=True generated_tokens=6162 ended_with_eos=True parse_reason=boxed
+[234/500] prompt_tokens=93
+[234/500] question_id=233 correct=True generated_tokens=7105 ended_with_eos=True parse_reason=boxed
+[235/500] prompt_tokens=68
+[235/500] question_id=234 correct=True generated_tokens=2097 ended_with_eos=True parse_reason=boxed
+[236/500] prompt_tokens=40
+[236/500] question_id=235 correct=True generated_tokens=1068 ended_with_eos=True parse_reason=boxed
+[237/500] prompt_tokens=57
+[237/500] question_id=236 correct=True generated_tokens=11392 ended_with_eos=True parse_reason=boxed
+[238/500] prompt_tokens=53
+[238/500] question_id=237 correct=True generated_tokens=1132 ended_with_eos=True parse_reason=boxed
+[239/500] prompt_tokens=54
+[239/500] question_id=238 correct=True generated_tokens=1491 ended_with_eos=True parse_reason=boxed
+[240/500] prompt_tokens=112
+[240/500] question_id=239 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[241/500] prompt_tokens=227
+[241/500] question_id=240 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[242/500] prompt_tokens=52
+[242/500] question_id=241 correct=True generated_tokens=2330 ended_with_eos=True parse_reason=boxed
+[243/500] prompt_tokens=79
+[243/500] question_id=242 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[244/500] prompt_tokens=49
+[244/500] question_id=243 correct=True generated_tokens=944 ended_with_eos=True parse_reason=boxed
+[245/500] prompt_tokens=40
+[245/500] question_id=244 correct=True generated_tokens=3205 ended_with_eos=True parse_reason=boxed
+[246/500] prompt_tokens=94
+[246/500] question_id=245 correct=True generated_tokens=2926 ended_with_eos=True parse_reason=boxed
+[247/500] prompt_tokens=70
+[247/500] question_id=246 correct=True generated_tokens=6980 ended_with_eos=True parse_reason=boxed
+[248/500] prompt_tokens=48
+[248/500] question_id=247 correct=True generated_tokens=2056 ended_with_eos=True parse_reason=boxed
+[249/500] prompt_tokens=61
+[249/500] question_id=248 correct=True generated_tokens=6386 ended_with_eos=True parse_reason=boxed
+[250/500] prompt_tokens=48
+[250/500] question_id=249 correct=True generated_tokens=1936 ended_with_eos=True parse_reason=boxed
+[251/500] prompt_tokens=74
+[251/500] question_id=250 correct=True generated_tokens=725 ended_with_eos=True parse_reason=boxed
+[252/500] prompt_tokens=118
+[252/500] question_id=251 correct=True generated_tokens=4725 ended_with_eos=True parse_reason=boxed
+[253/500] prompt_tokens=36
+[253/500] question_id=252 correct=True generated_tokens=1453 ended_with_eos=True parse_reason=boxed
+[254/500] prompt_tokens=30
+[254/500] question_id=253 correct=True generated_tokens=347 ended_with_eos=True parse_reason=boxed
+[255/500] prompt_tokens=73
+[255/500] question_id=254 correct=True generated_tokens=2849 ended_with_eos=True parse_reason=boxed
+[256/500] prompt_tokens=66
+[256/500] question_id=255 correct=True generated_tokens=1850 ended_with_eos=True parse_reason=boxed
+[257/500] prompt_tokens=35
+[257/500] question_id=256 correct=True generated_tokens=1037 ended_with_eos=True parse_reason=boxed
+[258/500] prompt_tokens=35
+[258/500] question_id=257 correct=True generated_tokens=988 ended_with_eos=True parse_reason=boxed
+[259/500] prompt_tokens=77
+[259/500] question_id=258 correct=True generated_tokens=1044 ended_with_eos=True parse_reason=boxed
+[260/500] prompt_tokens=29
+[260/500] question_id=259 correct=True generated_tokens=319 ended_with_eos=True parse_reason=boxed
+[261/500] prompt_tokens=55
+[261/500] question_id=260 correct=True generated_tokens=1782 ended_with_eos=True parse_reason=boxed
+[262/500] prompt_tokens=50
+[262/500] question_id=261 correct=True generated_tokens=867 ended_with_eos=True parse_reason=boxed
+[263/500] prompt_tokens=31
+[263/500] question_id=262 correct=True generated_tokens=169 ended_with_eos=True parse_reason=boxed
+[264/500] prompt_tokens=43
+[264/500] question_id=263 correct=True generated_tokens=2341 ended_with_eos=True parse_reason=boxed
+[265/500] prompt_tokens=274
+[265/500] question_id=264 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[266/500] prompt_tokens=41
+[266/500] question_id=265 correct=True generated_tokens=260 ended_with_eos=True parse_reason=boxed
+[267/500] prompt_tokens=41
+[267/500] question_id=266 correct=True generated_tokens=444 ended_with_eos=True parse_reason=boxed
+[268/500] prompt_tokens=194
+[268/500] question_id=267 correct=True generated_tokens=10829 ended_with_eos=True parse_reason=boxed
+[269/500] prompt_tokens=43
+[269/500] question_id=268 correct=True generated_tokens=294 ended_with_eos=True parse_reason=boxed
+[270/500] prompt_tokens=49
+[270/500] question_id=269 correct=True generated_tokens=1020 ended_with_eos=True parse_reason=boxed
+[271/500] prompt_tokens=70
+[271/500] question_id=270 correct=True generated_tokens=475 ended_with_eos=True parse_reason=boxed
+[272/500] prompt_tokens=36
+[272/500] question_id=271 correct=True generated_tokens=1155 ended_with_eos=True parse_reason=boxed
+[273/500] prompt_tokens=58
+[273/500] question_id=272 correct=True generated_tokens=1451 ended_with_eos=True parse_reason=boxed
+[274/500] prompt_tokens=76
+[274/500] question_id=273 correct=True generated_tokens=1601 ended_with_eos=True parse_reason=boxed
+[275/500] prompt_tokens=74
+[275/500] question_id=274 correct=True generated_tokens=14137 ended_with_eos=True parse_reason=boxed
+[276/500] prompt_tokens=47
+[276/500] question_id=275 correct=True generated_tokens=285 ended_with_eos=True parse_reason=boxed
+[277/500] prompt_tokens=32
+[277/500] question_id=276 correct=True generated_tokens=3453 ended_with_eos=True parse_reason=boxed
+[278/500] prompt_tokens=23
+[278/500] question_id=277 correct=True generated_tokens=348 ended_with_eos=True parse_reason=boxed
+[279/500] prompt_tokens=31
+[279/500] question_id=278 correct=True generated_tokens=595 ended_with_eos=True parse_reason=boxed
+[280/500] prompt_tokens=194
+[280/500] question_id=279 correct=True generated_tokens=2846 ended_with_eos=True parse_reason=boxed
+[281/500] prompt_tokens=53
+[281/500] question_id=280 correct=True generated_tokens=1833 ended_with_eos=True parse_reason=boxed
+[282/500] prompt_tokens=324
+[282/500] question_id=281 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[283/500] prompt_tokens=133
+[283/500] question_id=282 correct=True generated_tokens=4970 ended_with_eos=True parse_reason=boxed
+[284/500] prompt_tokens=43
+[284/500] question_id=283 correct=True generated_tokens=667 ended_with_eos=True parse_reason=boxed
+[285/500] prompt_tokens=71
+[285/500] question_id=284 correct=False generated_tokens=15407 ended_with_eos=True parse_reason=final_display_math
+[286/500] prompt_tokens=170
+[286/500] question_id=285 correct=True generated_tokens=11519 ended_with_eos=True parse_reason=boxed
+[287/500] prompt_tokens=75
+[287/500] question_id=286 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[288/500] prompt_tokens=71
+[288/500] question_id=287 correct=True generated_tokens=5999 ended_with_eos=True parse_reason=boxed
+[289/500] prompt_tokens=112
+[289/500] question_id=288 correct=True generated_tokens=3756 ended_with_eos=True parse_reason=boxed
+[290/500] prompt_tokens=85
+[290/500] question_id=289 correct=True generated_tokens=1474 ended_with_eos=True parse_reason=boxed
+[291/500] prompt_tokens=47
+[291/500] question_id=290 correct=True generated_tokens=1613 ended_with_eos=True parse_reason=boxed
+[292/500] prompt_tokens=60
+[292/500] question_id=291 correct=True generated_tokens=1201 ended_with_eos=True parse_reason=boxed
+[293/500] prompt_tokens=112
+[293/500] question_id=292 correct=True generated_tokens=7627 ended_with_eos=True parse_reason=boxed
+[294/500] prompt_tokens=54
+[294/500] question_id=293 correct=True generated_tokens=1975 ended_with_eos=True parse_reason=boxed
+[295/500] prompt_tokens=71
+[295/500] question_id=294 correct=True generated_tokens=3861 ended_with_eos=True parse_reason=boxed
+[296/500] prompt_tokens=109
+[296/500] question_id=295 correct=True generated_tokens=6676 ended_with_eos=True parse_reason=boxed
+[297/500] prompt_tokens=138
+[297/500] question_id=296 correct=True generated_tokens=4345 ended_with_eos=True parse_reason=boxed
+[298/500] prompt_tokens=104
+[298/500] question_id=297 correct=True generated_tokens=1205 ended_with_eos=True parse_reason=boxed
+[299/500] prompt_tokens=144
+[299/500] question_id=298 correct=True generated_tokens=4248 ended_with_eos=True parse_reason=boxed
+[300/500] prompt_tokens=52
+[300/500] question_id=299 correct=True generated_tokens=1029 ended_with_eos=True parse_reason=boxed
+[301/500] prompt_tokens=36
+[301/500] question_id=300 correct=True generated_tokens=6919 ended_with_eos=True parse_reason=boxed
+[302/500] prompt_tokens=795
+[302/500] question_id=301 correct=True generated_tokens=8948 ended_with_eos=True parse_reason=boxed
+[303/500] prompt_tokens=88
+[303/500] question_id=302 correct=True generated_tokens=10487 ended_with_eos=True parse_reason=boxed
+[304/500] prompt_tokens=65
+[304/500] question_id=303 correct=True generated_tokens=15345 ended_with_eos=True parse_reason=boxed
+[305/500] prompt_tokens=44
+[305/500] question_id=304 correct=True generated_tokens=1581 ended_with_eos=True parse_reason=boxed
+[306/500] prompt_tokens=43
+[306/500] question_id=305 correct=True generated_tokens=1152 ended_with_eos=True parse_reason=boxed
+[307/500] prompt_tokens=61
+[307/500] question_id=306 correct=True generated_tokens=16089 ended_with_eos=True parse_reason=boxed
+[308/500] prompt_tokens=44
+[308/500] question_id=307 correct=True generated_tokens=1662 ended_with_eos=True parse_reason=boxed
+[309/500] prompt_tokens=60
+[309/500] question_id=308 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[310/500] prompt_tokens=34
+[310/500] question_id=309 correct=True generated_tokens=6534 ended_with_eos=True parse_reason=boxed
+[311/500] prompt_tokens=75
+[311/500] question_id=310 correct=True generated_tokens=925 ended_with_eos=True parse_reason=boxed
+[312/500] prompt_tokens=64
+[312/500] question_id=311 correct=True generated_tokens=4884 ended_with_eos=True parse_reason=boxed
+[313/500] prompt_tokens=36
+[313/500] question_id=312 correct=True generated_tokens=483 ended_with_eos=True parse_reason=boxed
+[314/500] prompt_tokens=54
+[314/500] question_id=313 correct=True generated_tokens=1325 ended_with_eos=True parse_reason=boxed
+[315/500] prompt_tokens=74
+[315/500] question_id=314 correct=True generated_tokens=597 ended_with_eos=True parse_reason=boxed
+[316/500] prompt_tokens=47
+[316/500] question_id=315 correct=True generated_tokens=2172 ended_with_eos=True parse_reason=boxed
+[317/500] prompt_tokens=55
+[317/500] question_id=316 correct=True generated_tokens=980 ended_with_eos=True parse_reason=boxed
+[318/500] prompt_tokens=101
+[318/500] question_id=317 correct=True generated_tokens=5302 ended_with_eos=True parse_reason=boxed
+[319/500] prompt_tokens=40
+[319/500] question_id=318 correct=True generated_tokens=676 ended_with_eos=True parse_reason=boxed
+[320/500] prompt_tokens=38
+[320/500] question_id=319 correct=True generated_tokens=395 ended_with_eos=True parse_reason=boxed
+[321/500] prompt_tokens=153
+[321/500] question_id=320 correct=True generated_tokens=10138 ended_with_eos=True parse_reason=boxed
+[322/500] prompt_tokens=63
+[322/500] question_id=321 correct=True generated_tokens=1243 ended_with_eos=True parse_reason=boxed
+[323/500] prompt_tokens=50
+[323/500] question_id=322 correct=True generated_tokens=372 ended_with_eos=True parse_reason=boxed
+[324/500] prompt_tokens=54
+[324/500] question_id=323 correct=True generated_tokens=13754 ended_with_eos=True parse_reason=boxed
+[325/500] prompt_tokens=291
+[325/500] question_id=324 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[326/500] prompt_tokens=49
+[326/500] question_id=325 correct=True generated_tokens=1088 ended_with_eos=True parse_reason=boxed
+[327/500] prompt_tokens=54
+[327/500] question_id=326 correct=True generated_tokens=5888 ended_with_eos=True parse_reason=boxed
+[328/500] prompt_tokens=99
+[328/500] question_id=327 correct=True generated_tokens=8104 ended_with_eos=True parse_reason=boxed
+[329/500] prompt_tokens=72
+[329/500] question_id=328 correct=True generated_tokens=6474 ended_with_eos=True parse_reason=boxed
+[330/500] prompt_tokens=34
+[330/500] question_id=329 correct=True generated_tokens=793 ended_with_eos=True parse_reason=boxed
+[331/500] prompt_tokens=47
+[331/500] question_id=330 correct=True generated_tokens=1298 ended_with_eos=True parse_reason=boxed
+[332/500] prompt_tokens=50
+[332/500] question_id=331 correct=True generated_tokens=2345 ended_with_eos=True parse_reason=boxed
+[333/500] prompt_tokens=59
+[333/500] question_id=332 correct=True generated_tokens=9831 ended_with_eos=True parse_reason=boxed
+[334/500] prompt_tokens=72
+[334/500] question_id=333 correct=True generated_tokens=4231 ended_with_eos=True parse_reason=boxed
+[335/500] prompt_tokens=43
+[335/500] question_id=334 correct=True generated_tokens=628 ended_with_eos=True parse_reason=boxed
+[336/500] prompt_tokens=69
+[336/500] question_id=335 correct=True generated_tokens=5353 ended_with_eos=True parse_reason=boxed
+[337/500] prompt_tokens=27
+[337/500] question_id=336 correct=True generated_tokens=320 ended_with_eos=True parse_reason=boxed
+[338/500] prompt_tokens=45
+[338/500] question_id=337 correct=True generated_tokens=1467 ended_with_eos=True parse_reason=boxed
+[339/500] prompt_tokens=24
+[339/500] question_id=338 correct=True generated_tokens=1180 ended_with_eos=True parse_reason=boxed
+[340/500] prompt_tokens=72
+[340/500] question_id=339 correct=True generated_tokens=4181 ended_with_eos=True parse_reason=boxed
+[341/500] prompt_tokens=87
+[341/500] question_id=340 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[342/500] prompt_tokens=25
+[342/500] question_id=341 correct=True generated_tokens=1497 ended_with_eos=True parse_reason=boxed
+[343/500] prompt_tokens=38
+[343/500] question_id=342 correct=True generated_tokens=517 ended_with_eos=True parse_reason=boxed
+[344/500] prompt_tokens=46
+[344/500] question_id=343 correct=True generated_tokens=1582 ended_with_eos=True parse_reason=boxed
+[345/500] prompt_tokens=66
+[345/500] question_id=344 correct=True generated_tokens=851 ended_with_eos=True parse_reason=boxed
+[346/500] prompt_tokens=42
+[346/500] question_id=345 correct=True generated_tokens=764 ended_with_eos=True parse_reason=boxed
+[347/500] prompt_tokens=42
+[347/500] question_id=346 correct=True generated_tokens=1082 ended_with_eos=True parse_reason=boxed
+[348/500] prompt_tokens=68
+[348/500] question_id=347 correct=True generated_tokens=798 ended_with_eos=True parse_reason=boxed
+[349/500] prompt_tokens=21
+[349/500] question_id=348 correct=True generated_tokens=684 ended_with_eos=True parse_reason=boxed
+[350/500] prompt_tokens=48
+[350/500] question_id=349 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[351/500] prompt_tokens=21
+[351/500] question_id=350 correct=True generated_tokens=1056 ended_with_eos=True parse_reason=boxed
+[352/500] prompt_tokens=83
+[352/500] question_id=351 correct=True generated_tokens=4305 ended_with_eos=True parse_reason=boxed
+[353/500] prompt_tokens=214
+[353/500] question_id=352 correct=True generated_tokens=9257 ended_with_eos=True parse_reason=boxed
+[354/500] prompt_tokens=60
+[354/500] question_id=353 correct=True generated_tokens=1144 ended_with_eos=True parse_reason=boxed
+[355/500] prompt_tokens=30
+[355/500] question_id=354 correct=True generated_tokens=853 ended_with_eos=True parse_reason=boxed
+[356/500] prompt_tokens=66
+[356/500] question_id=355 correct=True generated_tokens=11373 ended_with_eos=True parse_reason=boxed
+[357/500] prompt_tokens=42
+[357/500] question_id=356 correct=True generated_tokens=2013 ended_with_eos=True parse_reason=boxed
+[358/500] prompt_tokens=75
+[358/500] question_id=357 correct=True generated_tokens=1895 ended_with_eos=True parse_reason=boxed
+[359/500] prompt_tokens=60
+[359/500] question_id=358 correct=True generated_tokens=1671 ended_with_eos=True parse_reason=boxed
+[360/500] prompt_tokens=100
+[360/500] question_id=359 correct=True generated_tokens=4859 ended_with_eos=True parse_reason=boxed
+[361/500] prompt_tokens=245
+[361/500] question_id=360 correct=True generated_tokens=3559 ended_with_eos=True parse_reason=boxed
+[362/500] prompt_tokens=55
+[362/500] question_id=361 correct=False generated_tokens=4236 ended_with_eos=True parse_reason=final_display_math
+[363/500] prompt_tokens=66
+[363/500] question_id=362 correct=True generated_tokens=1172 ended_with_eos=True parse_reason=boxed
+[364/500] prompt_tokens=32
+[364/500] question_id=363 correct=True generated_tokens=595 ended_with_eos=True parse_reason=boxed
+[365/500] prompt_tokens=82
+[365/500] question_id=364 correct=True generated_tokens=2747 ended_with_eos=True parse_reason=boxed
+[366/500] prompt_tokens=63
+[366/500] question_id=365 correct=True generated_tokens=9719 ended_with_eos=True parse_reason=boxed
+[367/500] prompt_tokens=40
+[367/500] question_id=366 correct=True generated_tokens=1604 ended_with_eos=True parse_reason=boxed
+[368/500] prompt_tokens=73
+[368/500] question_id=367 correct=True generated_tokens=728 ended_with_eos=True parse_reason=boxed
+[369/500] prompt_tokens=48
+[369/500] question_id=368 correct=True generated_tokens=791 ended_with_eos=True parse_reason=boxed
+[370/500] prompt_tokens=156
+[370/500] question_id=369 correct=True generated_tokens=4739 ended_with_eos=True parse_reason=boxed
+[371/500] prompt_tokens=50
+[371/500] question_id=370 correct=True generated_tokens=136 ended_with_eos=True parse_reason=boxed
+[372/500] prompt_tokens=74
+[372/500] question_id=371 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[373/500] prompt_tokens=233
+[373/500] question_id=372 correct=True generated_tokens=5862 ended_with_eos=True parse_reason=boxed
+[374/500] prompt_tokens=75
+[374/500] question_id=373 correct=True generated_tokens=2512 ended_with_eos=True parse_reason=boxed
+[375/500] prompt_tokens=31
+[375/500] question_id=374 correct=True generated_tokens=445 ended_with_eos=True parse_reason=boxed
+[376/500] prompt_tokens=40
+[376/500] question_id=375 correct=True generated_tokens=1130 ended_with_eos=True parse_reason=boxed
+[377/500] prompt_tokens=79
+[377/500] question_id=376 correct=True generated_tokens=1442 ended_with_eos=True parse_reason=boxed
+[378/500] prompt_tokens=63
+[378/500] question_id=377 correct=True generated_tokens=4100 ended_with_eos=True parse_reason=boxed
+[379/500] prompt_tokens=28
+[379/500] question_id=378 correct=True generated_tokens=1071 ended_with_eos=True parse_reason=boxed
+[380/500] prompt_tokens=188
+[380/500] question_id=379 correct=True generated_tokens=5427 ended_with_eos=True parse_reason=boxed
+[381/500] prompt_tokens=39
+[381/500] question_id=380 correct=True generated_tokens=2527 ended_with_eos=True parse_reason=boxed
+[382/500] prompt_tokens=57
+[382/500] question_id=381 correct=True generated_tokens=12337 ended_with_eos=True parse_reason=boxed
+[383/500] prompt_tokens=182
+[383/500] question_id=382 correct=True generated_tokens=8822 ended_with_eos=True parse_reason=boxed
+[384/500] prompt_tokens=46
+[384/500] question_id=383 correct=True generated_tokens=710 ended_with_eos=True parse_reason=boxed
+[385/500] prompt_tokens=35
+[385/500] question_id=384 correct=True generated_tokens=336 ended_with_eos=True parse_reason=boxed
+[386/500] prompt_tokens=87
+[386/500] question_id=385 correct=True generated_tokens=3672 ended_with_eos=True parse_reason=boxed
+[387/500] prompt_tokens=31
+[387/500] question_id=386 correct=True generated_tokens=481 ended_with_eos=True parse_reason=boxed
+[388/500] prompt_tokens=37
+[388/500] question_id=387 correct=True generated_tokens=530 ended_with_eos=True parse_reason=boxed
+[389/500] prompt_tokens=49
+[389/500] question_id=388 correct=True generated_tokens=1274 ended_with_eos=True parse_reason=boxed
+[390/500] prompt_tokens=135
+[390/500] question_id=389 correct=True generated_tokens=1789 ended_with_eos=True parse_reason=boxed
+[391/500] prompt_tokens=88
+[391/500] question_id=390 correct=True generated_tokens=3957 ended_with_eos=True parse_reason=boxed
+[392/500] prompt_tokens=89
+[392/500] question_id=391 correct=True generated_tokens=10700 ended_with_eos=True parse_reason=boxed
+[393/500] prompt_tokens=293
+[393/500] question_id=392 correct=True generated_tokens=10250 ended_with_eos=True parse_reason=boxed
+[394/500] prompt_tokens=91
+[394/500] question_id=393 correct=True generated_tokens=1143 ended_with_eos=True parse_reason=boxed
+[395/500] prompt_tokens=117
+[395/500] question_id=394 correct=True generated_tokens=3253 ended_with_eos=True parse_reason=boxed
+[396/500] prompt_tokens=42
+[396/500] question_id=395 correct=True generated_tokens=802 ended_with_eos=True parse_reason=boxed
+[397/500] prompt_tokens=234
+[397/500] question_id=396 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[398/500] prompt_tokens=40
+[398/500] question_id=397 correct=True generated_tokens=373 ended_with_eos=True parse_reason=boxed
+[399/500] prompt_tokens=119
+[399/500] question_id=398 correct=True generated_tokens=11126 ended_with_eos=True parse_reason=boxed
+[400/500] prompt_tokens=29
+[400/500] question_id=399 correct=True generated_tokens=424 ended_with_eos=True parse_reason=boxed
+[401/500] prompt_tokens=76
+[401/500] question_id=400 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[402/500] prompt_tokens=53
+[402/500] question_id=401 correct=True generated_tokens=11092 ended_with_eos=True parse_reason=boxed
+[403/500] prompt_tokens=50
+[403/500] question_id=402 correct=True generated_tokens=1437 ended_with_eos=True parse_reason=boxed
+[404/500] prompt_tokens=57
+[404/500] question_id=403 correct=True generated_tokens=4701 ended_with_eos=True parse_reason=boxed
+[405/500] prompt_tokens=51
+[405/500] question_id=404 correct=True generated_tokens=568 ended_with_eos=True parse_reason=boxed
+[406/500] prompt_tokens=42
+[406/500] question_id=405 correct=True generated_tokens=778 ended_with_eos=True parse_reason=boxed
+[407/500] prompt_tokens=24
+[407/500] question_id=406 correct=True generated_tokens=183 ended_with_eos=True parse_reason=boxed
+[408/500] prompt_tokens=46
+[408/500] question_id=407 correct=True generated_tokens=683 ended_with_eos=True parse_reason=boxed
+[409/500] prompt_tokens=64
+[409/500] question_id=408 correct=False generated_tokens=9651 ended_with_eos=True parse_reason=boxed
+[410/500] prompt_tokens=65
+[410/500] question_id=409 correct=True generated_tokens=12212 ended_with_eos=True parse_reason=boxed
+[411/500] prompt_tokens=43
+[411/500] question_id=410 correct=True generated_tokens=1639 ended_with_eos=True parse_reason=boxed
+[412/500] prompt_tokens=88
+[412/500] question_id=411 correct=True generated_tokens=689 ended_with_eos=True parse_reason=boxed
+[413/500] prompt_tokens=80
+[413/500] question_id=412 correct=True generated_tokens=16003 ended_with_eos=True parse_reason=boxed
+[414/500] prompt_tokens=30
+[414/500] question_id=413 correct=True generated_tokens=475 ended_with_eos=True parse_reason=boxed
+[415/500] prompt_tokens=47
+[415/500] question_id=414 correct=True generated_tokens=1431 ended_with_eos=True parse_reason=boxed
+[416/500] prompt_tokens=32
+[416/500] question_id=415 correct=True generated_tokens=1680 ended_with_eos=True parse_reason=boxed
+[417/500] prompt_tokens=30
+[417/500] question_id=416 correct=True generated_tokens=1607 ended_with_eos=True parse_reason=boxed
+[418/500] prompt_tokens=67
+[418/500] question_id=417 correct=True generated_tokens=1445 ended_with_eos=True parse_reason=boxed
+[419/500] prompt_tokens=46
+[419/500] question_id=418 correct=True generated_tokens=1581 ended_with_eos=True parse_reason=boxed
+[420/500] prompt_tokens=80
+[420/500] question_id=419 correct=True generated_tokens=3334 ended_with_eos=True parse_reason=boxed
+[421/500] prompt_tokens=56
+[421/500] question_id=420 correct=True generated_tokens=827 ended_with_eos=True parse_reason=boxed
+[422/500] prompt_tokens=114
+[422/500] question_id=421 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[423/500] prompt_tokens=114
+[423/500] question_id=422 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[424/500] prompt_tokens=62
+[424/500] question_id=423 correct=True generated_tokens=2528 ended_with_eos=True parse_reason=boxed
+[425/500] prompt_tokens=48
+[425/500] question_id=424 correct=True generated_tokens=740 ended_with_eos=True parse_reason=boxed
+[426/500] prompt_tokens=89
+[426/500] question_id=425 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[427/500] prompt_tokens=144
+[427/500] question_id=426 correct=True generated_tokens=654 ended_with_eos=True parse_reason=boxed
+[428/500] prompt_tokens=55
+[428/500] question_id=427 correct=True generated_tokens=403 ended_with_eos=True parse_reason=boxed
+[429/500] prompt_tokens=83
+[429/500] question_id=428 correct=True generated_tokens=3040 ended_with_eos=True parse_reason=boxed
+[430/500] prompt_tokens=48
+[430/500] question_id=429 correct=True generated_tokens=1857 ended_with_eos=True parse_reason=boxed
+[431/500] prompt_tokens=25
+[431/500] question_id=430 correct=True generated_tokens=245 ended_with_eos=True parse_reason=boxed
+[432/500] prompt_tokens=50
+[432/500] question_id=431 correct=True generated_tokens=5277 ended_with_eos=True parse_reason=boxed
+[433/500] prompt_tokens=86
+[433/500] question_id=432 correct=True generated_tokens=15684 ended_with_eos=True parse_reason=boxed
+[434/500] prompt_tokens=24
+[434/500] question_id=433 correct=True generated_tokens=880 ended_with_eos=True parse_reason=boxed
+[435/500] prompt_tokens=40
+[435/500] question_id=434 correct=True generated_tokens=2113 ended_with_eos=True parse_reason=boxed
+[436/500] prompt_tokens=42
+[436/500] question_id=435 correct=True generated_tokens=1261 ended_with_eos=True parse_reason=boxed
+[437/500] prompt_tokens=48
+[437/500] question_id=436 correct=True generated_tokens=2235 ended_with_eos=True parse_reason=boxed
+[438/500] prompt_tokens=99
+[438/500] question_id=437 correct=True generated_tokens=2626 ended_with_eos=True parse_reason=boxed
+[439/500] prompt_tokens=37
+[439/500] question_id=438 correct=True generated_tokens=1401 ended_with_eos=True parse_reason=boxed
+[440/500] prompt_tokens=32
+[440/500] question_id=439 correct=True generated_tokens=3567 ended_with_eos=True parse_reason=boxed
+[441/500] prompt_tokens=31
+[441/500] question_id=440 correct=True generated_tokens=511 ended_with_eos=True parse_reason=boxed
+[442/500] prompt_tokens=60
+[442/500] question_id=441 correct=True generated_tokens=969 ended_with_eos=True parse_reason=boxed
+[443/500] prompt_tokens=33
+[443/500] question_id=442 correct=True generated_tokens=576 ended_with_eos=True parse_reason=boxed
+[444/500] prompt_tokens=37
+[444/500] question_id=443 correct=True generated_tokens=627 ended_with_eos=True parse_reason=boxed
+[445/500] prompt_tokens=163
+[445/500] question_id=444 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[446/500] prompt_tokens=257
+[446/500] question_id=445 correct=True generated_tokens=9047 ended_with_eos=True parse_reason=boxed
+[447/500] prompt_tokens=62
+[447/500] question_id=446 correct=True generated_tokens=1623 ended_with_eos=True parse_reason=boxed
+[448/500] prompt_tokens=53
+[448/500] question_id=447 correct=True generated_tokens=431 ended_with_eos=True parse_reason=boxed
+[449/500] prompt_tokens=58
+[449/500] question_id=448 correct=True generated_tokens=939 ended_with_eos=True parse_reason=boxed
+[450/500] prompt_tokens=40
+[450/500] question_id=449 correct=True generated_tokens=268 ended_with_eos=True parse_reason=boxed
+[451/500] prompt_tokens=40
+[451/500] question_id=450 correct=True generated_tokens=3161 ended_with_eos=True parse_reason=boxed
+[452/500] prompt_tokens=76
+[452/500] question_id=451 correct=True generated_tokens=1998 ended_with_eos=True parse_reason=boxed
+[453/500] prompt_tokens=57
+[453/500] question_id=452 correct=True generated_tokens=1136 ended_with_eos=True parse_reason=boxed
+[454/500] prompt_tokens=69
+[454/500] question_id=453 correct=True generated_tokens=1820 ended_with_eos=True parse_reason=boxed
+[455/500] prompt_tokens=112
+[455/500] question_id=454 correct=True generated_tokens=3413 ended_with_eos=True parse_reason=boxed
+[456/500] prompt_tokens=29
+[456/500] question_id=455 correct=True generated_tokens=440 ended_with_eos=True parse_reason=boxed
+[457/500] prompt_tokens=54
+[457/500] question_id=456 correct=True generated_tokens=2212 ended_with_eos=True parse_reason=boxed
+[458/500] prompt_tokens=22
+[458/500] question_id=457 correct=True generated_tokens=225 ended_with_eos=True parse_reason=boxed
+[459/500] prompt_tokens=118
+[459/500] question_id=458 correct=True generated_tokens=6385 ended_with_eos=True parse_reason=boxed
+[460/500] prompt_tokens=87
+[460/500] question_id=459 correct=True generated_tokens=2355 ended_with_eos=True parse_reason=boxed
+[461/500] prompt_tokens=177
+[461/500] question_id=460 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[462/500] prompt_tokens=94
+[462/500] question_id=461 correct=True generated_tokens=1015 ended_with_eos=True parse_reason=boxed
+[463/500] prompt_tokens=101
+[463/500] question_id=462 correct=True generated_tokens=6684 ended_with_eos=True parse_reason=boxed
+[464/500] prompt_tokens=38
+[464/500] question_id=463 correct=True generated_tokens=524 ended_with_eos=True parse_reason=boxed
+[465/500] prompt_tokens=49
+[465/500] question_id=464 correct=True generated_tokens=2793 ended_with_eos=True parse_reason=boxed
+[466/500] prompt_tokens=33
+[466/500] question_id=465 correct=True generated_tokens=820 ended_with_eos=True parse_reason=boxed
+[467/500] prompt_tokens=94
+[467/500] question_id=466 correct=True generated_tokens=7573 ended_with_eos=True parse_reason=boxed
+[468/500] prompt_tokens=189
+[468/500] question_id=467 correct=True generated_tokens=2899 ended_with_eos=True parse_reason=boxed
+[469/500] prompt_tokens=44
+[469/500] question_id=468 correct=True generated_tokens=991 ended_with_eos=True parse_reason=boxed
+[470/500] prompt_tokens=23
+[470/500] question_id=469 correct=True generated_tokens=367 ended_with_eos=True parse_reason=boxed
+[471/500] prompt_tokens=60
+[471/500] question_id=470 correct=True generated_tokens=3909 ended_with_eos=True parse_reason=boxed
+[472/500] prompt_tokens=60
+[472/500] question_id=471 correct=True generated_tokens=288 ended_with_eos=True parse_reason=boxed
+[473/500] prompt_tokens=43
+[473/500] question_id=472 correct=True generated_tokens=742 ended_with_eos=True parse_reason=boxed
+[474/500] prompt_tokens=257
+[474/500] question_id=473 correct=True generated_tokens=8489 ended_with_eos=True parse_reason=boxed
+[475/500] prompt_tokens=67
+[475/500] question_id=474 correct=True generated_tokens=1015 ended_with_eos=True parse_reason=boxed
+[476/500] prompt_tokens=167
+[476/500] question_id=475 correct=True generated_tokens=6660 ended_with_eos=True parse_reason=boxed
+[477/500] prompt_tokens=69
+[477/500] question_id=476 correct=True generated_tokens=1620 ended_with_eos=True parse_reason=boxed
+[478/500] prompt_tokens=50
+[478/500] question_id=477 correct=True generated_tokens=1812 ended_with_eos=True parse_reason=boxed
+[479/500] prompt_tokens=84
+[479/500] question_id=478 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[480/500] prompt_tokens=49
+[480/500] question_id=479 correct=True generated_tokens=1937 ended_with_eos=True parse_reason=boxed
+[481/500] prompt_tokens=72
+[481/500] question_id=480 correct=True generated_tokens=4179 ended_with_eos=True parse_reason=boxed
+[482/500] prompt_tokens=112
+[482/500] question_id=481 correct=True generated_tokens=6462 ended_with_eos=True parse_reason=boxed
+[483/500] prompt_tokens=62
+[483/500] question_id=482 correct=True generated_tokens=2715 ended_with_eos=True parse_reason=boxed
+[484/500] prompt_tokens=61
+[484/500] question_id=483 correct=True generated_tokens=3715 ended_with_eos=True parse_reason=boxed
+[485/500] prompt_tokens=46
+[485/500] question_id=484 correct=True generated_tokens=8495 ended_with_eos=True parse_reason=boxed
+[486/500] prompt_tokens=221
+[486/500] question_id=485 correct=True generated_tokens=12513 ended_with_eos=True parse_reason=boxed
+[487/500] prompt_tokens=51
+[487/500] question_id=486 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[488/500] prompt_tokens=60
+[488/500] question_id=487 correct=True generated_tokens=306 ended_with_eos=True parse_reason=boxed
+[489/500] prompt_tokens=44
+[489/500] question_id=488 correct=True generated_tokens=299 ended_with_eos=True parse_reason=boxed
+[490/500] prompt_tokens=68
+[490/500] question_id=489 correct=True generated_tokens=4085 ended_with_eos=True parse_reason=boxed
+[491/500] prompt_tokens=99
+[491/500] question_id=490 correct=False generated_tokens=16384 ended_with_eos=False parse_reason=unfinished_thinking
+[492/500] prompt_tokens=149
+[492/500] question_id=491 correct=False generated_tokens=14760 ended_with_eos=True parse_reason=boxed
+[493/500] prompt_tokens=82
+[493/500] question_id=492 correct=True generated_tokens=785 ended_with_eos=True parse_reason=boxed
+[494/500] prompt_tokens=71
+[494/500] question_id=493 correct=True generated_tokens=4113 ended_with_eos=True parse_reason=boxed
+[495/500] prompt_tokens=83
+[495/500] question_id=494 correct=False generated_tokens=12020 ended_with_eos=True parse_reason=boxed
+[496/500] prompt_tokens=59
+[496/500] question_id=495 correct=True generated_tokens=2563 ended_with_eos=True parse_reason=boxed
+[497/500] prompt_tokens=41
+[497/500] question_id=496 correct=True generated_tokens=933 ended_with_eos=True parse_reason=boxed
+[498/500] prompt_tokens=60
+[498/500] question_id=497 correct=True generated_tokens=10403 ended_with_eos=True parse_reason=boxed
+[499/500] prompt_tokens=69
+[499/500] question_id=498 correct=True generated_tokens=9168 ended_with_eos=True parse_reason=boxed
+[500/500] prompt_tokens=63
+[500/500] question_id=499 correct=True generated_tokens=14234 ended_with_eos=True parse_reason=boxed
+Total samples: 500
+Correct: 453
+Accuracy: 0.906000
+Results: /home/hongchang/whf/MiniCPM/benchmarks/math500/outputs/penalty_16384/results.jsonl
+===== FINISH penalty_16384 : 2026年 09月 13日 星期日 10:05:14 CST, EXIT=0 =====

@@ -1,0 +1,9 @@
+# Install from an offline wheelhouse with --no-index; no automatic installation.
+torch
+transformers>=5.6
+accelerate
+PyYAML
+nltk>=3.9.1
+langdetect
+immutabledict
+packaging

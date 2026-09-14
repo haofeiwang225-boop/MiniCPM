@@ -1,0 +1,27 @@
+{
+  "total": 541,
+  "complete": true,
+  "final_only_metrics": {
+    "prompt_level_strict_acc": 0.878003696857671,
+    "inst_level_strict_acc": 0.9124700239808153,
+    "prompt_level_loose_acc": 0.8983364140480592,
+    "inst_level_loose_acc": 0.9292565947242206
+  },
+  "full_response_metrics": {
+    "prompt_level_strict_acc": 0.3955637707948244,
+    "inst_level_strict_acc": 0.5335731414868106,
+    "prompt_level_loose_acc": 0.5083179297597042,
+    "inst_level_loose_acc": 0.6258992805755396
+  },
+  "delta_full_minus_final": {
+    "prompt_level_strict_acc": -0.4824399260628466,
+    "inst_level_strict_acc": -0.37889688249400477,
+    "prompt_level_loose_acc": -0.39001848428835495,
+    "inst_level_loose_acc": -0.30335731414868106
+  },
+  "prompt_strict_transitions": {
+    "true_to_false": 268,
+    "false_to_true": 7,
+    "compared_samples": 541
+  }
+}

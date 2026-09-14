@@ -1,0 +1,13 @@
+model: openbmb/MiniCPM5-2B
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MMLU-Pro/data/
+test_file: test-00000-of-00001.parquet
+few_shot_file: validation-00000-of-00001.parquet
+num_shots: 5
+seed: 42
+max_samples: null
+output_dir: benchmarks/mmlu_pro/outputs/full
+generation:
+  do_sample: true
+  temperature: 1.0
+  top_p: 0.95
+  max_new_tokens: 1024

@@ -1,0 +1,40 @@
+experiment: baseline_8192
+model: /home/hongchang/whf/models/MiniCPM5-2B
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
+enable_thinking: true
+seed: 42
+question_ids:
+- 9
+- 24
+- 59
+- 84
+- 96
+- 142
+- 152
+- 166
+- 367
+- 425
+- 458
+- 499
+previously_truncated_ids:
+- 9
+- 24
+- 96
+- 142
+- 152
+- 166
+- 425
+- 499
+previously_correct_ids:
+- 59
+- 84
+- 367
+- 458
+prompt_suffix: ''
+generation:
+  do_sample: true
+  temperature: 1.0
+  top_p: 0.95
+  max_new_tokens: 8192
+  repetition_penalty: 1.0
+output_dir: benchmarks/math500/outputs/experiments/baseline_8192

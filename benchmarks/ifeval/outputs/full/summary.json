@@ -1,0 +1,9 @@
+{
+  "total": 541,
+  "expected_total": 541,
+  "complete": true,
+  "prompt_level_strict_acc": 0.41404805914972276,
+  "inst_level_strict_acc": 0.5455635491606715,
+  "prompt_level_loose_acc": 0.5286506469500925,
+  "inst_level_loose_acc": 0.6390887290167866
+}

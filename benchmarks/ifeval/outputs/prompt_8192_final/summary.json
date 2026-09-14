@@ -1,0 +1,14 @@
+{
+  "total": 541,
+  "expected_total": 541,
+  "complete": true,
+  "ended_with_eos": 519,
+  "length_limit_reached": 22,
+  "unfinished_thinking": 10,
+  "final_started_but_truncated": 12,
+  "avg_generated_tokens": 738.5730129390018,
+  "prompt_level_strict_acc": 0.8817005545286506,
+  "inst_level_strict_acc": 0.9064748201438849,
+  "prompt_level_loose_acc": 0.8983364140480592,
+  "inst_level_loose_acc": 0.9184652278177458
+}

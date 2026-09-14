@@ -1,0 +1,48 @@
+{
+  "policy": {
+    "normal": "Exactly one </think> in generated output, no reopened/malformed tags, prompt ends in <think>; extract final.",
+    "unfinished": "No closing tag and no malformed/reopened tag; empty scoring input, all metrics fail.",
+    "abnormal": "Multiple/reopened/malformed tags or unexpected prompt boundary; quarantine, no automatically selected final."
+  },
+  "runs": {
+    "full": {
+      "total": 541,
+      "normal": 520,
+      "unfinished": 20,
+      "abnormal": 1,
+      "normal_empty_final": 0,
+      "unfinished_old_strict_pass": 6,
+      "final_only_input_mismatches": 0,
+      "unfinished_final_only_not_failed": 0,
+      "source": "/home/hongchang/whf/MiniCPM/benchmarks/ifeval/outputs/full/results.jsonl",
+      "source_sha256": "c687e7586ff96451c6826c4a96e0f90fc316d91b5ab2716ddeaa35c8ebcc576d",
+      "original_scoring_protocol": "full_decoded_response"
+    },
+    "greedy_4096_rerun": {
+      "total": 50,
+      "normal": 32,
+      "unfinished": 18,
+      "abnormal": 0,
+      "normal_empty_final": 0,
+      "unfinished_old_strict_pass": 0,
+      "final_only_input_mismatches": 0,
+      "unfinished_final_only_not_failed": 0,
+      "source": "/home/hongchang/whf/MiniCPM/benchmarks/ifeval/outputs/greedy_4096_rerun/results.jsonl",
+      "source_sha256": "12d2458ac1394025be52ed330424b75751d407f7af2eb7644e17f49ed7f9cdf5",
+      "original_scoring_protocol": "final_only"
+    },
+    "sampling_4096_rerun": {
+      "total": 50,
+      "normal": 49,
+      "unfinished": 1,
+      "abnormal": 0,
+      "normal_empty_final": 0,
+      "unfinished_old_strict_pass": 0,
+      "final_only_input_mismatches": 0,
+      "unfinished_final_only_not_failed": 0,
+      "source": "/home/hongchang/whf/MiniCPM/benchmarks/ifeval/outputs/sampling_4096_rerun/results.jsonl",
+      "source_sha256": "76d5ee57fb942b43b29b5fad3c5805a4a2d7f443d94b9764c78eb767d4adf65d",
+      "original_scoring_protocol": "final_only"
+    }
+  }
+}

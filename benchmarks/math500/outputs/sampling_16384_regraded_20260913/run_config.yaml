@@ -1,0 +1,19 @@
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
+enable_thinking: true
+generation:
+  do_sample: true
+  max_new_tokens: 16384
+  temperature: 1.0
+  top_p: 0.95
+max_samples: null
+model: /home/hongchang/whf/models/MiniCPM5-2B
+output_dir: benchmarks/math500/outputs/sampling_16384
+question_ids: null
+regrade:
+  code_sha256:
+    answer_parser.py: 1590a33fdbf800cc22cdd232b2f30364aedd441a4dd09640dad64d8ec4cb4fbc
+    grader.py: 0586209be38b9bc9125aa09392fbe3626245247fc0992bf857592d976d6e47bf
+    regrade.py: a1277f37a33d1633c5d4d89182ad9c4cb54f49f43ea9fa8b7ead196cc0a5e69f
+  source: /home/hongchang/whf/MiniCPM/benchmarks/math500/outputs/sampling_16384/results.jsonl
+  source_sha256: dfce28054ce8a2ef044c7c11e4e50233f785f2e01e254b94edfb03585215e163
+seed: 42

@@ -1,0 +1,21 @@
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
+enable_thinking: true
+generation:
+  do_sample: true
+  max_new_tokens: 16384
+  temperature: 1.0
+  top_p: 0.95
+max_samples: null
+model: /home/hongchang/whf/models/MiniCPM5-2B
+output_dir: benchmarks/math500/outputs/prompt_16384
+prompt_suffix: Solve concisely and avoid repeated verification. Put the final answer
+  in \boxed{}.
+question_ids: null
+regrade:
+  code_sha256:
+    answer_parser.py: 1590a33fdbf800cc22cdd232b2f30364aedd441a4dd09640dad64d8ec4cb4fbc
+    grader.py: 00ef2534cbb608aa7a7c3bff672755fc3f7f988230534a0b9662028b4ba213f3
+    regrade.py: a1277f37a33d1633c5d4d89182ad9c4cb54f49f43ea9fa8b7ead196cc0a5e69f
+  source: /home/hongchang/whf/MiniCPM/benchmarks/math500/outputs/prompt_16384/results.jsonl
+  source_sha256: ffdf5b12cbd8ca443dc447b7ef563d8b4ec8f18ef905f3803fea4ce595900acc
+seed: 42

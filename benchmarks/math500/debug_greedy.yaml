@@ -1,0 +1,10 @@
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
+generation:
+  do_sample: false
+  max_new_tokens: 8192
+  temperature: 1.0
+  top_p: 0.95
+max_samples: 10
+model: /home/hongchang/whf/models/MiniCPM5-2B
+output_dir: benchmarks/math500/outputs/debug10_greedy
+seed: 42

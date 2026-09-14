@@ -1,0 +1,14 @@
+{
+  "total": 1,
+  "expected_total": 1,
+  "complete": true,
+  "ended_with_eos": 1,
+  "length_limit_reached": 0,
+  "unfinished_thinking": 0,
+  "final_started_but_truncated": 0,
+  "avg_generated_tokens": 1308.0,
+  "prompt_level_strict_acc": 1.0,
+  "inst_level_strict_acc": 1.0,
+  "prompt_level_loose_acc": 1.0,
+  "inst_level_loose_acc": 1.0
+}

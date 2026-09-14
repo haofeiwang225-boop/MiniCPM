@@ -1,0 +1,13 @@
+{
+  "source_repository": "https://github.com/EleutherAI/lm-evaluation-harness",
+  "local_source": "/tmp/tmp.AdGwhVzOgN/lm-eval",
+  "commit": "dd417662e5bda6a247489ec28d2ff46a45d1c42c",
+  "files": {
+    "utils.py": "1ab8f14808c826f93f2364883487ed63cf4267980bf4761fda8053899c013632",
+    "instructions.py": "511cc41a53787d818c292d8335c8e98aa833296a0789ac470db56bcd6496345e",
+    "instructions_registry.py": "9db1c062cdb70a91420d3789a588235a1064c2b9a1a66e09e5fb9df9e7584a6c",
+    "instructions_util.py": "e8c4d9187bac1482d93941fb46469609c3ae78d896195bfcb300a0707d492567",
+    "ifeval.yaml": "3d8a3eb32de03f6a23ac87b46951d972a4ec7cb137e753365c0271594e38f84b",
+    "README.md": "6759456b3130980616e16f63e7a088a7f9b0e743e9e470589e478209c6596425"
+  }
+}

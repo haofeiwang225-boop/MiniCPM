@@ -1,0 +1,13 @@
+model: /home/hongchang/whf/models/MiniCPM5-2B
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/IFEval/ifeval_input_data.jsonl
+output_dir: benchmarks/ifeval/outputs/smoke5
+max_samples: null
+num_fewshot: 0
+enable_thinking: true
+seed: 42
+response_processing: final_only
+nltk_data: null
+generation:
+  do_sample: false
+  temperature: 0.0
+  max_new_tokens: 1280

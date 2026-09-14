@@ -1,0 +1,13 @@
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MMLU-Pro/data
+few_shot_file: validation-00000-of-00001.parquet
+generation:
+  do_sample: true
+  max_new_tokens: 1024
+  temperature: 1.0
+  top_p: 0.95
+max_samples: null
+model: /home/hongchang/whf/models/MiniCPM5-2B
+num_shots: 5
+output_dir: benchmarks/mmlu_pro/outputs/full_v1
+seed: 42
+test_file: test-00000-of-00001.parquet

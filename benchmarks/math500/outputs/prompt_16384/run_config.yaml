@@ -1,0 +1,14 @@
+data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
+enable_thinking: true
+generation:
+  do_sample: true
+  max_new_tokens: 16384
+  temperature: 1.0
+  top_p: 0.95
+max_samples: null
+model: /home/hongchang/whf/models/MiniCPM5-2B
+output_dir: benchmarks/math500/outputs/prompt_16384
+prompt_suffix: Solve concisely and avoid repeated verification. Put the final answer
+  in \boxed{}.
+question_ids: null
+seed: 42
