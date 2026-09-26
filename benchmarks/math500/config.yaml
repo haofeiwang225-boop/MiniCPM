@@ -1,10 +1,12 @@
 model: /home/hongchang/whf/models/MiniCPM5-2B
+served_model_name: MiniCPM5-2B
+base_url: http://127.0.0.1:8000/v1
+context_length: 131072
+enable_thinking: true
 data_path: /home/hongchang/whf/datasets/MiniCPM5_eval/MATH-500/test.jsonl
 max_samples: null
-output_dir: benchmarks/math500/outputs/full_thinking_8192
-seed: 42
+output_dir: benchmarks/math500/outputs/author_endpoint_full
 generation:
-  do_sample: true
   temperature: 1.0
   top_p: 0.95
-  max_new_tokens: 8192
+  n: 1

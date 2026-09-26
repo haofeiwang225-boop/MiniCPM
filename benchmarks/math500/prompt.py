@@ -1,5 +1,6 @@
-"""MATH-500 模型输入只包含原始 problem，不添加其他提示词。"""
+"""Author-specified zero-shot, single-turn MATH-500 prompt."""
 
 
 def build_messages(problem: str):
-    return [{'role': 'user', 'content': problem}]
+    return [{'role': 'user', 'content': problem + '\n' +
+             r'Please reason step by step, and put your final answer within \boxed{}.'}]

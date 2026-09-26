@@ -1,20 +1,12 @@
-"""Evaluate local MATH-500 using MiniCPM5 Transformers inference.
-
-读取问题和标准答案 -> 仅用问题生成 -> 提取答案 -> 数学等价判分 -> 保存汇总。
-"""
-
-# 标准库与第三方依赖：argparse 用于命令行参数解析，json/yaml 用于配置与结果读写，
-# torch 与 transformers 用于加载模型并执行推理。
+"""Evaluate local MATH-500 through a local OpenAI-compatible endpoint."""
 import argparse
 from collections import Counter
+import hashlib
 import json
 from pathlib import Path
-
-import torch
+from urllib.request import Request, urlopen
 import yaml
-from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 
-# 兼容包内导入与直接运行两种方式：作为模块时用相对导入，作为脚本时退化为绝对导入。
 try:
     from .prompt import build_messages
     from .answer_parser import parse_answer
@@ -23,6 +15,34 @@ except ImportError:
     from prompt import build_messages
     from answer_parser import parse_answer
     from grader import grade_answer
+
+
+def build_request(config, problem):
+    if config.get('enable_thinking') is not True:
+        raise ValueError('Author protocol requires enable_thinking=true')
+    if config.get('generation') != {'temperature': 1.0, 'top_p': 0.95, 'n': 1}:
+        raise ValueError('generation must contain only temperature=1, top_p=0.95, n=1')
+    if config.get('prompt_suffix'):
+        raise ValueError('Custom prompt_suffix is not permitted by this protocol')
+    return {'model': config['served_model_name'], 'messages': build_messages(problem),
+            **config['generation'], 'chat_template_kwargs': {'enable_thinking': True}}
+
+
+def endpoint_json(url, payload=None):
+    body = None if payload is None else json.dumps(payload, ensure_ascii=False).encode('utf-8')
+    request = Request(url, data=body, headers={'Content-Type': 'application/json'})
+    # Transport timeout only; no token/time budget is sent to the generation API.
+    with urlopen(request, timeout=3600) as response:
+        return json.load(response)
+
+
+def score_response(raw, problem, gold):
+    finished = '</think>' in raw
+    final = raw.rsplit('</think>', 1)[1] if finished else ''
+    extraction = (parse_answer(final, thinking_expected=False, problem=problem) if finished
+                  else {'answer': None, 'reason': 'unfinished_thinking'})
+    grading = grade_answer(extraction['answer'], gold, problem=problem)
+    return final, finished, extraction, grading
 
 
 def load_samples(data_path, limit=None, question_ids=None):
@@ -80,13 +100,15 @@ def save_summary(results, output_dir, config, expected_total):
         'expected_total': expected_total,                 # 期望评测的总样本数（来自数据加载）
         'complete': total == expected_total,              # 是否已完成全部期望样本的评测
         'model': config['model'],                         # 使用的模型名称或路径
-        'generation': config['generation'],               # 生成配置（do_sample/temperature/top_p/max_new_tokens 等）
+        'generation': config['generation'],               # 实际 API 采样参数
         'enable_thinking': config.get('enable_thinking', True),  # 是否启用 thinking 模式
-        'seed': config['seed'],                           # 随机种子，用于复现
+        'seed': config.get('seed'),                           # 随机种子，用于复现
         'unfinished_thinking': sum(                       # thinking 阶段未完成的样本数
             row['parse_reason'] == 'unfinished_thinking' for row in results),
-        'length_limit_reached': sum(row['length_limit_reached'] for row in results),  # 触达 max_new_tokens 长度上限的样本数
-        'no_eos': sum(not row['ended_with_eos'] for row in results),  # 生成未以 eos 结束的样本数
+        'length_limit_reached': sum(row['length_limit_reached'] for row in results),  # endpoint 报告 finish_reason=length 的样本数
+        'no_eos': sum(row['ended_with_eos'] is False for row in results),  # 生成未以 eos 结束的样本数
+        'eos_unknown': sum(row['ended_with_eos'] is None for row in results),
+        'finish_reasons': dict(Counter(row['finish_reason'] for row in results)),
         'parse_reasons': dict(Counter(row['parse_reason'] for row in results)),      # 答案解析原因 -> 计数
         'grading_reasons': dict(Counter(row['grading']['reason'] for row in results)),  # 判分原因 -> 计数
         'failed_question_ids': [row['question_id'] for row in results if not row['correct']],  # 错误样本的 question_id 列表
@@ -98,139 +120,91 @@ def save_summary(results, output_dir, config, expected_total):
 
 
 def main():
-    """评测主流程：解析配置 -> 加载数据 -> 加载模型 -> 逐题生成与判分 -> 保存汇总。
-
-    步骤说明：
-      1. 命令行参数与 YAML 配置合并，校验生成参数是否符合实验要求；
-      2. 仅读取本地 JSONL 数据，答案不进入 prompt；
-      3. 以 'x' 模式打开结果文件防止覆盖已有结果，逐题即时落盘；
-      4. 使用官方 chat template 与 YAML 生成配置进行推理；
-      5. 复用现有 parser 与 grader，未提取到答案计为错误；
-      6. 最终保存整体准确率，包含未解析出答案的样本。
-    """
-    # 1. 命令行参数和配置，与 MMLU-Pro 脚本保持一致。
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--config', type=Path, default=Path(__file__).with_name('config.yaml'))
+    parser.add_argument('--config', type=Path, default=Path(__file__).with_name('config.yaml'))
     parser.add_argument('--max_samples', type=int)
-    parser.add_argument('--output_dir', type=Path) #命令行配置
-    parser.add_argument(
-        '--enable_thinking', type=str.lower, choices=('true', 'false'), default='true',
-        help='Enable thinking (default: true)')
-    parser.add_argument(
-        '--question_ids', type=int, nargs='+',
-        help='Select zero-based question IDs; max_samples applies after selection')
-
+    parser.add_argument('--output_dir', type=Path)
+    parser.add_argument('--question_ids', type=int, nargs='+')
+    parser.add_argument('--enable_thinking', choices=['true'], default='true')
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding='utf-8'))
-    config['enable_thinking'] = args.enable_thinking == 'true'
-    config['question_ids'] = args.question_ids
-    if args.question_ids is not None and any(index < 0 for index in args.question_ids):
-        parser.error('question_ids must be nonnegative integers')
     for key in ('max_samples', 'output_dir'):
         value = getattr(args, key)
         if value is not None:
             config[key] = str(value) if isinstance(value, Path) else value
-
+    config['question_ids'] = args.question_ids
+    if args.question_ids is not None and any(i < 0 for i in args.question_ids):
+        parser.error('question_ids must be nonnegative')
     limit = config['max_samples']
     if limit is not None and (type(limit) is not int or limit <= 0):
-        parser.error('max_samples must be a positive integer or null in YAML')
-    if not isinstance(config.get('generation'), dict):
-        parser.error('generation must be a mapping in YAML')
-    max_new_tokens = config['generation'].get('max_new_tokens')
-    if type(max_new_tokens) is not int or max_new_tokens <= 0:
-        parser.error('generation.max_new_tokens must be a positive integer')
-    prompt_suffix = config.get('prompt_suffix') or ''
-    if not isinstance(prompt_suffix, str):
-        parser.error('prompt_suffix must be a string or null')
-
-    # 2. 只读取本地数据，不下载数据；答案不进入 prompt。
-    samples = load_samples(
-        Path(config['data_path']).expanduser(), limit, args.question_ids)
+        parser.error('max_samples must be positive or null')
+    build_request(config, 'validation')
+    if config['context_length'] != 131072:
+        parser.error('context_length must be 131072')
+    samples = load_samples(Path(config['data_path']).expanduser(), limit, args.question_ids)
     output_dir = Path(config['output_dir']).expanduser()
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise FileExistsError(f'Refusing to overwrite nonempty output directory: {output_dir}')
+    base_url = config['base_url'].rstrip('/')
+    models = endpoint_json(base_url + '/models')
+    served = next((m for m in models['data'] if m['id'] == config['served_model_name']), None)
+    if served is None or served.get('max_model_len') != 131072:
+        raise RuntimeError('Endpoint must report requested model with max_model_len=131072')
+    config['endpoint_model_metadata'] = served
+    config['frozen_files_sha256'] = {
+        name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+        for name in ('grader.py', 'answer_parser.py')}
     output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / 'run_config.yaml').write_text(yaml.safe_dump(config), encoding='utf-8')
     output_path = output_dir / 'results.jsonl'
-
-    # 3. 防止覆盖已有结果，逐题保存。
+    results = []
     with output_path.open('x', encoding='utf-8') as output_file, \
-            (output_dir / 'failures.jsonl').open('x', encoding='utf-8') as failure_file:
-        (output_dir / 'run_config.yaml').write_text(
-            yaml.safe_dump(config), encoding='utf-8')
-        print(
-            'model.generate kwargs: ' + json.dumps(config['generation']), flush=True)
-        set_seed(config['seed'])
-        tokenizer = AutoTokenizer.from_pretrained(config['model'])#tokenizer 负责把人类文字转换成模型能理解的数字 token，以及把模型输出的 token 转回文字
-        model = AutoModelForCausalLM.from_pretrained(
-            config['model'], torch_dtype='auto', device_map='auto')
-        model.eval()
-        eos_ids = model.generation_config.eos_token_id #eos 是停止的符号
-        if isinstance(eos_ids, int):
-            eos_ids = [eos_ids]
-        results = []
+            (output_dir / 'failures.jsonl').open('x', encoding='utf-8') as failure_file, \
+            (output_dir / 'requests.jsonl').open('x', encoding='utf-8') as request_file:
         save_summary(results, output_dir, config, len(samples))
-
-        # 4. 官方 chat template 与 YAML 生成配置；空 suffix 不改变原始 prompt。
         for index, sample in enumerate(samples):
-            messages = build_messages(sample['problem'])
-            if prompt_suffix:
-                messages[-1]['content'] += '\n\n' + prompt_suffix
-            inputs = tokenizer.apply_chat_template(
-                messages, tokenize=True, add_generation_prompt=True,
-                enable_thinking=config['enable_thinking'], return_dict=True, return_tensors='pt',
-            ).to(model.device)
-            print(
-                f'[{index + 1}/{len(samples)}] '
-                f'prompt_tokens={inputs["input_ids"].shape[-1]}', flush=True)
-            with torch.inference_mode():
-                outputs = model.generate(**inputs, **config['generation'])
-            generated = outputs[0][inputs['input_ids'].shape[-1]:]
-            model_output = tokenizer.decode(generated, skip_special_tokens=False)
-
-            # 5. 复用现有 parser 和 grader；未提取到答案时计为错误。
-            extraction = parse_answer(
-                model_output, thinking_expected=config['enable_thinking'], problem=sample['problem'])
-            parsed_answer = extraction['answer']
-            grading = grade_answer(parsed_answer, sample['answer'], problem=sample['problem'])
-            correct = grading['correct']
+            payload = build_request(config, sample['problem'])
+            print('Actual endpoint request: ' + json.dumps(payload, ensure_ascii=False), flush=True)
+            request_file.write(json.dumps({'question_id': sample['question_id'], 'request': payload}, ensure_ascii=False) + '\n')
+            request_file.flush()
+            # One request, n=1; no automatic retries or regeneration.
+            response = endpoint_json(base_url + '/chat/completions', payload)
+            if len(response.get('choices', [])) != 1:
+                raise RuntimeError('Expected exactly one generated choice')
+            choice = response['choices'][0]
+            message = choice['message']
+            raw = message.get('content') or ''
+            # The dedicated server runs without a reasoning parser, preserving </think>.
+            # A server that strips the delimiter must not be silently treated as finished.
+            final, finished, extraction, grading = score_response(raw, sample['problem'], sample['answer'])
+            finish_reason = choice.get('finish_reason')
             result = {
-                'question_id': sample['question_id'],
-                'enable_thinking': config['enable_thinking'],
-                'problem': sample['problem'],
-                'gold_answer': sample['answer'],
-                'model_output': model_output,
-                'parsed_answer': parsed_answer,
-                'correct': bool(correct),
-                'parse_reason': extraction['reason'],
-                'grading': grading,
-                'generated_tokens': generated.shape[-1],
-                'length_limit_reached': generated.shape[-1] >= config['generation']['max_new_tokens'],
-                'ended_with_eos': bool(
-                    generated.numel() and generated[-1].item() in (eos_ids or [])),
+                'question_id': sample['question_id'], 'enable_thinking': True,
+                'problem': sample['problem'], 'gold_answer': sample['answer'],
+                'prompt': payload['messages'][0]['content'], 'request': payload,
+                'model_output': raw, 'endpoint_response': response,
+                'final_response': final, 'thinking_finished': finished,
+                'parsed_answer': extraction['answer'], 'correct': bool(grading['correct']),
+                'score': int(bool(grading['correct'])), 'parse_reason': extraction['reason'],
+                'grading': grading, 'generated_tokens': response.get('usage', {}).get('completion_tokens'),
+                'length_limit_reached': finish_reason == 'length',
+                # OpenAI finish_reason does not prove which token caused stopping.
+                'ended_with_eos': None, 'finish_reason': finish_reason,
             }
             output_file.write(json.dumps(result, ensure_ascii=False) + '\n')
             output_file.flush()
-            if not correct:
+            if not result['correct']:
                 failure_file.write(json.dumps(result, ensure_ascii=False) + '\n')
                 failure_file.flush()
             results.append(result)
             save_summary(results, output_dir, config, len(samples))
-            print(
-                f'[{index + 1}/{len(samples)}] '
-                f'question_id={result["question_id"]} correct={correct} '
-                f'generated_tokens={result["generated_tokens"]} '
-                f'ended_with_eos={result["ended_with_eos"]} '
-                f'parse_reason={result["parse_reason"]}', flush=True)
-
-    # 6. 保存整体准确率，包含未解析出答案的样本。
-    total = len(results)
-    correct = sum(row['correct'] for row in results)
+            print(f"[{index + 1}/{len(samples)}] question_id={sample['question_id']} "
+                  f"correct={result['correct']} tokens={result['generated_tokens']} "
+                  f"finish_reason={finish_reason} parse_reason={extraction['reason']}", flush=True)
     summary = save_summary(results, output_dir, config, len(samples))
-    print(
-        f'Total samples: {total}\nCorrect: {correct}\n'
-        f'Accuracy: {summary["accuracy"]:.6f}')
+    print(f"Total samples: {summary['total']}\nCorrect: {summary['correct']}\nAccuracy: {summary['accuracy']:.6f}")
     print(f'Results: {output_path.resolve()}')
 
 
 if __name__ == '__main__':
-    # 脚本直接运行入口：执行评测主流程。
     main()
