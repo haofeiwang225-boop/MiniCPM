@@ -70,7 +70,13 @@ def get_args():
     p.add_argument('--adaptive_rank_max', type=int, default=256)
     p.add_argument('--adaptive_rank_step_cap', type=int, default=4)
     p.add_argument('--residual_init_scale', type=float, default=0.001)
-    p.add_argument('--direction_correction', choices=['none', 'blend'], default='none')
+    p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric'], default='none')
+    p.add_argument('--direction_correction_steps', nargs='+', type=int, default=[])
+    p.add_argument('--direction_function_tolerance', type=float, default=0.05)
+    p.add_argument('--direction_min_gain', type=float, default=1e-3)
+    p.add_argument('--direction_eta_start', type=float, default=1.0)
+    p.add_argument('--direction_eta_decay', type=float, default=0.5)
+    p.add_argument('--direction_eta_min', type=float, default=0.03125)
     p.add_argument('--direction_blend', type=float, default=0.05)
     p.add_argument('--adaptive_stats_dir', type=Path)
     p.add_argument('--gradient_checkpointing', type=boolean, default=True)
@@ -96,14 +102,36 @@ def get_args():
         p.error('Thresholds must be in [0,1]')
     if not 0 < args.adaptive_residual_energy_target <= 1:
         p.error('Residual energy target must be in (0,1]')
-    if args.diagnostic_steps and (args.adaptive_lora or args.direction_correction != 'none'):
-        p.error('Trajectory requires adaptive_lora=false and direction_correction=none')
+    if args.diagnostic_steps and (args.adaptive_lora or args.direction_correction == 'blend'):
+        p.error('Diagnostic steps require adaptive_lora=false and none/geometric correction')
     if any(not 0 < step <= args.max_steps for step in args.diagnostic_steps):
         p.error('Diagnostic steps must lie inside training')
     if args.dense_rank_min < 1 or args.dense_rank_max < args.dense_rank_min:
         p.error('Invalid Dense rank bounds')
     if args.dense_lora_param_budget is not None and args.dense_lora_param_budget < 1:
         p.error('Dense parameter budget must be positive')
+    if args.direction_correction == 'geometric':
+        if args.lora_structure != 'dense' or args.adaptive_lora:
+            p.error('Geometric mode requires Dense LoRA and adaptive_lora=false; expansion is forbidden')
+        if not args.direction_correction_steps:
+            p.error('Geometric mode requires explicit direction_correction_steps')
+    elif args.direction_correction_steps:
+        p.error('Correction steps require direction_correction=geometric')
+    steps = args.direction_correction_steps
+    if steps != sorted(set(steps)) or any(not 0 < t < args.max_steps for t in steps):
+        p.error('Correction steps must be unique, increasing, and inside training')
+    if set(steps) & set(args.diagnostic_steps):
+        p.error('Correction and diagnostic steps must not overlap')
+    from adaptive_lora.direction_correction import _eta_grid
+    try:
+        _eta_grid(args.direction_eta_start,args.direction_eta_decay,args.direction_eta_min)
+    except ValueError as error:
+        p.error(str(error))
+    import math
+    if not math.isfinite(args.direction_function_tolerance) or args.direction_function_tolerance < 0:
+        p.error('Invalid LoRA-update trust region')
+    if not math.isfinite(args.direction_min_gain) or args.direction_min_gain <= 0:
+        p.error('direction_min_gain must be positive and finite')
     args.adaptive_stats_dir = args.adaptive_stats_dir or args.output_dir/'adaptive_stats'
     return args
 
@@ -225,6 +253,13 @@ def main():
             log.write(json.dumps(record)+'\n')
             log.flush()
             print(record, flush=True)
+            if step in args.direction_correction_steps:
+                from adaptive_lora.adaptation import geometric_correction_step
+                correction_dir = args.output_dir/'correction_checkpoints'
+                correction_dir.mkdir(exist_ok=True)
+                save_adapter(model,names,correction_dir/f'step_{step}_pre.pt',args.model_name_or_path)
+                geometric_correction_step(model,names,checkpoint_batches(),args,optimizer,scheduler,step)
+                save_adapter(model,names,correction_dir/f'step_{step}_post.pt',args.model_name_or_path)
             if step in args.diagnostic_steps:
                 if args.save_diagnostic_checkpoints:
                     checkpoint_dir = args.output_dir/'checkpoints'

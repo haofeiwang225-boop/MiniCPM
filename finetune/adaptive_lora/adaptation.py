@@ -1,4 +1,4 @@
-"""Single second-probe event between two independent optimizers."""
+"""Legacy rank adaptation and separate fixed-rank geometric correction events."""
 import torch
 from pathlib import Path
 from .official import blocks, dense_factors, LinearWithLoRA
@@ -17,6 +17,8 @@ from .diagnostics import write_diagnostics
 def adaptive_step(model, target_names, batches, args, diagnostic_only=False):
     if not args.adaptive_lora and not diagnostic_only:
         return None  # no probe, RNG consumption, mutation or optimizer reset
+    if not diagnostic_only and getattr(args, 'direction_correction', 'none') == 'geometric':
+        raise ValueError('Geometric correction cannot enter the structural adaptive path')
     if not target_names:
         raise ValueError('No targets')
     old_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -133,3 +135,100 @@ def adaptive_step(model, target_names, batches, args, diagnostic_only=False):
                     b.copy_(new_b)
     new_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     return write_diagnostics(args.adaptive_stats_dir, rows, old_params, new_params)
+
+
+def geometric_correction_step(model, target_names, batches, args, optimizer, scheduler, step):
+    """Fixed-rank event: measure every target before applying any mutation."""
+    import copy
+    from .direction_correction import plan_geometric_direction_correction, apply_geometric_correction
+    from .tangent_metrics import frobenius_metrics
+    from .diagnostics import write_geometric_diagnostics
+    old_parameters = [(id(p), tuple(p.shape)) for p in model.parameters()]
+    old_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    scheduler_before = copy.deepcopy(scheduler.state_dict())
+    lr_before = [group['lr'] for group in optimizer.param_groups]
+    # State tensor versions and identities detect unintended writes, without
+    # copying every Adam moment to GPU/CPU a second time.
+    state_before = {p: (state, {k:(id(v), v._version) if torch.is_tensor(v) else v
+                               for k,v in state.items()}) for p,state in optimizer.state.items()}
+    rows, pending = [], []
+    for name in target_names:
+        layer = model.get_submodule(name)
+        if type(layer) is not LinearWithLoRA:
+            raise ValueError('Geometric events require ordinary Dense LinearWithLoRA')
+        g, losses = probe_weight(model, layer, batches, return_losses=True)
+        g = g.to(args.analysis_device)
+        a, b = dense_factors(layer)
+        a, b = a.to(g.device), b.to(g.device)
+        rank = layer.lora_rank
+        if a.shape[0] != rank or b.shape[1] != rank:
+            raise ValueError('Factor width disagrees with configured rank')
+        u,s,vh,gid = svd_with_gid(g)
+        qa,qb,ca,cb = match_subspaces(a,b,u,s,vh)
+        residual = residual_gradient(g,qa,qb)
+        if residual.norm() <= 1e-6*g.norm(): residual.zero_()
+        ur,sr,vhr,gidr = svd_with_gid(residual)
+        metrics = tangent_metrics(g,residual,s,rank,ca,cb)
+        kstar = residual_energy_rank(sr,args.adaptive_residual_energy_target)
+        diagnostic = make_adaptive_decision(metrics['tangent_coverage'],metrics['oracle_tangent_coverage'],
+            metrics['direction_efficiency'],ca,cb,metrics['residual_energy_ratio'],gidr,rank,
+            max(rank,args.adaptive_rank_max),kstar,metrics['efficiency_A'],metrics['efficiency_B'],
+            efficiency_threshold=args.adaptive_direction_efficiency_threshold,
+            oracle_threshold=args.adaptive_oracle_coverage_threshold,
+            energy_threshold=args.adaptive_residual_energy_threshold,step_cap=args.adaptive_rank_step_cap)
+        plan,factors = plan_geometric_direction_correction(g,a,b,metrics['oracle_tangent_coverage'],
+            layer.lora_scaler, residual_threshold=args.adaptive_residual_energy_threshold,
+            function_tolerance=args.direction_function_tolerance,min_gain=args.direction_min_gain,
+            eta_start=args.direction_eta_start,eta_decay=args.direction_eta_decay,eta_min=args.direction_eta_min,
+            diagnostic_mismatch_side=diagnostic['mismatch_side'])
+        row = dict(module=name,step=step,coverage_A=ca,coverage_B=cb,gid_full=gid,gid_residual=gidr,
+                   residual_rank_k90=residual_energy_rank(sr),residual_rank_k_star=kstar,
+                   probe_batch_losses=losses,mean_probe_loss=sum(losses)/len(losses),
+                   num_calibration_batches=len(batches),calibration_indices_path=str(args.calibration_indices_path),
+                   calibration_indices_sha256=args.calibration_indices_sha256,
+                   base_weight_unchanged=True,diagnostic_decision=diagnostic['decision'],
+                   **metrics)
+        row.update(frobenius_metrics(g,residual,metrics['residual_energy_ratio']))
+        row.update(plan)
+        rows.append(row)
+        if factors is not None:
+            pending.append((name,tuple(f.detach().cpu().clone() for f in factors),row))
+        print(f'Geometric step {step}: {name}, side={row["applied_side"]}, gain={row["applied_gain"]:.6g}',flush=True)
+        del g,a,b,u,s,vh,qa,qb,residual,ur,sr,vhr,factors
+    changed = set()
+    for name,factors,row in pending:
+        layer = model.get_submodule(name)
+        base_before = layer.weight.detach().cpu().clone()
+        side = row['applied_side']
+        untouched = layer.weight_b if side == 'A' else layer.weight_a
+        untouched_before = untouched.detach().clone()
+        row.update(apply_geometric_correction(layer,factors,row,optimizer))
+        changed.add(layer.weight_a if side == 'A' else layer.weight_b)
+        assert torch.equal(untouched_before,untouched.detach())
+        assert torch.equal(base_before,layer.weight.detach().cpu())
+        assert layer.lora_scaler == row['old_scaling']
+        assert layer.lora_rank == row['rank_before']
+    for row in rows:
+        row.setdefault('optimizer_state_reset_side','none')
+        row.setdefault('optimizer_state_reset_count',0)
+        row['scheduler_preserved'] = True
+    assert old_parameters == [(id(p),tuple(p.shape)) for p in model.parameters()]
+    new_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    assert old_count == new_count
+    assert scheduler.state_dict() == scheduler_before
+    assert lr_before == [group['lr'] for group in optimizer.param_groups]
+    for p,(state,versions) in state_before.items():
+        if p in changed:
+            assert p not in optimizer.state
+        else:
+            assert optimizer.state[p] is state
+            for k,v in state.items():
+                assert ((id(v),v._version) if torch.is_tensor(v) else v) == versions[k]
+    summary = write_geometric_diagnostics(args.output_dir/'corrections'/f'step_{step}',rows,
+        dict(step=step,old_total_lora_params=old_count,new_total_lora_params=new_count,
+             optimizer_object_preserved=True,scheduler_preserved=True,
+             scheduler_last_epoch=scheduler.last_epoch,learning_rates=lr_before,
+             untouched_optimizer_states_preserved=True,parameter_objects_preserved=True,
+             calibration_indices_path=str(args.calibration_indices_path),
+             calibration_indices_sha256=args.calibration_indices_sha256,num_calibration_batches=len(batches)))
+    return summary

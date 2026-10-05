@@ -1,6 +1,7 @@
 # Gradient Subspace Matching + Residual-GID Adaptive LoRA
 
-只实现创新点1；没有 Stiefel、Oblique、SPD 或 manifold optimization。
+保留创新点1；direction-correction 分支新增创新点3第一版：Grassmann subspace correction with LoRA-update trust region。
+未实现 Stiefel/Oblique optimizer、SPD metric 或 Riemannian Adam。
 先阅读 [审计结论](AUDIT.md)，特别是 MELoRA 分块 tangent 的限制。
 
 
@@ -284,3 +285,85 @@ bash finetune/run_minicpm5_oracle_diagnostic.sh trajectory \
   --save_diagnostic_checkpoints true \
   --output_dir finetune/adaptive_lora/outputs/dense_trajectory_500_initial8_diag8
 ```
+
+
+## 创新点3 v1：Mismatch-Aware Geometric Subspace Direction Correction
+
+基于冻结创新点1 commit `7bafa65ea8ffa2a7db019f1e33c9eb43c1d310bc`。
+正式路径为普通Dense LinearWithLoRA，实际update为 `s B A`、`s=alpha/r`。
+本路径固定rank、scaling、Parameter对象和参数量；不含动态rank expansion。
+原none/blend、innovation1 rank-expansion代码保留，但geometric模式不能进入legacy structural adaptive path。
+本节描述子空间校正，不是Stiefel optimization；不声称最终benchmark已经改善。
+
+### 候选门槛与侧别
+
+仅当residual ratio高于原阈值、DirectionGap大于CapacityGap、A/B实际数值秩均等于r时搜索。
+CapacityGap主导只记录`deferred_capacity_no_expansion_in_innovation3`；秩亏记录`rank_deficient_factor`，
+不随机补basis。旧heuristic仅保存为diagnostic_mismatch_side。
+A/B分别搜索全部eta，必须同时满足实际tangent gain和LoRA-update trust region。
+最终只选一侧：优先gain更大、其次相对扰动更小，完全并列固定优先A；单侧eta并列优先更小eta。
+没有feasible candidate则不修改。恒不返回applied_side=both。
+
+### 数学实现
+
+- `direction_correction.py::compute_B_target_given_A`：`H_B=G-(G Q_A)Q_A^T`的top-r左子空间。
+- `compute_A_target_given_B`：`H_A=G-Q_B(Q_B^T G)`的top-r右子空间。
+- `grassmann_geodesic`：principal-angle SVD插值，float64计算、最后reduced QR；不构造ambient projector。
+- 主角恰为90度时最短路径不唯一。实现使用基于ambient坐标pivot的确定性选基来配对正交方向，
+  对输入basis旋转不敏感，但不声称该cut-locus约定具有ambient旋转不变性或唯一几何意义。
+- B-side：`B'=Q(Q^T B), A'=A`；A-side：`A'=(A Q)Q^T, B'=B`。
+  这是旧BA向给定输出/输入子空间的Frobenius最小扰动投影，而不是elementwise Euclidean blend。
+- `factor_product_fro_norm`及relative A/B helpers以r×r Gram identity算范数，归约使用float64。
+  `||BA||`极小时安全skip；分母及绝对scaled update change均记录。
+- 真正改变A/B子空间一般不能同时严格保持BA不变。本方法控制的是局部update矩阵`sBA`的相对变化，
+  不是整个网络函数的严格全局距离，也不保证loss不增加。
+- gain使用同一份pre-correction G重算候选实际factor的数值秩和tangent coverage；不会用理论target覆盖率代替实测。
+
+默认 `direction_function_tolerance=.05`（LoRA-update trust region）、`direction_min_gain=.001`，
+eta从1开始、衰减.5、最小.03125。参数是当前工程默认，不是已验证的论文最优超参数。
+
+### 多事件与optimizer
+
+CLI：`--direction_correction geometric --lora_structure dense --adaptive_lora false`。
+必须显式传`--direction_correction_steps`；严格递增、无重复、处于(0,max_steps)，与diagnostic_steps不重叠。
+真实模型仍使用initial K=8、periodic/correction K=8，以及同一manifest/hash；校正不改变初始GID分配公式/预算。
+
+`adaptation.py::geometric_correction_step`在正常training optimizer.step/scheduler.step/zero_grad之后运行。
+第一遍逐层probe并构造CPU pending factors；全部层测量完成前禁止mutation。
+随后对恰好一侧factor原地copy_；不替换Parameter，不调用expand_layer，不添加ExpandedLoRA。
+保持同一optimizer/scheduler；仅`optimizer.state.pop(被修改factor)`，保留另一factor和其他层的moments。
+运行时验证未修改state对象/版本、Parameter身份/shape、scheduler state/LR以及base weight不变。
+
+输出独立目录，旧innovation1格式不变：
+- correction_checkpoints/step_t_pre.pt、step_t_post.pt
+- corrections/step_t/modules.jsonl：每侧eta搜索结果、skip reason、实际gain/扰动、前后rank/scaling/params、state reset side/count
+- corrections/step_t/summary.json：全事件参数量、侧别统计、scheduler epoch/LR和optimizer不变性
+
+### 验证与launcher
+
+新增15项geometric测试，连同原32项共47项通过，包含旧blend/diagnostic-only回归。
+CPU tiny Llama 6步、K=2测试，step2/4两次事件，每次实际触发2个A-side和2个B-side correction；
+总LoRA参数416始终不变，scheduler epoch为2/4；step6仍运行只读diagnostic。
+该tiny配置仅用于工程测试，不是正式训练配置。真实MiniCPM5未自动运行。
+
+```bash
+TRITON_CACHE_DIR=/tmp/minicpm_adaptive_triton PYTHONPATH=finetune \
+  /home/hongchang/miniconda3/envs/ralora/bin/python -B -m unittest discover \
+  -s finetune/adaptive_lora/tests -v
+
+# CPU integration（新目录，避免覆盖既有结果）
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 TRITON_CACHE_DIR=/tmp/minicpm_adaptive_triton \
+  /home/hongchang/miniconda3/envs/ralora/bin/python -B finetune/train_adaptive_lora.py \
+  --tiny_model --device cpu --dtype float32 --analysis_device cpu \
+  --lora_structure dense --adaptive_lora false --direction_correction geometric \
+  --direction_correction_steps 2 4 --diagnostic_steps 6 --max_steps 6 \
+  --gradient_est_n_steps 2 --adaptive_probe_batches 2 \
+  --lora_rank 2 --lora_alpha 4 --dense_rank_max 4 --dense_lora_param_budget 448 \
+  --output_dir /tmp/minicpm_geometric_tiny_user
+```
+
+真实模型launcher：`finetune/run_minicpm5_geometric_direction.sh`，不自动启动。
+要求用户显式指定correction steps和新output_dir；max_steps也应与所选steps对应。
+默认本地MiniCPM5-2B、Dense预算480256、initial/periodic K=8；不替用户决定correction时机。
+
+保存的log、checkpoint、gradient cache和实验结果不纳入源码提交。

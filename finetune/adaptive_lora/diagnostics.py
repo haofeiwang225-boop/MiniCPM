@@ -49,3 +49,22 @@ def write_diagnostics(path, rows, old_params, new_params):
     (path / 'summary.json').write_text(json.dumps(summary, indent=2)+'\n')
     (path / 'rank_pattern.json').write_text(json.dumps({r['module']: r['applied_new_rank'] for r in rows}, indent=2)+'\n')
     return summary
+
+
+def write_geometric_diagnostics(path, rows, summary):
+    """Separate event format; innovation-1 modules/summary are unchanged."""
+    path = Path(path)
+    path.mkdir(parents=True,exist_ok=False)
+    with (path/'modules.jsonl').open('x') as stream:
+        for row in rows:
+            stream.write(json.dumps(row,allow_nan=False)+'\n')
+    summary.update(num_modules=len(rows),
+        applied_sides=dict(Counter(r['applied_side'] for r in rows)),
+        skip_reasons=dict(Counter(r['correction_skip_reason'] for r in rows if r['correction_skip_reason'])),
+        optimizer_state_reset_count=sum(r['optimizer_state_reset_count'] for r in rows),
+        mean_tangent_coverage_before=sum(r['tangent_coverage_before'] for r in rows)/len(rows),
+        mean_tangent_coverage_after=sum(r['tangent_coverage_after'] for r in rows)/len(rows),
+        max_relative_update_change=max(r['applied_relative_update_change'] for r in rows),
+        all_base_weights_unchanged=all(r['base_weight_unchanged'] for r in rows))
+    (path/'summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+    return summary
