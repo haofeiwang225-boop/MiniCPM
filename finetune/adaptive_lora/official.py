@@ -80,5 +80,8 @@ def blocks(layer):
 
 
 def dense_factors(layer):
+    # Ordinary Dense LoRA must not pass through block_diag, even with one pair.
+    if type(layer) is LinearWithLoRA:
+        return layer.weight_a.detach().float(), layer.weight_b.detach().float()
     pairs = blocks(layer)
     return torch.block_diag(*[a.detach().float() for a, _ in pairs]), torch.block_diag(*[b.detach().float() for _, b in pairs])

@@ -1,5 +1,6 @@
 """Single-device official RaLoRA baseline and optional two-phase adaptive extension."""
 import argparse
+import copy
 import json
 import os
 from pathlib import Path
@@ -38,11 +39,16 @@ def get_args():
     p.add_argument('--learning_rate', type=float, default=5e-5)
     p.add_argument('--weight_decay', type=float, default=0.01)
     p.add_argument('--target_modules', nargs='+', default=['q_proj', 'v_proj'])
+    p.add_argument('--lora_structure', choices=['dense', 'block'], default='dense')
+    p.add_argument('--dense_lora_param_budget', type=int)
+    p.add_argument('--dense_rank_min', type=int, default=1)
+    p.add_argument('--dense_rank_max', type=int, default=64)
     p.add_argument('--lora_rank', type=int, default=64)
     p.add_argument('--lora_alpha', type=float, default=32)
     p.add_argument('--lora_dropout', type=float, default=0.1)
     p.add_argument('--weight_a_init_method', default='kaiming', choices=['kaiming', 'normal', 'orthogonal', 'xavier'])
-    p.add_argument('--gradient_est_n_steps', type=int, default=2)
+    p.add_argument('--gradient_est_n_steps', type=int, default=8)
+    p.add_argument('--initial_probe_only', action='store_true', help='Save initialized adapter and exit before optimizer creation')
     p.add_argument('--ralora_min_rank', type=int, default=1)
     p.add_argument('--ralora_max_rank', type=int, default=64)
     p.add_argument('--ralora_erank_max_power', type=int, default=4)
@@ -51,8 +57,15 @@ def get_args():
     p.add_argument('--ralora_rank_stablize', type=boolean, default=False)
     p.add_argument('--adaptive_lora', type=boolean, default=False)
     p.add_argument('--adaptive_probe_step', type=int, default=100)
-    p.add_argument('--adaptive_probe_batches', type=int, default=2)
-    p.add_argument('--adaptive_alignment_threshold', type=float, default=0.6)
+    p.add_argument('--adaptive_probe_batches', type=int, default=8)
+    p.add_argument('--adaptive_direction_efficiency_threshold', type=float, default=0.8)
+    p.add_argument('--adaptive_oracle_coverage_threshold', type=float, default=0.9)
+    p.add_argument('--adaptive_residual_energy_target', type=float, default=0.90)
+    p.add_argument('--adaptive_rank_init', choices=['zero_b_residual_v', 'symmetric_residual'],
+                   default='zero_b_residual_v')
+    p.add_argument('--save_diagnostic_checkpoints', type=boolean, default=True)
+    p.add_argument('--diagnostic_steps', nargs='+', type=int, default=[],
+                   help='Read-only probes during one continuous warm-up, without optimizer reset')
     p.add_argument('--adaptive_residual_energy_threshold', type=float, default=0.1)
     p.add_argument('--adaptive_rank_max', type=int, default=256)
     p.add_argument('--adaptive_rank_step_cap', type=int, default=4)
@@ -66,6 +79,8 @@ def get_args():
     args = p.parse_args()
     if int(os.environ.get('WORLD_SIZE', '1')) != 1:
         p.error('Phase-boundary reconstruction currently supports one device only')
+    if args.lora_structure == 'dense' and args.gradient_est_n_steps != args.adaptive_probe_batches:
+        p.error('Dense initial and periodic probes must use the same calibration batch count')
     if args.adaptive_lora and not 0 < args.adaptive_probe_step < args.max_steps:
         p.error('Probe step must lie strictly inside training')
     for name in ('max_steps', 'batch_size', 'gradient_est_n_steps', 'adaptive_probe_batches',
@@ -76,8 +91,19 @@ def get_args():
         p.error('Invalid initial rank/split limits')
     if args.residual_init_scale < 0 or not 0 <= args.direction_blend <= 1:
         p.error('Invalid initialization/correction scale')
-    if not 0 <= args.adaptive_alignment_threshold <= 1 or not 0 <= args.adaptive_residual_energy_threshold <= 1:
+    if any(not 0 <= x <= 1 for x in (args.adaptive_direction_efficiency_threshold,
+            args.adaptive_oracle_coverage_threshold, args.adaptive_residual_energy_threshold)):
         p.error('Thresholds must be in [0,1]')
+    if not 0 < args.adaptive_residual_energy_target <= 1:
+        p.error('Residual energy target must be in (0,1]')
+    if args.diagnostic_steps and (args.adaptive_lora or args.direction_correction != 'none'):
+        p.error('Trajectory requires adaptive_lora=false and direction_correction=none')
+    if any(not 0 < step <= args.max_steps for step in args.diagnostic_steps):
+        p.error('Diagnostic steps must lie inside training')
+    if args.dense_rank_min < 1 or args.dense_rank_max < args.dense_rank_min:
+        p.error('Invalid Dense rank bounds')
+    if args.dense_lora_param_budget is not None and args.dense_lora_param_budget < 1:
+        p.error('Dense parameter budget must be positive')
     args.adaptive_stats_dir = args.adaptive_stats_dir or args.output_dir/'adaptive_stats'
     return args
 
@@ -145,19 +171,41 @@ def main():
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={'use_reentrant': False})
     calibration = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, collate_fn=default_data_collator)
     iterator = cycle_batches(calibration)
-    batches = [next(iterator) for _ in range(max(args.gradient_est_n_steps, args.adaptive_probe_batches))]
-    names = attach_ralora(model, args)
+    batches = [next(iterator) for _ in range(args.gradient_est_n_steps)]
+    from adaptive_lora.calibration import write_calibration_indices, load_calibration_batches
+    if args.lora_structure == 'dense' or args.adaptive_lora or args.diagnostic_steps:
+        args.calibration_indices_path = args.output_dir/'calibration_indices.json'
+        args.calibration_indices_sha256 = write_calibration_indices(
+            args.calibration_indices_path, dataset, args.batch_size, args.adaptive_probe_batches,
+            'synthetic_training' if args.tiny_model else args.train_data_path.resolve())
+
+    def checkpoint_batches():
+        return load_calibration_batches(args.calibration_indices_path,
+            args.calibration_indices_sha256, dataset, default_data_collator)
+
+    from adaptive_lora.dense_init import attach_dense, dense_first_probe
+    names = (attach_dense(model, args) if args.lora_structure == 'dense'
+             else attach_ralora(model, args))
     run_config = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
     run_config.update(model_class=type(model).__name__, train_samples=len(dataset), targets=names,
                       python=sys.executable, torch_version=str(torch.__version__),
                       transformers_version=transformers.__version__,
                       model_type=model.config.model_type, model_config=model.config.to_dict(),
                       target_weight_shapes={n: list(model.get_submodule(n).weight.shape) for n in names},
-                      baseline='local_official_ralora', phase2_optimizer='fresh_adamw_and_linear_scheduler')
+                      baseline=('gid_dense_lora' if args.lora_structure == 'dense' else 'local_official_ralora'),
+                      phase2_optimizer=('fresh_adamw_and_linear_scheduler' if args.adaptive_lora else 'not_used'),
+                      diagnostic_protocol='fixed_training_calibration_restore_rng_no_optimizer_reset')
     from adaptive_lora.official import OFFICIAL
     run_config['official_commit'] = subprocess.check_output(['git', '-C', str(OFFICIAL), 'rev-parse', 'HEAD'], text=True).strip()
     (args.output_dir/'run_config.json').write_text(json.dumps(run_config, indent=2))
-    first_probe(model, batches[:args.gradient_est_n_steps], args)
+    if args.lora_structure == 'dense':
+        dense_first_probe(model, names, checkpoint_batches(), args)
+    else:
+        first_probe(model, batches[:args.gradient_est_n_steps], args)
+    if args.initial_probe_only:
+        save_adapter(model, names, args.output_dir/'initial_adapter.pt', args.model_name_or_path)
+        print('Initial probe sanity completed; no optimizer created and no training updates.', flush=True)
+        return
     optimizer, scheduler = make_optimizer(model, args, args.max_steps)
     train_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True,
                     generator=torch.Generator().manual_seed(args.seed), collate_fn=default_data_collator)
@@ -177,11 +225,22 @@ def main():
             log.write(json.dumps(record)+'\n')
             log.flush()
             print(record, flush=True)
+            if step in args.diagnostic_steps:
+                if args.save_diagnostic_checkpoints:
+                    checkpoint_dir = args.output_dir/'checkpoints'
+                    checkpoint_dir.mkdir(exist_ok=True)
+                    save_adapter(model, names, checkpoint_dir/f'step_{step}.pt', args.model_name_or_path)
+                diagnostic_args = copy.copy(args)
+                diagnostic_args.adaptive_stats_dir = args.output_dir/'diagnostics'/f'step_{step}'
+                summary = adaptive_step(model, names, checkpoint_batches(),
+                                        diagnostic_args, diagnostic_only=True)
+                with (args.output_dir/'warmup_trajectory.jsonl').open('a') as trajectory:
+                    trajectory.write(json.dumps(dict(step=step, **summary))+'\n')
             if args.adaptive_lora and step == args.adaptive_probe_step:
                 save_adapter(model, names, args.output_dir/'phase1_adapter.pt', args.model_name_or_path)
                 # No active optimizer is allowed across the structural change.
                 del optimizer, scheduler
-                adaptive_step(model, names, batches[:args.adaptive_probe_batches], args)
+                adaptive_step(model, names, checkpoint_batches(), args)
                 save_adapter(model, names, args.output_dir/'phase2_initial_adapter.pt', args.model_name_or_path)
                 optimizer, scheduler = make_optimizer(model, args, args.max_steps-step)
     save_adapter(model, names, args.output_dir/'adapter.pt', args.model_name_or_path)

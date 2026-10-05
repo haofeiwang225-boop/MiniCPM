@@ -4,9 +4,13 @@ from torch import nn
 from torch.nn import functional as F
 
 
-def residual_factors(u, s, vh, k, gamma):
+def residual_factors(u, s, vh, k, gamma, method="zero_b_residual_v"):
     if gamma < 0 or k < 1 or k > len(s):
         raise ValueError('Invalid residual initialization')
+    if method == "zero_b_residual_v":
+        return vh[:k].clone(), torch.zeros_like(u[:, :k])
+    if method != "symmetric_residual":
+        raise ValueError("Unknown rank initialization")
     root = (gamma * s[:k]).sqrt()
     return root[:, None] * vh[:k], u[:, :k] * root[None, :]
 
@@ -15,7 +19,7 @@ class ExpandedLoRA(nn.Module):
     """Retain official block layout/scaling; additive branch has unit scaling.
 
     If base delta=s*B*A, expanded delta=s*B*A + B_add*A_add.
-    Thus old parameters AND old function are preserved, and new delta=gamma*R_k.
+    Thus old parameters AND old function are preserved, and default new delta=0 (symmetric ablation: gamma*R_k).
     """
     def __init__(self, base_layer, a_add, b_add):
         super().__init__()
@@ -34,6 +38,6 @@ class ExpandedLoRA(nn.Module):
         return result + branch.to(result.dtype)
 
 
-def expand_layer(layer, u, s, vh, delta_rank, gamma):
-    a, b = residual_factors(u, s, vh, delta_rank, gamma)
+def expand_layer(layer, u, s, vh, delta_rank, gamma, method="zero_b_residual_v"):
+    a, b = residual_factors(u, s, vh, delta_rank, gamma, method)
     return ExpandedLoRA(layer, a, b)

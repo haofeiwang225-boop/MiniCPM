@@ -7,8 +7,8 @@ def residual_gradient(g, qa, qb):
     return g - qb @ left - right @ qa.T + qb @ (left @ qa) @ qa.T
 
 
-def residual_energy_ratio(g, residual, eps=1e-10):
-    return float((residual.square().sum() / (g.square().sum() + eps)).clamp(0, 1))
+def residual_energy_ratio(g, residual, eps=1e-30):
+    return float((residual.double().square().sum() / (g.double().square().sum() + eps)).clamp(0, 1))
 
 
 def block_tangent_residual(g, blocks):

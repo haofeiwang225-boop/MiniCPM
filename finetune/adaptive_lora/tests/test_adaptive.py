@@ -83,10 +83,11 @@ class MathTests(unittest.TestCase):
         self.assertAlmostEqual(svd_with_gid(g)[3], compute_effective_rank(g), places=4)
 
     def test_decisions_and_budget(self):
-        self.assertEqual(make_adaptive_decision(.9, .9, .01, 5, 1, 2, 8)['decision'], 'keep')
-        d = make_adaptive_decision(.1, .9, .5, 5, 3, 2, 8)
+        d = make_adaptive_decision(.99, 1., .99, .4, .6, .01, 1., 2, 8, 1, .5, .8)
+        self.assertEqual(d['decision'], 'keep')
+        d = make_adaptive_decision(.2, 1., .2, .01, .19, .8, 3., 2, 8, 3, .02, .38)
         self.assertEqual((d['decision'], d['mismatch_side'], d['delta_rank']), ('direction_mismatch','A',0))
-        d = make_adaptive_decision(.7, .7, .2, 5, 3.5, 2, 8)
+        d = make_adaptive_decision(.4, .4, 1., .2, .2, .6, 3.5, 2, 8, 4, 1., 1.)
         self.assertEqual((d['decision'], d['new_rank']), ('expand',6))
         self.assertEqual(allocate_rank(10, 7, 8, 4), 1)
         self.assertEqual(allocate_rank(10, 9, 8, 4), 0)
@@ -98,7 +99,7 @@ class MathTests(unittest.TestCase):
             x = torch.randn(2, 4)
             old_y = l(x).detach()
             u, s, vh, _ = svd_with_gid(torch.randn(4, 4))
-            new = expand_layer(l, u, s, vh, 1, .01)
+            new = expand_layer(l, u, s, vh, 1, .01, "symmetric_residual")
             aa, bb = dense_factors(new.base_layer)
             self.assertTrue(torch.equal(a, aa) and torch.equal(b, bb))
             self.assertEqual(new.base_layer.lora_scaler, 2)
@@ -171,7 +172,7 @@ class MathTests(unittest.TestCase):
             m=Toy(split)
             base_state = copy.deepcopy(m.proj.weight.detach())
             u,s,vh,_=svd_with_gid(torch.randn(4,4))
-            m.proj=expand_layer(m.proj,u,s,vh,1,.01)
+            m.proj=expand_layer(m.proj,u,s,vh,1,.01,"symmetric_residual")
             x=torch.randn(3,4)
             expected=m.proj(x).detach()
             with tempfile.TemporaryDirectory() as tmp:

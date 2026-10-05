@@ -3,7 +3,7 @@ import torch
 from .official import get_record_gradient_post_accumulate_hook
 
 
-def probe_weight(model, layer, batches):
+def probe_weight(model, layer, batches, return_losses=False):
     params = list(model.parameters())
     flags = [p.requires_grad for p in params]
     grads = [p.grad for p in params]
@@ -13,6 +13,7 @@ def probe_weight(model, layer, batches):
         raise ValueError('Stale initial-probe gradient state')
     original = weight.detach().cpu().clone()
     hook = None
+    batch_losses = []
     devices = sorted({p.device.index for p in params if p.is_cuda})
     try:
         with torch.random.fork_rng(devices=devices):
@@ -26,13 +27,17 @@ def probe_weight(model, layer, batches):
                 loss = model(**{k: v.to(weight.device) for k, v in batch.items()}).loss
                 if not torch.isfinite(loss):
                     raise ValueError('Nonfinite calibration loss')
+                batch_losses.append(float(loss.detach()))
                 loss.backward()
+                # Preserve FP32 accumulation across batches even for BF16 base weights.
+                if hasattr(weight, "grad_stored"):
+                    weight.grad_stored = weight.grad_stored.float()
             if not hasattr(weight, 'iters') or weight.iters != len(batches):
                 raise RuntimeError('Target did not receive a gradient on every batch')
             gradient = weight.grad_stored.float() / weight.iters
             if not torch.equal(weight.detach().cpu(), original):
                 raise RuntimeError('Probe modified base weight')
-            return gradient
+            return (gradient, batch_losses) if return_losses else gradient
     finally:
         if hook is not None:
             hook.remove()

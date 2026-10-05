@@ -1,18 +1,21 @@
 """Single second-probe event between two independent optimizers."""
 import torch
-from .official import blocks, dense_factors
+from pathlib import Path
+from .official import blocks, dense_factors, LinearWithLoRA
 from .gradient_probe import probe_weight
 from .subspace_matching import match_subspaces
 from .residual_gradient import residual_gradient, residual_energy_ratio, block_tangent_residual
 from .residual_gid import svd_with_gid
 from .decision import make_adaptive_decision
-from .direction_correction import apply_direction_correction
+from .direction_correction import (apply_direction_correction, compute_A_target_given_B,
+                                   compute_B_target_given_A)
+from .tangent_metrics import tangent_metrics, residual_energy_rank
 from .rank_expansion import expand_layer
 from .diagnostics import write_diagnostics
 
 
-def adaptive_step(model, target_names, batches, args):
-    if not args.adaptive_lora:
+def adaptive_step(model, target_names, batches, args, diagnostic_only=False):
+    if not args.adaptive_lora and not diagnostic_only:
         return None  # no probe, RNG consumption, mutation or optimizer reset
     if not target_names:
         raise ValueError('No targets')
@@ -23,54 +26,94 @@ def adaptive_step(model, target_names, batches, args):
     pending = []
     for name in target_names:
         layer = model.get_submodule(name)
-        g = probe_weight(model, layer, batches).to(args.analysis_device)
+        is_dense = type(layer) is LinearWithLoRA
+        g, batch_losses = probe_weight(model, layer, batches, return_losses=True)
+        g = g.to(args.analysis_device)
         a, b = dense_factors(layer)
         a, b = a.to(g.device), b.to(g.device)
         u, s, vh, gid = svd_with_gid(g)
         qa, qb, ca, cb = match_subspaces(a, b, u, s, vh)
         residual = residual_gradient(g, qa, qb)
-        rho = residual_energy_ratio(g, residual)
         # Roundoff residual is not a physical missing subspace.
         if residual.norm() <= 1e-6 * g.norm():
             residual.zero_()
         ur, sr, vhr, gidr = svd_with_gid(residual)
         old_rank = a.shape[0]
+        metrics = tangent_metrics(g, residual, s, old_rank, ca, cb)
+        from .tangent_metrics import frobenius_metrics
+        metrics.update(frobenius_metrics(g, residual, metrics['residual_energy_ratio']))
+        k_star = residual_energy_rank(sr, args.adaptive_residual_energy_target)
         decision = make_adaptive_decision(
-            ca, cb, rho, gid, gidr, old_rank,
-            min(args.adaptive_rank_max, min(g.shape)),
-            args.adaptive_alignment_threshold, args.adaptive_residual_energy_threshold,
-            args.adaptive_rank_step_cap)
-        row = dict(module=name, old_rank=old_rank, gid_full=gid, coverage_A=ca,
-                   coverage_B=cb, residual_energy_ratio=rho, gid_residual=gidr,
-                   n_split=layer.n_split, mini_rank=layer.mini_lora_rank,
-                   original_scaling=layer.lora_scaler, **decision)
-        pairs = [(aa.detach().float().to(g.device), bb.detach().float().to(g.device)) for aa, bb in blocks(layer)]
-        if layer.n_split > 1:
+            metrics['tangent_coverage'], metrics['oracle_tangent_coverage'],
+            metrics['direction_efficiency'], ca, cb, metrics['residual_energy_ratio'],
+            gidr, old_rank, min(args.adaptive_rank_max, min(g.shape)), k_star,
+            metrics['efficiency_A'], metrics['efficiency_B'],
+            efficiency_threshold=args.adaptive_direction_efficiency_threshold,
+            oracle_threshold=args.adaptive_oracle_coverage_threshold,
+            energy_threshold=args.adaptive_residual_energy_threshold,
+            step_cap=args.adaptive_rank_step_cap)
+        row = dict(module=name, rank=old_rank, old_rank=old_rank, gid_full=gid,
+                   coverage_A=ca, coverage_B=cb, gid_residual=gidr,
+                   residual_rank_k90=residual_energy_rank(sr, .90),
+                   residual_rank_k_star=k_star,
+                   residual_energy_target=args.adaptive_residual_energy_target,
+                   structure="dense" if is_dense else "block",
+                   original_scaling=layer.lora_scaler, diagnostic_only=diagnostic_only,
+                   base_weight_unchanged=True, probe_batch_losses=batch_losses,
+                   mean_probe_loss=sum(batch_losses)/len(batch_losses),
+                   num_calibration_batches=len(batches),
+                   calibration_indices_path=str(getattr(args, 'calibration_indices_path', 'in_memory_test')),
+                   calibration_indices_sha256=getattr(args, 'calibration_indices_sha256', None),
+                   **metrics, **decision)
+        pairs = [(a, b)] if is_dense else [(aa.detach().float().to(g.device), bb.detach().float().to(g.device)) for aa, bb in blocks(layer)]
+        if not is_dense and layer.n_split > 1:
             restricted = block_tangent_residual(g, pairs)
             row['restricted_block_residual_energy_ratio'] = residual_energy_ratio(g, restricted)
             row['tangent_scope'] = 'ambient_dense_relaxation_of_block_factors'
             del restricted
         else:
             row['tangent_scope'] = 'exact_dense_BA_tangent'
-        if decision['decision'] == 'expand':
+        row['target_side'] = decision['mismatch_side']
+        row['target_subspace'] = None
+        # Trajectory measures scalars only; correction targets are not consumed there.
+        if not diagnostic_only and decision['decision'] == 'direction_mismatch':
+            targets = {}
+            if decision['mismatch_side'] in ('A', 'both'):
+                targets['A_columns'] = compute_A_target_given_B(g, b, old_rank).cpu()
+            if decision['mismatch_side'] in ('B', 'both'):
+                targets['B_columns'] = compute_B_target_given_A(g, a, old_rank).cpu()
+            folder = Path(args.adaptive_stats_dir)/'targets'
+            folder.mkdir(parents=True, exist_ok=True)
+            path = folder/(name+'.pt')
+            torch.save(targets, path)
+            row['target_subspace'] = dict(path=str(path), kind='complementary_dense_subspace' if is_dense else 'complementary_dense_relaxation',
+                                           shapes={k: list(v.shape) for k,v in targets.items()})
+            del targets
+        if not diagnostic_only and decision['decision'] == 'expand':
             k = decision['delta_rank']
             pending.append((name, 'expand', (ur[:, :k].cpu().clone(), sr[:k].cpu().clone(), vhr[:k].cpu().clone())))
             row['residual_init_scale'] = args.residual_init_scale
-            row['residual_update_sign'] = 'positive_gradient_as_requested'
-        elif decision['decision'] == 'direction_mismatch' and args.direction_correction != 'none':
+            row['adaptive_rank_init'] = args.adaptive_rank_init
+            row['residual_update_sign'] = ('zero_function_then_optimizer_descent'
+                if args.adaptive_rank_init == 'zero_b_residual_v' else 'positive_gradient_ablation')
+        elif not diagnostic_only and decision['decision'] == 'direction_mismatch' and args.direction_correction != 'none':
             corrected = []
             ro = co = 0
             for aa, bb in pairs:
                 m, n = bb.shape[0], aa.shape[1]
                 # Keep MELoRA structural zeros: corrections remain in each block.
-                bu, _, bvh, _ = svd_with_gid(g[ro:ro+m, co:co+n])
+                block_g = g[ro:ro+m, co:co+n]
+                bu = compute_B_target_given_A(block_g, aa, aa.shape[0])
+                bvh = compute_A_target_given_B(block_g, bb, aa.shape[0]).T
                 aa, bb = apply_direction_correction(aa, bb, bu, bvh, decision['mismatch_side'],
                                                     args.direction_correction, args.direction_blend)
                 corrected.append((aa.cpu(), bb.cpu()))
                 ro += m
                 co += n
             pending.append((name, 'correct', corrected))
-        row['direction_correction'] = args.direction_correction if decision['decision'] == 'direction_mismatch' else 'none'
+        row['direction_correction'] = args.direction_correction if not diagnostic_only and decision['decision'] == 'direction_mismatch' else 'none'
+        row['applied_delta_rank'] = 0 if diagnostic_only else decision['delta_rank']
+        row['applied_new_rank'] = old_rank + row['applied_delta_rank']
         rows.append(row)
         print(row, flush=True)
         del g, a, b, u, s, vh, qa, qb, residual, ur, sr, vhr, pairs
@@ -79,12 +122,13 @@ def adaptive_step(model, target_names, batches, args):
     for name, operation, data in pending:
         layer = model.get_submodule(name)
         if operation == 'expand':
-            new_layer = expand_layer(layer, *data, len(data[1]), args.residual_init_scale)
+            new_layer = expand_layer(layer, *data, len(data[1]), args.residual_init_scale, args.adaptive_rank_init)
             parent, _, child = name.rpartition('.')
             setattr(model.get_submodule(parent) if parent else model, child, new_layer)
         else:
             with torch.no_grad():
-                for (a, b), (new_a, new_b) in zip(blocks(layer), data):
+                pairs = [(layer.weight_a, layer.weight_b)] if type(layer) is LinearWithLoRA else blocks(layer)
+                for (a, b), (new_a, new_b) in zip(pairs, data):
                     a.copy_(new_a)
                     b.copy_(new_b)
     new_params = sum(p.numel() for p in model.parameters() if p.requires_grad)

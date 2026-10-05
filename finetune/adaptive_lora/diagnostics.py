@@ -1,4 +1,5 @@
 import json
+import statistics
 from collections import Counter
 from pathlib import Path
 
@@ -17,9 +18,34 @@ def write_diagnostics(path, rows, old_params, new_params):
         **{'num_'+key: counts[key] for key in ('keep', 'direction_mismatch', 'expand')},
         'old_total_lora_params': old_params, 'new_total_lora_params': new_params,
         'old_rank_distribution': dict(Counter(r['old_rank'] for r in rows)),
-        'new_rank_distribution': dict(Counter(r['new_rank'] for r in rows)),
-        'rank_convention': 'total algebraic factor width: mini_rank*n_split + appended_dense_rank',
+        'new_rank_distribution': dict(Counter(r['applied_new_rank'] for r in rows)),
+        'rank_convention': 'dense factor width r + appended_dense_rank' if all(r.get('structure') == 'dense' for r in rows) else 'legacy block algebraic width',
     }
+    for key in ('coverage_A', 'coverage_B', 'tangent_coverage', 'oracle_tangent_coverage',
+                'direction_efficiency', 'efficiency_A', 'efficiency_B',
+                'residual_energy_ratio', 'gid_full', 'gid_residual', 'residual_rank_k90',
+                'gradient_fro_norm', 'tangent_fro_norm', 'residual_fro_norm'):
+        summary['mean_'+key] = sum(r[key] for r in rows)/len(rows)
+    summary['max_coverage_consistency_error'] = max(r['coverage_consistency_error'] for r in rows)
+    summary['max_oracle_excess'] = max(r['oracle_excess'] for r in rows)
+    summary['all_base_weights_unchanged'] = all(r['base_weight_unchanged'] for r in rows)
+    summary['diagnostic_only'] = all(r['diagnostic_only'] for r in rows)
+    summary['num_modules'] = len(rows)
+    summary['median_gradient_fro_norm'] = statistics.median(r['gradient_fro_norm'] for r in rows)
+    for key in ('residual_norm_consistency_error', 'energy_decomposition_error',
+                'relative_energy_decomposition_error'):
+        summary['max_'+key] = max(r[key] for r in rows)
+    ge = sum(r['gradient_fro_norm']**2 for r in rows)
+    re = sum(r['residual_fro_norm']**2 for r in rows)
+    summary.update(global_gradient_energy=ge, global_residual_energy=re,
+                   global_residual_energy_ratio=re/(ge+1e-30))
+    # Same eval-mode model/data loss at every layer; use one pass, not 84 repeats.
+    for key in ('probe_batch_losses', 'mean_probe_loss', 'num_calibration_batches',
+                'calibration_indices_path', 'calibration_indices_sha256'):
+        summary[key] = rows[0][key]
+    summary['probe_loss_source_module'] = rows[0]['module']
+    summary['max_probe_batch_loss_difference_across_modules'] = max(
+        abs(a-b) for r in rows for a,b in zip(r['probe_batch_losses'], rows[0]['probe_batch_losses']))
     (path / 'summary.json').write_text(json.dumps(summary, indent=2)+'\n')
-    (path / 'rank_pattern.json').write_text(json.dumps({r['module']: r['new_rank'] for r in rows}, indent=2)+'\n')
+    (path / 'rank_pattern.json').write_text(json.dumps({r['module']: r['applied_new_rank'] for r in rows}, indent=2)+'\n')
     return summary
