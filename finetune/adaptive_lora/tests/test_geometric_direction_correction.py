@@ -49,6 +49,36 @@ class GeometricTests(unittest.TestCase):
                 target=q0 if eta==0 else q1
                 torch.testing.assert_close(q@q.T,target@target.T,atol=1e-6,rtol=1e-6)
 
+    def test_geodesic_accepts_numerically_imperfect_basis(self):
+        bases = [orth(torch.randn(10, 3)) for _ in range(2)]
+        noisy = [q + 1e-4 * torch.randn_like(q) for q in bases]
+        for q in noisy:
+            self.assertFalse(torch.allclose(
+                q.double().T @ q.double(), torch.eye(3, dtype=torch.float64),
+                atol=2e-5, rtol=2e-5))
+            self.assertEqual(int(torch.linalg.matrix_rank(q.double())), 3)
+        for eta in (0., .5, 1.):
+            q = grassmann_geodesic(*noisy, eta)
+            self.assertTrue(torch.isfinite(q).all())
+            self.assertEqual(int(torch.linalg.matrix_rank(q)), 3)
+            torch.testing.assert_close(q.T @ q, torch.eye(3), atol=1e-6, rtol=1e-6)
+            if eta in (0., 1.):
+                target = torch.linalg.qr(noisy[int(eta)].double(), mode='reduced')[0]
+                torch.testing.assert_close(
+                    q.double() @ q.double().T, target @ target.T, atol=1e-6, rtol=1e-6)
+
+    def test_geodesic_rejects_rank_deficient_basis(self):
+        q = orth(torch.randn(10, 3))
+        duplicate, zero = q.clone(), q.clone()
+        duplicate[:, 1] = duplicate[:, 0]
+        zero[:, 2] = 0
+        for bad in (duplicate, zero):
+            for inputs in ((bad, q), (q, bad)):
+                for eta in (0., .5, 1.):
+                    with self.assertRaisesRegex(
+                            ValueError, '^Geodesic basis is numerically rank deficient$'):
+                        grassmann_geodesic(*inputs, eta)
+
     def test_basis_invariance_both_bases(self):
         q0,q1=orth(torch.randn(12,3)),orth(torch.randn(12,3))
         r0,r1=orth(torch.randn(3,3)),orth(torch.randn(3,3))

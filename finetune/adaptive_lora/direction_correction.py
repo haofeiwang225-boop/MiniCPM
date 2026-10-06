@@ -75,10 +75,13 @@ def grassmann_geodesic(q0, q1, eta):
     x0, x1 = q0.double(), q1.double()
     eye = torch.eye(rank, device=q0.device, dtype=torch.float64)
     for q in (x0, x1):
-        if not torch.allclose(q.T @ q, eye, atol=2e-5, rtol=2e-5):
-            raise ValueError('Geodesic inputs must be orthonormal')
+        if int(torch.linalg.matrix_rank(q)) != rank:
+            raise ValueError('Geodesic basis is numerically rank deficient')
     x0 = torch.linalg.qr(x0, mode='reduced')[0]
     x1 = torch.linalg.qr(x1, mode='reduced')[0]
+    for q in (x0, x1):
+        if not torch.allclose(q.T @ q, eye, atol=1e-10, rtol=1e-10):
+            raise ArithmeticError('Geodesic reorthogonalization failed')
     if eta == 0:
         return x0.to(q0.dtype)
     if eta == 1:
