@@ -143,6 +143,7 @@ def geometric_correction_step(model, target_names, batches, args, optimizer, sch
     from .direction_correction import plan_geometric_direction_correction, apply_geometric_correction
     from .tangent_metrics import frobenius_metrics
     from .diagnostics import write_geometric_diagnostics
+    from .gradient_probe import evaluate_calibration_loss
     old_parameters = [(id(p), tuple(p.shape)) for p in model.parameters()]
     old_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
     scheduler_before = copy.deepcopy(scheduler.state_dict())
@@ -151,6 +152,8 @@ def geometric_correction_step(model, target_names, batches, args, optimizer, sch
     # copying every Adam moment to GPU/CPU a second time.
     state_before = {p: (state, {k:(id(v), v._version) if torch.is_tensor(v) else v
                                for k,v in state.items()}) for p,state in optimizer.state.items()}
+    pre_losses, pre_mean = evaluate_calibration_loss(model, batches)
+    parameter_names = {p:n for n,p in model.named_parameters()}
     rows, pending = [], []
     for name in target_names:
         layer = model.get_submodule(name)
@@ -204,28 +207,48 @@ def geometric_correction_step(model, target_names, batches, args, optimizer, sch
         untouched_before = untouched.detach().clone()
         row.update(apply_geometric_correction(layer,factors,row,optimizer))
         changed.add(layer.weight_a if side == 'A' else layer.weight_b)
-        assert torch.equal(untouched_before,untouched.detach())
-        assert torch.equal(base_before,layer.weight.detach().cpu())
-        assert layer.lora_scaler == row['old_scaling']
-        assert layer.lora_rank == row['rank_before']
+        if not torch.equal(untouched_before,untouched.detach()):
+            raise RuntimeError(f'Geometric correction unexpectedly changed untouched factor: {name}')
+        if not torch.equal(base_before,layer.weight.detach().cpu()):
+            raise RuntimeError(f'Geometric correction unexpectedly changed base weight: {name}')
+        if layer.lora_scaler != row['old_scaling']:
+            raise RuntimeError(f'Geometric correction unexpectedly changed scaling: {name}')
+        if layer.lora_rank != row['rank_before']:
+            raise RuntimeError(f'Geometric correction unexpectedly changed rank: {name}')
     for row in rows:
         row.setdefault('optimizer_state_reset_side','none')
         row.setdefault('optimizer_state_reset_count',0)
         row['scheduler_preserved'] = True
-    assert old_parameters == [(id(p),tuple(p.shape)) for p in model.parameters()]
+    post_losses, post_mean = evaluate_calibration_loss(model, batches)
+    if old_parameters != [(id(p),tuple(p.shape)) for p in model.parameters()]:
+        raise RuntimeError('Geometric correction changed Parameter identity or shape')
     new_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    assert old_count == new_count
-    assert scheduler.state_dict() == scheduler_before
-    assert lr_before == [group['lr'] for group in optimizer.param_groups]
+    if old_count != new_count:
+        raise RuntimeError(f'Geometric correction changed trainable parameter count: {old_count} -> {new_count}')
+    if scheduler.state_dict() != scheduler_before:
+        raise RuntimeError('Geometric correction changed scheduler state')
+    if lr_before != [group['lr'] for group in optimizer.param_groups]:
+        raise RuntimeError('Geometric correction changed optimizer param-group learning rates')
+    for p in changed:
+        if p in optimizer.state:
+            raise RuntimeError(f'Geometric correction did not clear modified optimizer state: {parameter_names[p]}')
     for p,(state,versions) in state_before.items():
         if p in changed:
-            assert p not in optimizer.state
+            continue
         else:
-            assert optimizer.state[p] is state
+            if p not in optimizer.state or optimizer.state[p] is not state:
+                raise RuntimeError(f'Geometric correction replaced untouched optimizer state: {parameter_names[p]}')
+            if state.keys() != versions.keys():
+                raise RuntimeError(f'Geometric correction changed untouched optimizer state keys: {parameter_names[p]}')
             for k,v in state.items():
-                assert ((id(v),v._version) if torch.is_tensor(v) else v) == versions[k]
+                if ((id(v),v._version) if torch.is_tensor(v) else v) != versions[k]:
+                    raise RuntimeError(f'Geometric correction changed untouched optimizer state: {parameter_names[p]}.{k}')
     summary = write_geometric_diagnostics(args.output_dir/'corrections'/f'step_{step}',rows,
         dict(step=step,old_total_lora_params=old_count,new_total_lora_params=new_count,
+             pre_correction_batch_losses=pre_losses,post_correction_batch_losses=post_losses,
+             pre_correction_mean_loss=pre_mean,post_correction_mean_loss=post_mean,
+             immediate_loss_change=post_mean-pre_mean,
+             relative_immediate_loss_change=(post_mean-pre_mean)/(abs(pre_mean)+1e-30),
              optimizer_object_preserved=True,scheduler_preserved=True,
              scheduler_last_epoch=scheduler.last_epoch,learning_rates=lr_before,
              untouched_optimizer_states_preserved=True,parameter_objects_preserved=True,

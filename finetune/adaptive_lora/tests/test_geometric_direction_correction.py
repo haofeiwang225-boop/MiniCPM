@@ -178,6 +178,12 @@ class GeometricTests(unittest.TestCase):
             summary=geometric_correction_step(model,['proj'],[batch],args,opt,sched,2)
             self.assertTrue(summary['optimizer_object_preserved'] and summary['scheduler_preserved'])
             self.assertEqual(summary['old_total_lora_params'],summary['new_total_lora_params'])
+            pre,post=summary['pre_correction_mean_loss'],summary['post_correction_mean_loss']
+            self.assertTrue(torch.isfinite(torch.tensor([pre,post])).all())
+            self.assertEqual(len(summary['pre_correction_batch_losses']),summary['num_calibration_batches'])
+            self.assertEqual(len(summary['post_correction_batch_losses']),summary['num_calibration_batches'])
+            self.assertAlmostEqual(summary['immediate_loss_change'],post-pre)
+            self.assertAlmostEqual(summary['relative_immediate_loss_change'],(post-pre)/(abs(pre)+1e-30))
         self.assertTrue(torch.equal(before,model.proj.weight))
         self.assertTrue(torch.equal(rng,torch.get_rng_state()))
 
@@ -205,8 +211,26 @@ class GeometricTests(unittest.TestCase):
                 adaptive_residual_energy_threshold=.1,adaptive_rank_step_cap=2,direction_function_tolerance=.05,
                 direction_min_gain=.001,direction_eta_start=1.,direction_eta_decay=.5,direction_eta_min=.03125,
                 calibration_indices_path=Path(tmp)/'manifest',calibration_indices_sha256='test',output_dir=Path(tmp))
-            with patch('adaptive_lora.adaptation.probe_weight',side_effect=fake_probe):
+            with patch('adaptive_lora.adaptation.probe_weight',side_effect=fake_probe), \
+                 patch('adaptive_lora.gradient_probe.evaluate_calibration_loss',side_effect=[([1.],1.),([2.],2.)]):
                 summary=geometric_correction_step(model,['first','second'],[{}],args,opt,sched,2)
             self.assertEqual(len(calls),2)
             self.assertEqual(summary['applied_sides'],{'A':1,'B':1})
             self.assertEqual(summary['optimizer_state_reset_count'],2)
+            self.assertEqual(summary['immediate_loss_change'],1.)
+            self.assertEqual(summary['relative_immediate_loss_change'],1.)
+            for name in ('first','second'):
+                layer=model.get_submodule(name)
+                self.assertFalse(torch.equal(layer.weight_a,snapshot[name+'.weight_a']) and
+                                 torch.equal(layer.weight_b,snapshot[name+'.weight_b']))
+
+
+    def test_cut_locus_independent_basis_rotations(self):
+        q0,q1=torch.eye(10)[:,:3],torch.eye(10)[:,3:6]
+        # Independent rotations, not the same rotation/transposed rotation.
+        for _ in range(5):
+            r0,r1=orth(torch.randn(3,3)),orth(torch.randn(3,3))
+            for eta in (.25,.5,.75):
+                q=grassmann_geodesic(q0,q1,eta)
+                rotated=grassmann_geodesic(q0@r0,q1@r1,eta)
+                torch.testing.assert_close(q@q.T,rotated@rotated.T,atol=2e-6,rtol=2e-6)

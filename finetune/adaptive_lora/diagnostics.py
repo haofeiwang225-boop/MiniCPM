@@ -66,5 +66,15 @@ def write_geometric_diagnostics(path, rows, summary):
         mean_tangent_coverage_after=sum(r['tangent_coverage_after'] for r in rows)/len(rows),
         max_relative_update_change=max(r['applied_relative_update_change'] for r in rows),
         all_base_weights_unchanged=all(r['base_weight_unchanged'] for r in rows))
+    import math
+    energy = math.fsum(float(r['gradient_fro_norm'])**2 for r in rows)
+    before = math.fsum(float(r['gradient_fro_norm'])**2 * float(r['tangent_coverage_before']) for r in rows)
+    after = math.fsum(float(r['gradient_fro_norm'])**2 * float(r['tangent_coverage_after']) for r in rows)
+    ct_before = before/(energy+1e-30) if energy else 1.0
+    ct_after = after/(energy+1e-30) if energy else 1.0
+    summary.update(global_gradient_energy=energy,
+                   global_tangent_energy_before=before, global_tangent_energy_after=after,
+                   global_tangent_coverage_before=ct_before, global_tangent_coverage_after=ct_after,
+                   global_tangent_coverage_gain=ct_after-ct_before)
     (path/'summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
     return summary

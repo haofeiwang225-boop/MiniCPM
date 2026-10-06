@@ -49,3 +49,26 @@ def probe_weight(model, layer, batches, return_losses=False):
             p.grad = grad
         for module, mode in modes:
             module.training = mode
+
+
+def evaluate_calibration_loss(model, batches):
+    """Eval/no-grad diagnostic, restoring per-module modes and CPU/CUDA RNG."""
+    if not batches:
+        raise ValueError('Calibration loss requires at least one batch')
+    modes = [(module, module.training) for module in model.modules()]
+    params = list(model.parameters())
+    device = params[0].device
+    devices = sorted({p.device.index for p in params if p.is_cuda})
+    losses = []
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad():
+            model.eval()
+            for batch in batches:
+                loss = model(**{k:v.to(device) for k,v in batch.items()}).loss
+                if loss.numel() != 1 or not torch.isfinite(loss).all():
+                    raise RuntimeError('Nonfinite or nonscalar calibration diagnostic loss')
+                losses.append(float(loss.detach()))
+    finally:
+        for module, mode in modes:
+            module.training = mode
+    return losses, sum(losses)/len(losses)

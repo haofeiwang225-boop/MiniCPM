@@ -367,3 +367,22 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 TRITON_CACHE_DIR=/tmp/minicpm_adaptive_trito
 默认本地MiniCPM5-2B、Dense预算480256、initial/periodic K=8；不替用户决定correction时机。
 
 保存的log、checkpoint、gradient cache和实验结果不纳入源码提交。
+
+### 创新点3审计诊断补丁
+
+保留 `mean_tangent_coverage_before/after`，它们只是 layer-wise descriptive mean。
+正式全局 coverage 按 planning gradient 能量加权：
+`C_T_global = sum_l ||G_l||_F^2 C_T,l / (sum_l ||G_l||_F^2 + 1e-30)`。
+summary 新增 `global_gradient_energy`、`global_tangent_energy_before/after`、
+`global_tangent_coverage_before/after/gain`；以 Python float/math.fsum 归约，零能量约定coverage=1、gain=0。
+这些都是所选目标层的统计，不是整个模型所有参数的能量。
+
+每次event额外在所有mutation前、统一mutation后，对完全相同的fixed calibration batches做eval/no-grad loss测量。
+保存 `pre_correction_batch_losses`、`post_correction_batch_losses`、`pre_correction_mean_loss`、
+`post_correction_mean_loss`、`immediate_loss_change`、`relative_immediate_loss_change`。
+helper恢复各模块原training mode和CPU/CUDA RNG，不backward，不改变optimizer/scheduler。
+loss只作为安全/行为诊断，不参与candidate selection，也不用于rollback；允许post loss升高。
+
+关键geometric safety invariant使用显式RuntimeError，在python -O下也生效。
+C_T gain仍是planning gradient上的in-sample metric；正式实验还需要held-out/future-gradient validation，
+当前没有实现这些新实验，也不声称已证明generalization。
