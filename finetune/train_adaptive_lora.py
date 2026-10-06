@@ -70,7 +70,7 @@ def get_args():
     p.add_argument('--adaptive_rank_max', type=int, default=256)
     p.add_argument('--adaptive_rank_step_cap', type=int, default=4)
     p.add_argument('--residual_init_scale', type=float, default=0.001)
-    p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric'], default='none')
+    p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric', 'reset_only'], default='none')
     p.add_argument('--direction_correction_steps', nargs='+', type=int, default=[])
     p.add_argument('--direction_function_tolerance', type=float, default=0.05)
     p.add_argument('--direction_min_gain', type=float, default=1e-3)
@@ -103,20 +103,20 @@ def get_args():
     if not 0 < args.adaptive_residual_energy_target <= 1:
         p.error('Residual energy target must be in (0,1]')
     if args.diagnostic_steps and (args.adaptive_lora or args.direction_correction == 'blend'):
-        p.error('Diagnostic steps require adaptive_lora=false and none/geometric correction')
+        p.error('Diagnostic steps require adaptive_lora=false and none/geometric/reset_only correction')
     if any(not 0 < step <= args.max_steps for step in args.diagnostic_steps):
         p.error('Diagnostic steps must lie inside training')
     if args.dense_rank_min < 1 or args.dense_rank_max < args.dense_rank_min:
         p.error('Invalid Dense rank bounds')
     if args.dense_lora_param_budget is not None and args.dense_lora_param_budget < 1:
         p.error('Dense parameter budget must be positive')
-    if args.direction_correction == 'geometric':
+    if args.direction_correction in ('geometric', 'reset_only'):
         if args.lora_structure != 'dense' or args.adaptive_lora:
-            p.error('Geometric mode requires Dense LoRA and adaptive_lora=false; expansion is forbidden')
+            p.error('Geometric/reset_only mode requires Dense LoRA and adaptive_lora=false; expansion is forbidden')
         if not args.direction_correction_steps:
-            p.error('Geometric mode requires explicit direction_correction_steps')
+            p.error('Geometric/reset_only mode requires explicit direction_correction_steps')
     elif args.direction_correction_steps:
-        p.error('Correction steps require direction_correction=geometric')
+        p.error('Correction steps require direction_correction=geometric/reset_only')
     steps = args.direction_correction_steps
     if steps != sorted(set(steps)) or any(not 0 < t < args.max_steps for t in steps):
         p.error('Correction steps must be unique, increasing, and inside training')
@@ -253,7 +253,10 @@ def main():
             log.write(json.dumps(record)+'\n')
             log.flush()
             print(record, flush=True)
-            if step in args.direction_correction_steps:
+            if step in args.direction_correction_steps and args.direction_correction == 'reset_only':
+                from adaptive_lora.reset_only import reset_only_step
+                reset_only_step(model, names, optimizer, scheduler, step, args.output_dir)
+            elif step in args.direction_correction_steps:
                 from adaptive_lora.adaptation import geometric_correction_step
                 correction_dir = args.output_dir/'correction_checkpoints'
                 correction_dir.mkdir(exist_ok=True)
