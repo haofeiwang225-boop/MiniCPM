@@ -50,5 +50,60 @@
     "/home/hongchang/whf/MiniCPM/finetune/adaptive_lora/outputs/baseline_smoke",
     "/home/hongchang/whf/MiniCPM/finetune/adaptive_lora/outputs/natural_smoke",
     "/home/hongchang/whf/MiniCPM/finetune/adaptive_lora/outputs/expansion_branch_smoke"
-  ]
+  ],
+  "minicpm5_2b_few_batch_test": {
+    "model": "/home/hongchang/whf/models/MiniCPM5-2B",
+    "model_family": "minicpm5",
+    "targets": 84,
+    "steps": [
+      {
+        "step": 1,
+        "loss": 4.044827461242676,
+        "lr": 3.7500000000000003e-05
+      },
+      {
+        "step": 2,
+        "loss": 4.19140100479126,
+        "lr": 2.5e-05
+      },
+      {
+        "step": 3,
+        "loss": 4.243721008300781,
+        "lr": 2.5e-05
+      },
+      {
+        "step": 4,
+        "loss": 3.5271568298339844,
+        "lr": 0.0
+      }
+    ],
+    "corrected_layers": 84,
+    "final_adapter_all_finite": true,
+    "summary": {
+      "average_coverage_A": 0.0038106186991734873,
+      "average_coverage_B": 0.09846219637741645,
+      "average_residual_energy": 0.8982487484103158,
+      "num_keep": 0,
+      "num_direction_mismatch": 84,
+      "num_expand": 0,
+      "old_total_lora_params": 480256,
+      "new_total_lora_params": 480256,
+      "old_rank_distribution": {
+        "4": 46,
+        "16": 23,
+        "8": 8,
+        "12": 7
+      },
+      "new_rank_distribution": {
+        "4": 46,
+        "16": 23,
+        "8": 8,
+        "12": 7
+      },
+      "rank_convention": "total algebraic factor width: mini_rank*n_split + appended_dense_rank"
+    },
+    "torch_version": "2.4.1+cu118"
+  },
+  "training_data_tests": 2,
+  "minicpm5_verification_path": "/home/hongchang/whf/MiniCPM/finetune/adaptive_lora/outputs/minicpm5_2b_smoke_v2/verification.json"
 }

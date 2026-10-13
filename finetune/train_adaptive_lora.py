@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 import torch
 import transformers
 from torch.utils.data import DataLoader, Dataset
@@ -34,12 +35,15 @@ def get_args():
     p.add_argument('--analysis_device', default='cpu')
     p.add_argument('--seed', type=int, default=42)
     p.add_argument('--batch_size', type=int, default=1)
-    p.add_argument('--model_max_length', type=int, default=256)
+    p.add_argument('--model_max_length', type=int, default=None)
+    p.add_argument('--dynamic_length', type=boolean, default=False)
     p.add_argument('--max_steps', type=int, default=200)
     p.add_argument('--learning_rate', type=float, default=5e-5)
     p.add_argument('--weight_decay', type=float, default=0.01)
     p.add_argument('--target_modules', nargs='+', default=['q_proj', 'v_proj'])
     p.add_argument('--lora_structure', choices=['dense', 'block'], default='dense')
+    p.add_argument('--dense_init_mode', choices=['gid', 'vanilla', 'budget_matched', 'shuffled_gid', 'replay_gid'], default='gid')
+    p.add_argument('--rank_manifest', type=Path)
     p.add_argument('--dense_lora_param_budget', type=int)
     p.add_argument('--dense_rank_min', type=int, default=1)
     p.add_argument('--dense_rank_max', type=int, default=64)
@@ -71,6 +75,7 @@ def get_args():
     p.add_argument('--adaptive_rank_step_cap', type=int, default=4)
     p.add_argument('--residual_init_scale', type=float, default=0.001)
     p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric', 'reset_only'], default='none')
+    p.add_argument('--reset_side_manifest', type=Path)
     p.add_argument('--direction_correction_steps', nargs='+', type=int, default=[])
     p.add_argument('--direction_function_tolerance', type=float, default=0.05)
     p.add_argument('--direction_min_gain', type=float, default=1e-3)
@@ -83,6 +88,21 @@ def get_args():
     p.add_argument('--export_merged', type=boolean, default=False)
     p.add_argument('--tiny_model', action='store_true', help='Synthetic tiny Llama training smoke only')
     args = p.parse_args()
+    if args.dense_init_mode != 'gid':
+        if args.lora_structure != 'dense' or args.adaptive_lora or args.direction_correction != 'none' or args.diagnostic_steps:
+            p.error('Rank controls require dense, adaptive_lora=false, no correction or diagnostic probes')
+        if args.dense_init_mode != 'vanilla' and args.dense_lora_param_budget is None:
+            p.error('Rank control requires explicit actual parameter budget')
+        if args.dense_init_mode in ('shuffled_gid', 'replay_gid') and (args.rank_manifest is None or not args.rank_manifest.is_file()):
+            p.error('Shuffled/replay GID requires an existing rank_manifest')
+        if args.dense_init_mode in ('vanilla', 'budget_matched') and args.rank_manifest is not None:
+            p.error('Vanilla/budget control must not read a GID manifest')
+    if args.model_max_length is None:
+        args.model_max_length = 2048 if args.dynamic_length else 256
+    if args.dynamic_length and args.batch_size != 1:
+        p.error('Dynamic length with default_data_collator requires batch_size=1')
+    if args.dynamic_length and args.model_family != 'minicpm5' and not args.tiny_model:
+        p.error('Dynamic chat length requires model_family=minicpm5')
     if int(os.environ.get('WORLD_SIZE', '1')) != 1:
         p.error('Phase-boundary reconstruction currently supports one device only')
     if args.lora_structure == 'dense' and args.gradient_est_n_steps != args.adaptive_probe_batches:
@@ -117,6 +137,11 @@ def get_args():
             p.error('Geometric/reset_only mode requires explicit direction_correction_steps')
     elif args.direction_correction_steps:
         p.error('Correction steps require direction_correction=geometric/reset_only')
+    if args.reset_side_manifest is not None:
+        if args.direction_correction != 'reset_only':
+            p.error('reset_side_manifest requires direction_correction=reset_only')
+        if not args.reset_side_manifest.is_file():
+            p.error('reset_side_manifest must be an existing file')
     steps = args.direction_correction_steps
     if steps != sorted(set(steps)) or any(not 0 < t < args.max_steps for t in steps):
         p.error('Correction steps must be unique, increasing, and inside training')
@@ -163,6 +188,9 @@ def cycle_batches(loader):
 
 def main():
     args = get_args()
+    started = time.perf_counter()
+    if args.device.startswith("cuda"):
+        torch.cuda.reset_peak_memory_stats()
     args.output_dir.mkdir(parents=True, exist_ok=False)
     os.environ.setdefault('LOG_FOLDER', str((args.output_dir/'official_logs').resolve()))
     os.environ.setdefault('EXPERIMENT_NAME', args.output_dir.name)
@@ -189,7 +217,8 @@ def main():
             raise ValueError(f'Model type does not match explicit family {args.model_family}')
         if args.model_family == 'minicpm5':
             from adaptive_lora.training_data import ChatTrainingDataset
-            dataset = ChatTrainingDataset(args.train_data_path, tokenizer, args.model_max_length)
+            dataset = ChatTrainingDataset(args.train_data_path, tokenizer, args.model_max_length,
+                                          dynamic_length=args.dynamic_length)
         else:
             dataset = SupervisedDataset(str(args.train_data_path), tokenizer, args.model_max_length)
     model.to(args.device)
@@ -224,9 +253,15 @@ def main():
                       phase2_optimizer=('fresh_adamw_and_linear_scheduler' if args.adaptive_lora else 'not_used'),
                       diagnostic_protocol='fixed_training_calibration_restore_rng_no_optimizer_reset')
     from adaptive_lora.official import OFFICIAL
+    from adaptive_lora.data_provenance import file_sha256, git_version
+    run_config.update(git_version())
+    run_config['train_data_sha256'] = None if args.tiny_model else file_sha256(args.train_data_path)
     run_config['official_commit'] = subprocess.check_output(['git', '-C', str(OFFICIAL), 'rev-parse', 'HEAD'], text=True).strip()
     (args.output_dir/'run_config.json').write_text(json.dumps(run_config, indent=2))
-    if args.lora_structure == 'dense':
+    if args.dense_init_mode != 'gid':
+        from adaptive_lora.control_initialization import initialize_control
+        initialize_control(model, names, args)
+    elif args.lora_structure == 'dense':
         dense_first_probe(model, names, checkpoint_batches(), args)
     else:
         first_probe(model, batches[:args.gradient_est_n_steps], args)
@@ -255,7 +290,8 @@ def main():
             print(record, flush=True)
             if step in args.direction_correction_steps and args.direction_correction == 'reset_only':
                 from adaptive_lora.reset_only import reset_only_step
-                reset_only_step(model, names, optimizer, scheduler, step, args.output_dir)
+                reset_only_step(model, names, optimizer, scheduler, step, args.output_dir,
+                                side_manifest=args.reset_side_manifest)
             elif step in args.direction_correction_steps:
                 from adaptive_lora.adaptation import geometric_correction_step
                 correction_dir = args.output_dir/'correction_checkpoints'
@@ -288,6 +324,11 @@ def main():
         model.save_pretrained(args.output_dir/'merged')
         if tokenizer is not None:
             tokenizer.save_pretrained(args.output_dir/'merged')
+    metrics = dict(elapsed_seconds=time.perf_counter()-started, steps=args.max_steps,
+        actual_lora_parameters=sum(p.numel() for p in model.parameters() if p.requires_grad),
+        peak_allocated_bytes=torch.cuda.max_memory_allocated() if args.device.startswith('cuda') else None,
+        peak_reserved_bytes=torch.cuda.max_memory_reserved() if args.device.startswith('cuda') else None)
+    (args.output_dir/'training_resources.json').write_text(json.dumps(metrics, indent=2))
     print(f'Completed {args.max_steps} training updates; saved to {args.output_dir}')
 
 

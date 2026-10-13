@@ -1,0 +1,17 @@
+{
+  "seed": 42,
+  "source": "/home/hongchang/whf/datasets/MetaMathQA/MetaMathQA-395K.jsonl",
+  "total_unique_original_questions": 13927,
+  "unique_groups_by_family": {
+    "GSM": 7390,
+    "MATH": 6537
+  },
+  "train_rows": 2000,
+  "validation_rows": 400,
+  "train_original_groups": 2000,
+  "validation_original_groups": 400,
+  "train_validation_overlap": 0,
+  "invalid_rows": 4,
+  "train_sha256": "ab70c3ac6632d111dbdbfab7558d8c4e68ab2d6a0a605583fb2a7382f42032cc",
+  "dev_sha256": "52bc0854e093b2e30b526fba414e9fa30cca586444fc17408c7614aea2827ccc"
+}

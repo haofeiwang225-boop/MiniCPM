@@ -1,0 +1,3208 @@
+{
+  "data_sha256": "52bc0854e093b2e30b526fba414e9fa30cca586444fc17408c7614aea2827ccc",
+  "source_path": "/home/hongchang/whf/datasets/MetaMathQA/MetaMathQA-395K.jsonl",
+  "source_sha256": "919d28b189751943090acce31eb151b97b57419e5942b7adcc297914220cdf4d",
+  "num_samples": 400,
+  "samples": [
+    {
+      "index": 0,
+      "sample_sha256": "0e7b4ae918a59c2480a1c6f5506a413bbdd3634655f2cbda22ab11ef769aa1b9",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "9fd12df8cb1cde17b08bfcc20a69c88740ee2ecfe9e4f2b0ed1a035834442adf",
+      "source_line_1based": 235951
+    },
+    {
+      "index": 1,
+      "sample_sha256": "9c21af54db201bfe944c18127c1cab7df9459946538716ba749c455d26c16444",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "fdc078f4ef35328cf7b9f82dd161c3971582e711feedac47dec2a8a01bdad698",
+      "source_line_1based": 254542
+    },
+    {
+      "index": 2,
+      "sample_sha256": "78a8b5f469a6b380d85f2f7be13497a77f3c739f1997b55a42b42728bcff7d31",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "86e9291be8346b0f10ab6043fb19caabb245fb64369d9e30086a5ab43ac9079f",
+      "source_line_1based": 276058
+    },
+    {
+      "index": 3,
+      "sample_sha256": "9f91d2df7682c0e6cad00ee36ea08fe47fbe493fef08097519b1f77fc91b25b6",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "2ba5b0e50bc4934b60b5bdc86e11e9465edbfa5af93bdd174e5a6a8bc60bcf41",
+      "source_line_1based": 264513
+    },
+    {
+      "index": 4,
+      "sample_sha256": "bf3439c7a3d4050f20762efa0dc88b88472e5e5abfa812bd903324effab2e317",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "238821f2b9a43ddcda847deeccafc85f5f0a685802949c3ccf553aea8c431f4b",
+      "source_line_1based": 32025
+    },
+    {
+      "index": 5,
+      "sample_sha256": "5f345813a969b5871e01dd6d7cd1a5d53c2f48613c1af49ffd313599125d792e",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "9a94a07f774a471f9b9fec06c333451a93d1dd7529f1edbf6fe263cb4ee9e814",
+      "source_line_1based": 63166
+    },
+    {
+      "index": 6,
+      "sample_sha256": "e165e5e7922fa313964d5acb3cf5c2d4f2fb6f9adc2a92ee56e472267a5967cb",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "e0ec5fd219d12b112aba637326ddc60351bc6befd762f5db74eb86f995d3842d",
+      "source_line_1based": 51930
+    },
+    {
+      "index": 7,
+      "sample_sha256": "4fa542948a84cf70bec6a066e3703815a1f5d6f0495ef570173a03a6c726b5b6",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "ffc4d6e30438b5fabcffb84917bb9f98abaf794117e5a693428872d8986c7a79",
+      "source_line_1based": 279354
+    },
+    {
+      "index": 8,
+      "sample_sha256": "d06b60987f050d411841bb9c33122f39bc1e461414b715188b5f4d7178000844",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "4fc232d04273132c5241e25fae7de06ce2942246beb617161d42afaac626e1a3",
+      "source_line_1based": 381403
+    },
+    {
+      "index": 9,
+      "sample_sha256": "d8bf6a9fc4b83940217035a67cff9ccbc63bc16b1eb3f2657cba63c6ac76f066",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "083f5cc69bcf7443a174af45526812e6d22c2a99d7c7e5ceddaffa890bbc67b8",
+      "source_line_1based": 129247
+    },
+    {
+      "index": 10,
+      "sample_sha256": "37da3fa3d73041f877fa034c399913d57d8aa6c5bbe8ae9943f8f7f1a5c04d23",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "410eb19203877666e4e211e047f4d3961fe9ebb5d244a05c2a1367ea58559046",
+      "source_line_1based": 339531
+    },
+    {
+      "index": 11,
+      "sample_sha256": "f2e35e637ad7e9f4d8e81b56494052f88c6d15d2bbdc6d07605493ac9c1a9f5e",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "170aa73373ee1bdfdad2abc6e71d57fc59752939444288e90b0249708b862323",
+      "source_line_1based": 159900
+    },
+    {
+      "index": 12,
+      "sample_sha256": "563246caea399b60396993ae399b9b702481db04cad314fd1b7d2c5c77e0f81e",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "d41bf13f66fb0add9dd45dfcdcd260a38f4ff0514bfcb2025a76fc7ca20a36da",
+      "source_line_1based": 262956
+    },
+    {
+      "index": 13,
+      "sample_sha256": "d476b2c8d2c8d9faa1606d7d24d8b3b09aa190aaa19a828d2beb4cb679022569",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "f9d5cd0a92f586a03fb15f9b6e27deafd29d1d900c82487fedf4e1fddc6d86fb",
+      "source_line_1based": 72065
+    },
+    {
+      "index": 14,
+      "sample_sha256": "86031b721cc3296060b607ebaa56a6f788bb4fd614cf087fbf8537f59ea895f6",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "abed7b990e60934dd246df02afc2dbaf1d3a40823e6a766281a34fa1dedba910",
+      "source_line_1based": 217284
+    },
+    {
+      "index": 15,
+      "sample_sha256": "bc13ca8d391f461ee712a12a6de63d869261b56c0eb07a98493057ae1953d74d",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "dbb080655f67c5a9a110732b98475297725c5d49d8761a76e86ba3acf9421df0",
+      "source_line_1based": 96491
+    },
+    {
+      "index": 16,
+      "sample_sha256": "f4ca6d2a46fba8201d52afc576320c87287ade341925c526d24fed8ec365646d",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "a58f249ba15cf04bf7ff8bedcb0b5ce5d1717a68fb2b3283d1692e894b792d01",
+      "source_line_1based": 143642
+    },
+    {
+      "index": 17,
+      "sample_sha256": "e73fb95105f2d8166c9685ef8d690398b130eae5858fe3e90da122daa7f59256",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "cfb40c4d9e9fe54de9210edc9f1390a14d2f7e46786f95f0c019a8b30329d219",
+      "source_line_1based": 240869
+    },
+    {
+      "index": 18,
+      "sample_sha256": "326bd84031bebe4c054aebe756a4aecba792d7971ab1baf0d68785e8ae1786f8",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "97df28235f92bc52fea092f2d82350d3e3e8cce5d3443d64932f8c8c33e224c9",
+      "source_line_1based": 205020
+    },
+    {
+      "index": 19,
+      "sample_sha256": "9132c9df0d4df8d1fd3fa10afc0268f49209231eb0ae69095fc0f5362df3f8fc",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "2510efbb2d61fbc01551f4b4fd6336711951a11aa7858a11ee8b71cb531e9724",
+      "source_line_1based": 281665
+    },
+    {
+      "index": 20,
+      "sample_sha256": "675e5c9d92bb3903c2ad60feccd13b294b3c72bc14228505f6aaf05e8f40b819",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "e93e478a4d67319557e93ce35f7918ca62bf25f0ca9b2153003d5c282e259a24",
+      "source_line_1based": 294167
+    },
+    {
+      "index": 21,
+      "sample_sha256": "3e7ffd6ac457c2a1b529c5ee557fce930c38ea4bb609efa9361fa7551eddd1a8",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "ad27cf9d54044533c985c3c181103dbea664209445458aa1054d9e180bc54fdc",
+      "source_line_1based": 215914
+    },
+    {
+      "index": 22,
+      "sample_sha256": "0d07588712133bd599f8723fdc8a181ffbcc2bc04c6f87bacadcbedaeffc9f4c",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "2b7f0025578474c7f7cfd0abc47aa08a12f44accf91aad1f1e78d72583adae2c",
+      "source_line_1based": 186171
+    },
+    {
+      "index": 23,
+      "sample_sha256": "fcc6db50615c7b90bd82f140dc86c28fa423e76c79c887516d13a244cd4b4814",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "0a9d0e6f132ee1bc19814aa73853171d54a60bfc097ace3c5574d65d220ed02e",
+      "source_line_1based": 24259
+    },
+    {
+      "index": 24,
+      "sample_sha256": "5fb126acdb48feb13fd6c5eff47caab5eba129e5fe849f5393f20d9533ad91c6",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "b2f83775bfa0d2d3ebc56f213973ac3720c93a3e9454e527b88c6aedf99ec561",
+      "source_line_1based": 280164
+    },
+    {
+      "index": 25,
+      "sample_sha256": "c403ba691acb576bc88cfd7951bc7b954ef06026a4e5cfe6778427a4928b04ce",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "1ad6ebc64eef3894acb9afce59ef6b87c4d66068598accaf38687e04f885afd2",
+      "source_line_1based": 303064
+    },
+    {
+      "index": 26,
+      "sample_sha256": "3169d8a5e77f49fe47e7485d4678df5d722a6fcef94c1993e7c6d3718b098d41",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "489ac8b9f71ea1bdd7d61802a968c70db98e2d429142e263ab92cf3bcc19389b",
+      "source_line_1based": 63423
+    },
+    {
+      "index": 27,
+      "sample_sha256": "05e339e84c0d60fb638fee0344ac640e9a577727add8717d24b6c0732a845422",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "582e6408c4d3cae5985f6c6e8a300102bd6f278390d151bb60a4a6f2bde04dd0",
+      "source_line_1based": 311386
+    },
+    {
+      "index": 28,
+      "sample_sha256": "3e865876bb0e8ee828d132ee87b6607b7fccf38767eac1158a3e134e9a7a1290",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "8a504926d7e1570769204104088362ae52da1cab6686a078bcdb9b2f092a858d",
+      "source_line_1based": 191124
+    },
+    {
+      "index": 29,
+      "sample_sha256": "9b8fe75fd94a18f7c3a5545af092dc860ebbf2c6b609939daef6e7c8eb2a2812",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "6d688699eedc3a809881edb7e37fe6a09fd02174ece4e477521dab431d2c0da7",
+      "source_line_1based": 259823
+    },
+    {
+      "index": 30,
+      "sample_sha256": "555067f91ce1ca9705ea376f83c2739358218c4fdf8307aa10a06f03c5acbf93",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "57cc53fb6124c4624796420e5784eeb1ab9fc1bfbf4b4ff215eddbcb3032a82a",
+      "source_line_1based": 356903
+    },
+    {
+      "index": 31,
+      "sample_sha256": "6595ef3cffd10e825ea38cae1c9e4018a33ec827fbfed80cccc69aa7efd04766",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "a269843b54ffe2d7b8af5f9990779414c73ea3f6c3e6562850c62cad35d38c48",
+      "source_line_1based": 309856
+    },
+    {
+      "index": 32,
+      "sample_sha256": "4c3dc8a34b4aa58567563eb3591b4db71410af605a493794fdcf8b5c8737298b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "6ed7dee6da161c0f3f30ef1bc98142c6ccaa556fdaca5547a682e9ae004b6cce",
+      "source_line_1based": 233830
+    },
+    {
+      "index": 33,
+      "sample_sha256": "aaa8f9451591b1c4fe3d358767a9a92e4dd370df42b05920c143f1fc7d72935a",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "90cfb985c699c704e6881d1ae75dc220723179bee07952137e726ca3922d535e",
+      "source_line_1based": 372179
+    },
+    {
+      "index": 34,
+      "sample_sha256": "8285651057141e0bf3404f06f772338f1893773fc89944102692d461448b31d0",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "09188e360564c10bc76b2fd333ee8842081381c169329bfa2140522f2efe3145",
+      "source_line_1based": 311223
+    },
+    {
+      "index": 35,
+      "sample_sha256": "65c9da0bdbe6febb1cdf7bfc7298baa799d7e7167b82c1312de057373f0a799e",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "6f80202d0dd0f7d4d8e4ec62fa7164dc2a24e8738495dcedbf27638af61f1620",
+      "source_line_1based": 221749
+    },
+    {
+      "index": 36,
+      "sample_sha256": "0d9c201efc84f979a27323654f1a91482e56ab2de7ee87c957c2496b21f153c5",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "9f55584a005d8e442c905aa5870c1aab37c0c5177dc6e7a0a651f38fdcf8cfc5",
+      "source_line_1based": 209329
+    },
+    {
+      "index": 37,
+      "sample_sha256": "a96d1843fd089db76342d7a61bad81062b1fc2221719622c4e2bd0de84715424",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "d3d7238f7c5bd049978611f6284e558086ca6745fb40b2b4e69dc0d3be9fb921",
+      "source_line_1based": 20805
+    },
+    {
+      "index": 38,
+      "sample_sha256": "e60b19ba76e1cf4fc9486057b83bd2dfa40612593146e8df818620b9a15e0fd4",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "1c13071ce16f80e1922f995e704cd2e50b7d6853c6d3d301fdbb97c52ccad793",
+      "source_line_1based": 199488
+    },
+    {
+      "index": 39,
+      "sample_sha256": "8e950e1acbd27e374fb9bb518d1350843c3357463c2c62e7a662f633310c9b7b",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "f766195f79119eb6457115f883f8e3431cf759cf10bdcf18415a7d740e66e6c8",
+      "source_line_1based": 364832
+    },
+    {
+      "index": 40,
+      "sample_sha256": "3370ec4d566e7e9a502e75199da9fd53183286f30350f69ecaa9be10c7bf3149",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "cb341094b3ad58873e120efd0830b3e97699940b222dba94e4a2dea5176777fa",
+      "source_line_1based": 306492
+    },
+    {
+      "index": 41,
+      "sample_sha256": "67dcc1203be4b0f0bcf00a87de8b45b49483a4b6afd709bed5d47aabd809dca0",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "75e10a9aa2ee6fba5c56a77699bf862471553b00c5b08d0ec19508cfe6bae4b9",
+      "source_line_1based": 103675
+    },
+    {
+      "index": 42,
+      "sample_sha256": "0a4e503b4d7774c641c34c294a97d9b979692132f1689f02f34180eea3e13984",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "46167cfc1f2de943108fff05587de1d8de5e949b1a3e4206f142416facdc81fc",
+      "source_line_1based": 21482
+    },
+    {
+      "index": 43,
+      "sample_sha256": "b5d2c8b8c2fd543987075133d0c75bc3c4e8ad4a8a853cfc9bfa3ba1a4b660ed",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "bd179c2ed4580f34af723c72014b9a07eee91ba417455e85bf9c76621a4c05f2",
+      "source_line_1based": 140391
+    },
+    {
+      "index": 44,
+      "sample_sha256": "ed7a5bd1bdc37967729c7807889b6d11c545e118feb23fb40dc4c12cc2397c67",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "87e56ec4cd5e17d952ca84f3f121775f33c9e0b63f0210eb516507f7e796c884",
+      "source_line_1based": 255312
+    },
+    {
+      "index": 45,
+      "sample_sha256": "67e97cea3198ca663d9ccdacab82f61055b8dfec7e18244b88624c9aaf19c8f0",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "04d722ae23a30d325bdde11b5adcc17bf31279f31f0e22bbe566e8c52f6bb55a",
+      "source_line_1based": 270331
+    },
+    {
+      "index": 46,
+      "sample_sha256": "f720eeb2694b5692c03c57bd3cf912a91fefb786fb91e3c33704fbf829445b86",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "c2bce58d57b10312d08222ed42344aa36c1d107b4e1ed3177c828038f3c735a6",
+      "source_line_1based": 203128
+    },
+    {
+      "index": 47,
+      "sample_sha256": "2e065594db9c557262294261633abcf51afb5d36f16533c6251f512bde544505",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "b5eae70d214e9f846bd3d1efbbba9f2869d1d781f3bdc7f58788eb968ce02a5b",
+      "source_line_1based": 205870
+    },
+    {
+      "index": 48,
+      "sample_sha256": "04db1dade761c9220b5debb1ba658c58b300092a11337b3023c4daec2cc53bc2",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "a82e3e013f319782f5543f8923ade79f99a4249e2ff30e5a660edee1f62d9bfb",
+      "source_line_1based": 303926
+    },
+    {
+      "index": 49,
+      "sample_sha256": "15ebc400ae76a693a25d8cb776e36d3f5d06789d325bb9747b340f91f1cd211b",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "0f6f11bc82310e2ce9b7477e4827b6054d40ddb06ea100637027890d1aee9655",
+      "source_line_1based": 108993
+    },
+    {
+      "index": 50,
+      "sample_sha256": "abe40e1c59eb6f75a759e657e4e2dabbbe4bcc7925a08426d29cc65cd2e20473",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "f6266487846bf09b934a4d7e4e56b6a3e5b95ae26db3b9a54e75778aee0f16d1",
+      "source_line_1based": 12709
+    },
+    {
+      "index": 51,
+      "sample_sha256": "42a7a432ac074da3bab65fa49ecbd69306917afdc42471e6fdec635e2d417b26",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "7b8b8b18c18b591a72a9dc65683da5370517e100a9f6df20498ae9eb6d84c971",
+      "source_line_1based": 72224
+    },
+    {
+      "index": 52,
+      "sample_sha256": "944ffaf3f1bd2b04db8ebbe7bbcbef4a3fb25a2284372f9670026b4844cdbc22",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "0a3d5bfc9bb54d7100d96f4a7cc93ed402a80a985c306cc43d00bc403fc2e271",
+      "source_line_1based": 2897
+    },
+    {
+      "index": 53,
+      "sample_sha256": "0737a682df04cc0b4a8e69ddd590d069d3f393799fab4cabae5c7d1d544ddef7",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c0e0ee88aafc733d074e7f9fddca6ed6b07579841e474c6cda900512d76ee0af",
+      "source_line_1based": 276343
+    },
+    {
+      "index": 54,
+      "sample_sha256": "c5eea713d75c11c2e2f06c0b571f7b5326fc1ec8ca7fc25eb6311558cec65bd8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "a541578e8265faaf32c0cee40388c8a9a0c3e1f387e92d2996bbea6352a6d17c",
+      "source_line_1based": 201776
+    },
+    {
+      "index": 55,
+      "sample_sha256": "5681c3558fce3b87b41ec841899a41d763c43f4ddde6271f7bbac4787fdaab9c",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "5809bf863704d5df3eb71abc15f73df25dd3c629c8b4a412a60548fa291a2f0a",
+      "source_line_1based": 1955
+    },
+    {
+      "index": 56,
+      "sample_sha256": "c5b3857d82eb63963cd7a20b18d5528d297d13191fce1021d1859db1662949b8",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "952095981eaee817d6c420a6af95d12b4394dfbc475d80dce826d2857c1a58e3",
+      "source_line_1based": 17394
+    },
+    {
+      "index": 57,
+      "sample_sha256": "e7ba9ca4da4d913b7ad96cc0a0a0c2ec31de9375216c1b583238742f63437fbf",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "eec8a36ed505e7c84c4dd921b1ea431b64e53973e0f674533438ac30c83ba1aa",
+      "source_line_1based": 244381
+    },
+    {
+      "index": 58,
+      "sample_sha256": "2cbb337dc7622c11bef495d61aef46f8e5c1efd76b996f2933bc5ec809abf1aa",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "634fc001cd273608cedbfe6765df3e4aad678decc2da17ae05663088f5d4fde5",
+      "source_line_1based": 345335
+    },
+    {
+      "index": 59,
+      "sample_sha256": "076aa09f75352f694041e410e3ce747a668d3c36290f0c9d121e9412eae65e14",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "6a084aa0878b8bd64e2878db368c19fdddb54092fdca999b6ada536fe5f88483",
+      "source_line_1based": 183175
+    },
+    {
+      "index": 60,
+      "sample_sha256": "2ad63b2769b157e634dae67abece4804b7109401fb61667965cb0900bfdf4675",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "77f467a4ba00ff62ce51f50a9afee457df20af5ca539ecdad5c1504f08f51dbc",
+      "source_line_1based": 17236
+    },
+    {
+      "index": 61,
+      "sample_sha256": "932571b8d3ade0860bc47b1196a4239db22053cb9faa72e072b364b4950dbbfd",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "e6c56ebb23f909ff336403ec5e19ae4755408b91f4c26b1ba1d71854f8a60ff7",
+      "source_line_1based": 259803
+    },
+    {
+      "index": 62,
+      "sample_sha256": "2563065aafd4a28f55121b37a25ffffc940138e18105def3bf9f14d1cc7f56d4",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "929bd8dc181b080d9fe53498419f6ef799e052fffe76775a5f6c0135aa95f3a6",
+      "source_line_1based": 388543
+    },
+    {
+      "index": 63,
+      "sample_sha256": "92d31c2c71ff42460d85202358a24d24a455e3225e54565757bb59a70b48b6c7",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "ae09881c96c3e9033e91c9ff38ef193ab9db02dee2ee04b5178d9a16011f27ba",
+      "source_line_1based": 232944
+    },
+    {
+      "index": 64,
+      "sample_sha256": "2c08d0d1f8413c2c2cad09b71ffbe9a9f80c404e83d18cc237ebde6d4c3def69",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "c39b9b59295bbb603b75a362e051b934dbf0eb33c60db428942710fbdbefccbe",
+      "source_line_1based": 157276
+    },
+    {
+      "index": 65,
+      "sample_sha256": "904c15181fa263d531c45966184c00fc52cee7d214e9504e6f98b92dcbac7f93",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "3c5657e414342c50878d5759ce6007127d196129d621b74567ed05ede6af40ca",
+      "source_line_1based": 380877
+    },
+    {
+      "index": 66,
+      "sample_sha256": "d2e876dfc110eeb44a1b203392ab95803bcf947ac7efea15d12cb0ecafad2d95",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "e23e6b3e7a68d37d79b22ae10cf235f7768323ab6d2e9bd6d1e15b87293e7c1f",
+      "source_line_1based": 344863
+    },
+    {
+      "index": 67,
+      "sample_sha256": "302521d811983b2b349a668db097408ff2c2421b4ab9814797a7f83f1582b3c1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "d84d6d05e15ca95ee3089c5992392db618c59ef7ad228479f8bc91432dc2635d",
+      "source_line_1based": 53716
+    },
+    {
+      "index": 68,
+      "sample_sha256": "395cbac39b759363979b603a731fedeee8e22061cc24ee5df286dd02d8d01201",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "1ba860bf980b3bf6be2d2da76fc36d236aec94b70308ba09239ec19a6c99aca1",
+      "source_line_1based": 59307
+    },
+    {
+      "index": 69,
+      "sample_sha256": "1d6e70a0a643c5b1da47a525ae78bd32b383b129c7895c6429b4310548d24d95",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "aeea5012a803ae7536a2f1feb304fbef6eee390c022b9e1f167460fb63c74dc1",
+      "source_line_1based": 36563
+    },
+    {
+      "index": 70,
+      "sample_sha256": "1c1c5cf5f60f46d51be59b916fb105aa4d34c5815cc3d555ff89a5692af14e4a",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "7325af59872db65b74d31882e0e88f4cc14cdf4da506bde8a03bd81d9f91a827",
+      "source_line_1based": 85589
+    },
+    {
+      "index": 71,
+      "sample_sha256": "b6a4b90192da1c1cb0fff8d95eb56100aab891a89263558a5742a0d88d39ff8f",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "093ab546961d1b3e80898ce67b34ab621a04a49512c914cbf4919bcea4646423",
+      "source_line_1based": 122541
+    },
+    {
+      "index": 72,
+      "sample_sha256": "4cdbf21ebca38037a15ba086e931030f804d39a2cfd3744dad824f38f3153cb7",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "ca9da0b853820c0547397823ac27acc9ff09f972b833912414146588cd01dff4",
+      "source_line_1based": 187313
+    },
+    {
+      "index": 73,
+      "sample_sha256": "d82bd6038a7d1b275c269f2c3fbaf6621783a2a98657237647d0ab9ea41ba2fb",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "10c0bde297f72f3c15af75670a7eb7a8bb25f2ff1ebbbdfd331518198b3b57b4",
+      "source_line_1based": 57757
+    },
+    {
+      "index": 74,
+      "sample_sha256": "ea13578a45d2496b6bce03ac07d2f147e80b05ac493ba627eb60d347e0e27bfb",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "6fd2e35fabec6ff5fd16254849c5b11a379025256fdf3f6db25df27ecf6f1981",
+      "source_line_1based": 41922
+    },
+    {
+      "index": 75,
+      "sample_sha256": "550d4ae25e5443c7168f7ef72ee44c112c81c986ef11e82e9eed4e763be236ab",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "3d7b1a4581d1093575bfb5cf3526c78d20913a0c77b9c0adb67f94a367c0e47e",
+      "source_line_1based": 136699
+    },
+    {
+      "index": 76,
+      "sample_sha256": "cfe298a8e2c4b0c78aeed52b3e4d36ea527de7d53c222a73df7be58ed4fa5820",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "34e32fd3c84ad5b3552a540795b238a7178ccf9c16c4d72fb9f10e61cb2671c9",
+      "source_line_1based": 386341
+    },
+    {
+      "index": 77,
+      "sample_sha256": "b5adac7bd345dc9305b498a0aec3e3cf8427fb9a8b0212f4428e06e1dec3e512",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "b620d34bebeab760cc68d3e2cd5e04b1feb5e8a686f3f097321be43cd9f0145b",
+      "source_line_1based": 307812
+    },
+    {
+      "index": 78,
+      "sample_sha256": "e469c818028093444916ce39fae9736d67d9f8cc127180558fe5a5307ebab6e1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "8e136e3df329cfc9b82b0742ab1385e330ca5d2a43e2fbb011c6e5d84e31c8fb",
+      "source_line_1based": 173184
+    },
+    {
+      "index": 79,
+      "sample_sha256": "5b91a12194fa67dd67e04e0b8379ddd37eb2277d4f04181479967d285af41d88",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "79638374ebe13b48ae14fdb62ede7bc9f755a0fb2597f2c3d38c3e8e3df3a334",
+      "source_line_1based": 45414
+    },
+    {
+      "index": 80,
+      "sample_sha256": "6a15a9dd2c81188e2b7b32316c43541b0ecebc2f3cb5d7c83d1fa434de986922",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "dee26c7ca4d7b15280fa76269e771d1d1d94e0f18b66a9cd8c8b0aa2b03dab05",
+      "source_line_1based": 126093
+    },
+    {
+      "index": 81,
+      "sample_sha256": "6308ccf512cee5b2e1020e0317da080e7cef1968e259f062c2bf6eea6b16c7d6",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "7616b3e18921100857e99a34e68cad655cc769f11bdad5d3e3a17f5fd4cd1cff",
+      "source_line_1based": 157994
+    },
+    {
+      "index": 82,
+      "sample_sha256": "90db98b8d9d615c2421192b4ccdc3ee61ba9c8e131c2de68c5d553ace4163d8f",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "88b10f49caa4e63610ed19c746d0a32b49115858452c8a4c82855aadc04dd365",
+      "source_line_1based": 80297
+    },
+    {
+      "index": 83,
+      "sample_sha256": "df6372caae09df86f52b7bdbb554f41bd2dad9689e4403d0758f1768abd9f7e1",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "7c529920430887c3af838523fba893dc230756217da7c3ca496e1bc2bb1bb899",
+      "source_line_1based": 125646
+    },
+    {
+      "index": 84,
+      "sample_sha256": "b4b3b151a861719069d3d0e8c246cddf38e37b7ddf527094707eb522349622bd",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "460aeaf91286f9a9300b0d08b17a239408a78cbcac181438673862b0f888de3a",
+      "source_line_1based": 184002
+    },
+    {
+      "index": 85,
+      "sample_sha256": "2e66811ba9523265d9f93eff06996192d57c47cb78f8984395b4530424736c1d",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "fac5e51991ca21397410d089aacb6fb8c46204e66cd46764b16723f0990aba52",
+      "source_line_1based": 173228
+    },
+    {
+      "index": 86,
+      "sample_sha256": "b91936602255558868f0cba437a53e969bb4aea991a59f8bc86cd722ad680265",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "662e1c4ad4ac3ce75cecd88cb09d7b9bd7b6069b914e7098e7dbb86cfb025d1c",
+      "source_line_1based": 187797
+    },
+    {
+      "index": 87,
+      "sample_sha256": "3888da6e9f22246acb2e98d5bad8f1982c390b17073cdba0bb62c63bf423efe8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "a5a75cc37662f1b182a4683a91a7f89668c845842903db22f8d6d9911fbe4180",
+      "source_line_1based": 86965
+    },
+    {
+      "index": 88,
+      "sample_sha256": "994516b1eb5e5195242ceda7f0d26b85f2dd358544ece89af2f29d8aeaea685f",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "eaaf5c701a4af1d607d40f0ac651b696412ba14732f2ad4632dbca788312f6a6",
+      "source_line_1based": 331886
+    },
+    {
+      "index": 89,
+      "sample_sha256": "3576814773a56c8f8357e434c71219153fd62479ef238236842fb078de802394",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "01b523d579cf978a94f0bdfedd3071cb58bfad97c37298964014800549b794f8",
+      "source_line_1based": 130113
+    },
+    {
+      "index": 90,
+      "sample_sha256": "5eeca3d516a36d546ca46e508a4f1de08e4e12ef570adaa541e156245dfd639d",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "120c4e2058d9a6e51a7afc706e4597beee84ebbd1a16398fa6e280c83a75615d",
+      "source_line_1based": 40956
+    },
+    {
+      "index": 91,
+      "sample_sha256": "ca69a90e8ae57c116ce0449690b5fb019f6e3082c12e2f15a5c190e02c1ad7b9",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "8535ae0540a763f96a89ec1602a5691c26baa20bc738025588bed63d1c944a2e",
+      "source_line_1based": 134431
+    },
+    {
+      "index": 92,
+      "sample_sha256": "91c410e379dd6ad540afd90d266eee64bb6f862095eb0a12f24360e23f782be8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "36ece4594afa85f6594a08c628cc9cd4425a10bd4c7784f4b2408c55b2c253ed",
+      "source_line_1based": 307727
+    },
+    {
+      "index": 93,
+      "sample_sha256": "411d9210a24de1d172720fb53fca4f432213dbdc2b5ac33aae14b5a3c11c2808",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "0235c08b38fabf8989dacf4b88f159fd5a102f6864198220338dbe79f82651ec",
+      "source_line_1based": 124453
+    },
+    {
+      "index": 94,
+      "sample_sha256": "bcae5ab8b0a98e72b69610abf798fc477228bb5fce757320ae3188da99c92809",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "57f6b576e7b6a8ac8be3674894d084798497d46ed89088cbf8aa082ac0d243bb",
+      "source_line_1based": 85925
+    },
+    {
+      "index": 95,
+      "sample_sha256": "1f11a2054adca0af363643b4150c12636263b4130d860da859b849bad705eb34",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "db9d906c0dd17422274db44c236b19b37bbbed29033034dc952c9130d30e2ad2",
+      "source_line_1based": 44360
+    },
+    {
+      "index": 96,
+      "sample_sha256": "0c727b5a2e7df6372640dab8b2ab3d4c659a7f8e7fac530fef891ee731f7ea71",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "50ee037194ec0443e0a42793252679a3c9b3182ec7d89778bc5e2fb1746fd8fa",
+      "source_line_1based": 205688
+    },
+    {
+      "index": 97,
+      "sample_sha256": "2442f74b97f021a0f86b0ee879d9c13e9adce37d2de2f04536801f8806f754a2",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "d4440ccebd0f677908a6d181ccd0914e0c969df693afd3ab95bdb30886dc7822",
+      "source_line_1based": 291626
+    },
+    {
+      "index": 98,
+      "sample_sha256": "31bc687873da00c4e223086a32b44ff8b5cf0448e8c3da318ed61cb1b7730afb",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9e072767cdd6d8d9241932b0dd1e669c4c2b8e147f993d4d44912087b48f4bdc",
+      "source_line_1based": 84349
+    },
+    {
+      "index": 99,
+      "sample_sha256": "310ddca08f99c068fd3e9278e8bebf55de35676e4ef53ad4a1bf3db61f8c94a3",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "e68df25e9c45cbaace9ced4839ad09d0f5e5fc1004ffb0b91cb4c3c9d9b60576",
+      "source_line_1based": 252941
+    },
+    {
+      "index": 100,
+      "sample_sha256": "0444aa51e24ef62b9f1c11744697e965913d965a3a27cfb289acb7a45c92f706",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "db17eb3fcf584816a5dd9eb959dc7f82ac219f89f9fe6a62d719b5712d608ee9",
+      "source_line_1based": 28859
+    },
+    {
+      "index": 101,
+      "sample_sha256": "bee980dc404b09f16994e04ecd4a6ff88627105d034d7f28181b1e42d0cb6ba2",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "f30193fbea7b63805391fc7a74d66da206cb0169c68309136f56db5bf456ab47",
+      "source_line_1based": 176535
+    },
+    {
+      "index": 102,
+      "sample_sha256": "87b0bfe8ce96593c80abd7422e27a178c56ee5b896d3d120d37c700693f3e091",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "4ec19ce1dd53bcb96977e07854d241bd3f93e9d8dbf4cd4f4fff451c4043fb9f",
+      "source_line_1based": 169534
+    },
+    {
+      "index": 103,
+      "sample_sha256": "ad1df28976b53778670410f9b20fe8c6e6b9392439f9065bf8b0e528d4ed5472",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "128f7c09b48ee8fc7dd6d7657a897d1b5f86bd5eb38362e90509fb29efe42bcc",
+      "source_line_1based": 297566
+    },
+    {
+      "index": 104,
+      "sample_sha256": "dc0b783c599d35232207e66b1c2143906bdc16431ffa5ebad56998eb41f3b5a9",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "538810923dfac5e6d983fbeee8916b9fb5bd1fd0a3fa28f6239efcb08c18e32e",
+      "source_line_1based": 230569
+    },
+    {
+      "index": 105,
+      "sample_sha256": "3d2f5c5a29dceb3a09f27dfc4d71f9c0c0274491258fdcc60067611f6598b8a3",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "5d6b26d2e315074aecd6761edfff4d496471dd349182ebca013d6f74a51d56c1",
+      "source_line_1based": 151742
+    },
+    {
+      "index": 106,
+      "sample_sha256": "a9aaa580b730640d8e67d4aed5bb92cbe1eb57a987803c44edcaf2e70c4f98be",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "d4a51456b7945b998d838c6bf97fe22342203fd55fa34680fb4f32759bc6e7e6",
+      "source_line_1based": 367596
+    },
+    {
+      "index": 107,
+      "sample_sha256": "c976935a07c64a43bc63e6c3fe9063176815d68406702af68976a8deb83ae14c",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "47762d624238e0bc1a212d22f9736a5d6e0edfd8d2161465192f6e5112f3c6f4",
+      "source_line_1based": 244562
+    },
+    {
+      "index": 108,
+      "sample_sha256": "ede84f67f9e3cd706b78e7b3ea95977aa02e52377319f8c0b3e42e2a84856a7d",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "1356f4a814ea12159cac7e0eb447a98bf6b89a998d4c6fb96ccd9c120160a376",
+      "source_line_1based": 230330
+    },
+    {
+      "index": 109,
+      "sample_sha256": "8ee1bc6f4d1ef926855aff4c1e4b9ad54fa72785b5bbdc396d522cf121b019eb",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "2dc9983a46efdc6f464d0f1b0d0515b4470720591229f1b724a9bdac3b63897a",
+      "source_line_1based": 222163
+    },
+    {
+      "index": 110,
+      "sample_sha256": "5a673a6251dc343dc563ce24e857e42829d022d8caf3c3d478932bbf25215bde",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "5bf6d10946eaa37db8e2e32d6adc110b4dff77f300a192f5cee07effac1167e0",
+      "source_line_1based": 61334
+    },
+    {
+      "index": 111,
+      "sample_sha256": "be560557e50240d7c3a89b5cf1914e9f3d0e7cd4db56712dbc5d405fd836b6ac",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "d177cd115a9e249393a3c3696054357ea2400632af3401abd93f6b7ebf1acf89",
+      "source_line_1based": 30997
+    },
+    {
+      "index": 112,
+      "sample_sha256": "78cccd63410e6fa5cc53bab350cb13580274a8fe4b848b4ce6ab335b527ed458",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "212951dd8dc7dddbe8eb728915ddbc380b8f01ae7d3dfe91be31270704c24d7f",
+      "source_line_1based": 54432
+    },
+    {
+      "index": 113,
+      "sample_sha256": "f8b01ece61fbfd972eb9e7de9bea729049c81cf228afb9b6a1890d540e67a2b3",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "6343192d647be800c214bbc5d80e929f704e291c4417edd4ae5bb575fab24824",
+      "source_line_1based": 327909
+    },
+    {
+      "index": 114,
+      "sample_sha256": "3fbb1f9bbedce22a7e2074b81eadfc1f7a1ee29971c0840c355307462bf010b3",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "f443339610a5f224faa2917a68c2bb0d47f883f1ddfbd4d28754b4d5c0d1d72f",
+      "source_line_1based": 152354
+    },
+    {
+      "index": 115,
+      "sample_sha256": "34a896c850e1082fc55ef63ad3fdac2d6a134663338161cc00242d9c9276ceb8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "e4f4101174e46ff899c449aa101b096404edfd53769ceec83ae5970310117e69",
+      "source_line_1based": 223249
+    },
+    {
+      "index": 116,
+      "sample_sha256": "82410ef6781755b3c2968b52512151f3a02e1efface896c7cf749d3d7694a44a",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "42a43c3a491bc4120f65459326dd7ae181a4f95877a1087f2b33504ffd8c3fca",
+      "source_line_1based": 117281
+    },
+    {
+      "index": 117,
+      "sample_sha256": "fbdf29d175c0e1ae997cba9cd2e42a64495620c840011f76492159a6b0566d05",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "be458e2134190ec9b1b74d4e54e0dcc897e5d34ed62555fe068a230067e1c815",
+      "source_line_1based": 379551
+    },
+    {
+      "index": 118,
+      "sample_sha256": "aac4e2eaeb118b1f07f9f8f2f3b284120ad761060f4e0073b3365a2c27d059cb",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "005c1d5bdef92b7431761c76772e9baae21300ab93a29cd82a2384a88ba8598b",
+      "source_line_1based": 60551
+    },
+    {
+      "index": 119,
+      "sample_sha256": "55c468e9a56c03a94e8b7d757a90513b09cb281022a12e09199f6a4e17d4b1dd",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "ef7ad9454f3bca09aff9c272dc3b2758d5917a0824c464f6dcb2538dcc03656b",
+      "source_line_1based": 221184
+    },
+    {
+      "index": 120,
+      "sample_sha256": "0c08359779487751cf7b0fdfd0899bcb4bdc38cb41abeaa32cf2e9e7309fb59f",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "3ac26b7014e3f56ce7f840c008016566a5e96dfb0e92b9b824606088936c9aa0",
+      "source_line_1based": 51225
+    },
+    {
+      "index": 121,
+      "sample_sha256": "e4751b55fb4cf969f0deedad914d9a954ba3f9f74b39413f398b8efc060465ec",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "4d5f9d798826cfe8021622c5ef2b1584a274b5aef5092a13a6a3e08a9cd4e8a8",
+      "source_line_1based": 281200
+    },
+    {
+      "index": 122,
+      "sample_sha256": "b8ed22f58b33d0ec68ea8def65b03e0d36bef032741ffb95c30490b6cf374280",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "8f5cb8f9bb1742518873d59fba07569aa2e6cedc9e01c77f82c952d44297ebc6",
+      "source_line_1based": 79672
+    },
+    {
+      "index": 123,
+      "sample_sha256": "884cb1f03c5553a091cdc3e5952e26ba5e402c62efd8fa7d7f38d6ba21e3a57b",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "6a6ea11d98ce1045f3c286f1fe6b2de81fcb2b5b07393d06a939761bc0efb104",
+      "source_line_1based": 222460
+    },
+    {
+      "index": 124,
+      "sample_sha256": "454d118ae286e3f377bcdc8a011a62f5f43f09402990e5d1225aa4e3d584f8ea",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "81d78427ca22fe34d51846202bf31efce6436d778499c100ae3ff5e3d24d1750",
+      "source_line_1based": 342482
+    },
+    {
+      "index": 125,
+      "sample_sha256": "d45476779ae67eba963c9ca0e349b6934a74c8694c9abd4c9e8dd6e5d819a109",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "c6d8dbeae3a64dbf1d4d5499b7e15193695be5a757a7d8268152af660c0afe5b",
+      "source_line_1based": 214014
+    },
+    {
+      "index": 126,
+      "sample_sha256": "8c43b552eabe3fe35a16a6028d038988c9c3699004b37e795260c534e50b68ff",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "1e6bf9b920db398104d992c7a687e59dbff6a69981a1e626e851de867e35449c",
+      "source_line_1based": 241264
+    },
+    {
+      "index": 127,
+      "sample_sha256": "7387bb822ecd2eb2eb02e8f37f1ca0e1fe57f597f8a8627be87ad7d2cb57fc1f",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9ad81bf49f395ffd000b2aff7c979cad81e9afdf294eb6a604c6dd5346a01a93",
+      "source_line_1based": 7706
+    },
+    {
+      "index": 128,
+      "sample_sha256": "c8a7ff628ce4ec68f7c19b685e57b7e1465ac3c76b2f2b01df715e36d96788c2",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "c282d07f5d5888eeea0af05bca3f12c2899450d83849c122f613fbe5766978ff",
+      "source_line_1based": 173453
+    },
+    {
+      "index": 129,
+      "sample_sha256": "c3a3e923331136534d47463a689a02bc812a5d3c511423c54216f5c9841aa8a7",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "3595ab71ba248e5a7990d4614a92ffdf5372fa4d061168fe83ae693a330ed208",
+      "source_line_1based": 352372
+    },
+    {
+      "index": 130,
+      "sample_sha256": "40f6fed33fea016336de167044aaf994b4edd8007da6eb7d9c5f677c3cd0ed4f",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "b8fce9c97098b67527fe6c8706c5f4cb4831ad3ceeb2e13c77417d0c59bd4a37",
+      "source_line_1based": 129774
+    },
+    {
+      "index": 131,
+      "sample_sha256": "0aec8e537d223686ad519be4b3d1cfe19f17d610786dd1fd528e85f8614daec7",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "35d7a05890be497ed8e1d04ecf36d8c3e34476137afbf9d242073039c9cdcf16",
+      "source_line_1based": 140661
+    },
+    {
+      "index": 132,
+      "sample_sha256": "755e935b4a33077f6a68d461a54bd1a96ba1162994718e46190f6fe99effbc5b",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "b159bbc5059b56cfbb9cf8e47474ae1992a1c52b7848533796c29d2dd45746a1",
+      "source_line_1based": 28007
+    },
+    {
+      "index": 133,
+      "sample_sha256": "133cfe0b2c5caa584eee5610c866988de31a3611acf0cb5145eb1d4fe9c9c1a2",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "3d829e8cedaaf0ef4f6181765a519f16180debec806b38bcc61581fe861d69f6",
+      "source_line_1based": 280871
+    },
+    {
+      "index": 134,
+      "sample_sha256": "1eb9acb228d42797e26a60c0fced201c40fe5cefd45b90799c83055de86ad971",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "68b81fe7e8f4bf4b0b420ea2af9fa6e19c03d0ff074706a9f3b7617b774136eb",
+      "source_line_1based": 356654
+    },
+    {
+      "index": 135,
+      "sample_sha256": "6ea69a830c292bb8cbf8cb94ca61ce837e5d3df2e8a4ebcf9988b4e751bb3bfe",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9ac3c936b5c4082d3b8277a286fba414fda33b558f3ec2d12ad699b8b1b74a3f",
+      "source_line_1based": 282170
+    },
+    {
+      "index": 136,
+      "sample_sha256": "f3cfe6aaa49a4e104c7a949650185aaef984e36e35d8150614bf6c8476a0a400",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "d1a0e8719bf5ce2bea318ce10eb505439e2664c451563accd29627b700dbe3b4",
+      "source_line_1based": 82653
+    },
+    {
+      "index": 137,
+      "sample_sha256": "2c4b22df505c1e8ab01cc06f13043d3b38c8fea3d6e6b2a99bc9824b6b103a20",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "823c58ce4b5a17bbe7ac05efa6f5f261d5f4238f79fd7faedaf551784082269a",
+      "source_line_1based": 364953
+    },
+    {
+      "index": 138,
+      "sample_sha256": "6a02f6f9ebaa7f3e7f5f290c841b69a10e418a1394964087df506f31b0a84230",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "4f8f998c6f14ee58b2083ebccd18ad1f2b4a86e7ab0e3905d7f4eb3f00211a4e",
+      "source_line_1based": 283423
+    },
+    {
+      "index": 139,
+      "sample_sha256": "d3e56028aecab0fc7ab1a4552c5781c4f8557c6d8cdb48dfa80eb8e9c0328024",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "cc4580e5bea367644e132d2d13ea112e01324292945edbb6f2a60d4495a670d1",
+      "source_line_1based": 29571
+    },
+    {
+      "index": 140,
+      "sample_sha256": "1104232696c4e9bc9274af7b90a3a934ad780e44cbed5bf9ed8468b668dabc30",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "57ebaaaca9208c2a166af24780bd7c1effa974c73d3a628cc2cb0a0144bdf69c",
+      "source_line_1based": 128665
+    },
+    {
+      "index": 141,
+      "sample_sha256": "7579d8acc16d8bec33e4bef753f3dfda6cb81a223f234389ab2cfb3345d5d491",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "bfaa254cfefb8631d870b3aa7b99c011b32b6a25268711f43a491b0ac9d8eef1",
+      "source_line_1based": 391972
+    },
+    {
+      "index": 142,
+      "sample_sha256": "e39fffcf7b96dff5cd9d033751c17a7a7722545140ae2558b3f625672d2c7ba0",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "0998c38e31be42516e64f7e2cd870f879b1c8a04e82f9911248b62d2753afaad",
+      "source_line_1based": 353385
+    },
+    {
+      "index": 143,
+      "sample_sha256": "1e4a22e45b5df0f5487b1d789c95f13bee950189a87caf1197c82760a08660d8",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "2c6b49c93dd83c7d6a3955755b1ecf35f3bdfa1c52dd40ace1e0f90ba99c1910",
+      "source_line_1based": 67522
+    },
+    {
+      "index": 144,
+      "sample_sha256": "edea1d46fd95ff880afa3faa90cdd0353230929a379e4400913ad23cf8ce2a56",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "f7759ef7e47f78eea2233404a3efb3fcc72205cce8ec2357a8c75f8e82c31718",
+      "source_line_1based": 38263
+    },
+    {
+      "index": 145,
+      "sample_sha256": "173761b0f99f8e0d81e2bf2e4fcccea05e8a9c4f2423ec4cf684e66282e60286",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "670c790ca7a006cfd64ebb5e8cc1ef5f1078677de283d1830fce8342aaf75937",
+      "source_line_1based": 254134
+    },
+    {
+      "index": 146,
+      "sample_sha256": "db751177775ad64a8ac78d0a933ac49c784fa10b9495983969ba2a7d63fc6fea",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "d7efd04a356822108ea225a643700e64ef25f44123bb7f6380b38508fca30ef4",
+      "source_line_1based": 247020
+    },
+    {
+      "index": 147,
+      "sample_sha256": "38913ebf1ecaa2fb2fbef6875d4c767adc0eeb47e6d7301f48628b063fab52e3",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "c56ba549ec18884bc55c264ba7a7243a0f52d9f6eb4fd68d2b04e018cf3999b2",
+      "source_line_1based": 327410
+    },
+    {
+      "index": 148,
+      "sample_sha256": "975f6f80e43fc71b67761a84e4c9716e361bc10219c76f2bf62bd2ad50011b52",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "66e778cc659dd53df7ec1d3b4da9b5721740eed621b27a3849b7421c8cca2809",
+      "source_line_1based": 131680
+    },
+    {
+      "index": 149,
+      "sample_sha256": "f2e2e640c53a114b7654e03494539ff5831d209981e389e5b6ddb6b66cca79a3",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9bba4af18e22b4263f84e3dc0fa24d1595e529f2b83a9ea7b2cf4b32ea7e3948",
+      "source_line_1based": 362938
+    },
+    {
+      "index": 150,
+      "sample_sha256": "6e2ae08be92425cb48d8af6a525825900d33d3f1fa9377108c7f291102e3521d",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "ec2c1ea53455897f7a28f5d4c0d82c83e97dd95eae94d5c07db2fb5d0157f900",
+      "source_line_1based": 249013
+    },
+    {
+      "index": 151,
+      "sample_sha256": "0bf90156b7b18c3c20a582174125d873505107f5fd8dc376c635f38ccbda2801",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "751fbd4f77c24be822b81ac70a0e2a1253de5992f70896382344586b4a0446ac",
+      "source_line_1based": 67523
+    },
+    {
+      "index": 152,
+      "sample_sha256": "62dcc00062d0f2adefdbcc2628b0502190ac2dec3b0144bdd4f1af6ee552921c",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "2574f4a89762332302666c8d2c07de64db09012dbe518fd5a2ace76ecace6294",
+      "source_line_1based": 63068
+    },
+    {
+      "index": 153,
+      "sample_sha256": "70cc1045766dbbafc8c561d9371b0679bd7e7752e54a0dd99cb8226ce3aa4b39",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "07da93a4bbf9fbdf5dd111adc23d7aaefe1b412568f436a3aa37e16885991d58",
+      "source_line_1based": 160183
+    },
+    {
+      "index": 154,
+      "sample_sha256": "d81f5c490705b0d5f677d3fa4c78b8d2747e819342eb49cd809ff2ba17b751e0",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "7184c29404c771a645d84364fdd35594e4644afab2b17b13e0ac9796ea0855f8",
+      "source_line_1based": 348647
+    },
+    {
+      "index": 155,
+      "sample_sha256": "ba00fddc811c43764b5527dce86421b1333f8eac1c03c31bf1bd305c2039fb0b",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "0220bb517d0c2fffcbaf5a69468f88699e679e1503b69c611ab59f9d5e5b3ea7",
+      "source_line_1based": 69437
+    },
+    {
+      "index": 156,
+      "sample_sha256": "0b83bb8a4d8f2d558b88b0429acdbb76ac94722b11e696c36ee94065c6236102",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "5ab6033b477fb788c557d9492ea816c243514efd9ecfe5602926c771a3f60c5e",
+      "source_line_1based": 274969
+    },
+    {
+      "index": 157,
+      "sample_sha256": "886307547a48e930e88d8f8681e42891c00c4c72281c3fcb835c572d62324e91",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "1ed4b1ba0ab9da9643bd52cfe528f0eaeaef9c6d77990108407414b476b12223",
+      "source_line_1based": 247804
+    },
+    {
+      "index": 158,
+      "sample_sha256": "6c10cc905c8f51ac89d165ea955df5686915575f181ed57ad65b7340fcf38062",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "ab520a7c904e3a785bf5cb82e283bfe38a74429cda7d4de66b78afa6e874053b",
+      "source_line_1based": 331031
+    },
+    {
+      "index": 159,
+      "sample_sha256": "dfb4f6a777715df0f9b9bbc28061088c85d17ef3662a57a84e4eeda4d0faf35b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "3a9a8908979a7373dce872a7ca7351a18c08e12931d61b653e67ec6547fc9f6e",
+      "source_line_1based": 105457
+    },
+    {
+      "index": 160,
+      "sample_sha256": "00a75f0a56516ae5edc77119711b4222e5b3484a919e51ce134f089e479fe3a7",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "079a7729cf9e27ed5c0fa541c8f100221619af09a4c15eeca8a9499ebd56f87f",
+      "source_line_1based": 161422
+    },
+    {
+      "index": 161,
+      "sample_sha256": "43090377d8f9b7fd9aee477bae6326a3597896f948a6078c63c7cf8d030babeb",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "d678f1c8dac5e288c10400a8035ec6c4c8167bfb891f09340d4d5cffd3783ddc",
+      "source_line_1based": 268866
+    },
+    {
+      "index": 162,
+      "sample_sha256": "eee1b0ac30a3013987074c02435741cfa2c5d76009e854a897a46da4f7d618fd",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "f4a4028678d55fafeb3f57d022284e95a797acc5e931982d24bcaa51e2d9d4e9",
+      "source_line_1based": 4438
+    },
+    {
+      "index": 163,
+      "sample_sha256": "4829678806c98dea40676c357d6c15919f9bd0c0588f116b6bf7f359af8f4590",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "43117b8b7f57253fc74296da6106026f8221a1825f7352350aecabacf0053021",
+      "source_line_1based": 14213
+    },
+    {
+      "index": 164,
+      "sample_sha256": "d3a81d0940cc34ba497ff40ab85baa128991cfb70e3a383eb9f314691faa86f2",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "742ec02082c9638bad951db8fc06cc0852ce98b7d18410be29408bc4673ee529",
+      "source_line_1based": 352407
+    },
+    {
+      "index": 165,
+      "sample_sha256": "c8ed6b0e64b78e2222f6136ead10a47a57a2709e3a3911b9c222bd4713aa1d88",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "0a62d49b9d94154b429db49b8233adef73e63db5246dd1b85fd2e72b85aed179",
+      "source_line_1based": 73099
+    },
+    {
+      "index": 166,
+      "sample_sha256": "699079ef614c7485871e96bec29e186324335db69be789c0f09fe01f3afdfea9",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "40f5aac64a29865a8c29d14970f298b5f464f25716337448691151112247fd01",
+      "source_line_1based": 128025
+    },
+    {
+      "index": 167,
+      "sample_sha256": "72c26768849bbb1b17ad88670d01fbc2b1310a3cf01ea094a602a369f5d06a6d",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "7ec78a10094738a88319ab2c73015b518c097c23a331a888dac08c335dccf4c1",
+      "source_line_1based": 211330
+    },
+    {
+      "index": 168,
+      "sample_sha256": "83952c4b8d1adff1f4f319239b54503ff24186287f1d6a8be2c48397114e8d4d",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "f8031dd0278cacc7a1da9f7bc06d86379b3e9285090149f008b7c658be21f93f",
+      "source_line_1based": 252596
+    },
+    {
+      "index": 169,
+      "sample_sha256": "33d8b94b85148a7ba5d8d812d5995376045568c5b59ae2c0b0ba65c5c34206be",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "85cd8b011a14405071ea62b097d6bbcf26af773115bf84fb82bad5f711ad1f23",
+      "source_line_1based": 267045
+    },
+    {
+      "index": 170,
+      "sample_sha256": "bae2026c33050536042eb96db0a5b459110139806463eaf269553dd2f82cb01e",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "664356a505e864114e75f1e91ca41b51f7c9742e3fa1be3b2091b3a2ab7d4fbf",
+      "source_line_1based": 392697
+    },
+    {
+      "index": 171,
+      "sample_sha256": "bd16c2a16b567ace36eff9b1f0ed18b88cead65a86a610dcfbdee6e450be24f0",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "82dd2fec922c97213f3886d65ac8f628b2c1432bfd66dc7a5024f2967c9cfe47",
+      "source_line_1based": 388951
+    },
+    {
+      "index": 172,
+      "sample_sha256": "72c165832fae2e2f48adede1af2e5f3b7ca6f9b8043f9e52ee64ee31c37f3b57",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "53014f7ffb11bb5135cba0fac81c155950b638ea5444a8dc155555edcaacd13e",
+      "source_line_1based": 164903
+    },
+    {
+      "index": 173,
+      "sample_sha256": "96b31cae09080775e47e61c1f8733c8c6fc3eb98d134457db04421ac539d5cca",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "089b7dca621360d367b0450d61fc38518eeab7df5ae7568c2c6198d640ace979",
+      "source_line_1based": 298231
+    },
+    {
+      "index": 174,
+      "sample_sha256": "7a38294da99f7a16d18a38acf640382cb991ad60f3c7b739d72cabe8a6ab8ae8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c7406ccdf295686f4b9a9be2377d64b995daf4294b44d12ae73651a26aca81da",
+      "source_line_1based": 368931
+    },
+    {
+      "index": 175,
+      "sample_sha256": "a1bad42feb585fd4f9d3042f4a7b8184f49ac022a944b40f9c99ec4fe15fa62a",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "84443e898ff4b81005e601302beeb977c2849d8a3485963ae400000952b4bf39",
+      "source_line_1based": 10000
+    },
+    {
+      "index": 176,
+      "sample_sha256": "49419b490b3df5317f6f7f5e13ce32fbbf4efdd6522fbcd0dc24e20a62fc2ace",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "225ea9b6413fdb2d0f752ec7a228f4680a0a5d02978c433680f3d93ea6adbdba",
+      "source_line_1based": 322780
+    },
+    {
+      "index": 177,
+      "sample_sha256": "251241cd9e3ae393b18dc1e95a1c844493d77848ff9c082db8ba4862f69b8c14",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "2b659bfe358b5ebc13d14ce4df7fd812927013cae257e5423947cc8ea4f2a725",
+      "source_line_1based": 181024
+    },
+    {
+      "index": 178,
+      "sample_sha256": "7d2137d1dadb119eb8640f8bd82d89f2e47e0befba4951776a60c4f3169f2592",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "5c26b1813945bef321a653ba2d2e9d6e36b9e3c29648be33af62e32448c5f83d",
+      "source_line_1based": 373677
+    },
+    {
+      "index": 179,
+      "sample_sha256": "fcdb53acb7f881023ae81d01873b2add4fc87360dc486a7872f16a24108a403e",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "c0ea13e8b12f7a422d64fa93939a443f6ca75898fef7a0fb943fb2f6840b92b7",
+      "source_line_1based": 45883
+    },
+    {
+      "index": 180,
+      "sample_sha256": "691c99878495944a40642922a50f39e390627ac330df88985320ff2e9f56fb58",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "386d95b87e93692f8b64f6d172808e54f4b6b5cff1fec5c8a29cacc49f2b1d11",
+      "source_line_1based": 68950
+    },
+    {
+      "index": 181,
+      "sample_sha256": "74e5de87a2cf61e1e4850902f133ed504718c1e7f5892ff078dc2e4326ded720",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "41923629232176e4e35f85bb4f03050e2904ffaf198e5c4b98ecee42b0efbccb",
+      "source_line_1based": 14231
+    },
+    {
+      "index": 182,
+      "sample_sha256": "8e864f0c3d76232a7e37507f74e037415405f8718595cbd8575615540acbf323",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "1e1187f09d34da7be9bca07fc8443919df511d12280b41921801cd50134e4c41",
+      "source_line_1based": 182203
+    },
+    {
+      "index": 183,
+      "sample_sha256": "a50ca9d3e956ef5904b20ffc64f9f29dee7c8eec701739f8b823b193d337fb0d",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "5582bc643196d268bb7c90825eb24cb7a9d340c703389d45382600d329e624dc",
+      "source_line_1based": 81713
+    },
+    {
+      "index": 184,
+      "sample_sha256": "944c387aa669e8d06b679842308340f094201c9cf01c1a705cb77566c1560205",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "f43723f398b5cb15d66119cc6f071d5b1e285fbfbb700706a6d20e9183d2a050",
+      "source_line_1based": 278587
+    },
+    {
+      "index": 185,
+      "sample_sha256": "7ce9395163082e11efd6bb9fdabe45ef4095337136d70276c2ff5a3a6aea98d1",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "148175e14bc0416169cd5dfa52702f518994c0bd45b2856f927871d978175712",
+      "source_line_1based": 327946
+    },
+    {
+      "index": 186,
+      "sample_sha256": "5fe24d61535791ec32de4385773536b9bf2624ff3a6b9de0ba5b556f8e0bf8ca",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c35a1449ebcaa798234113c4e607c810d11deed54a301e6041f92dfd74cd0cfb",
+      "source_line_1based": 233145
+    },
+    {
+      "index": 187,
+      "sample_sha256": "b5253fcf5f601c52811d0e256ec426b6c0845ec7069f9dcff4e2fead27ee964a",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "dac1827c070f05ad9e36067aed8d8c32f436f527ad06e7cf90b52eb77bbd984d",
+      "source_line_1based": 311561
+    },
+    {
+      "index": 188,
+      "sample_sha256": "2da53195eb7c569cacae88e2d42265c56e80cd8070bc35341e5840041719a056",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "ec1c834815f62726285947b4c5db2a94867ac2519c6c88ff27fb5559c7d87fa7",
+      "source_line_1based": 116589
+    },
+    {
+      "index": 189,
+      "sample_sha256": "68700ec9ee4c1b2b0db13eeb8797a7eabd31e512c0433c2aaae13e8dea20f746",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "6bd62bb168a45da4f9ed3867cd55343862bd547c1f779911965cc9919c84e29b",
+      "source_line_1based": 73331
+    },
+    {
+      "index": 190,
+      "sample_sha256": "79f49947d603e008f7db9dc6cec304011e39c684feb4541c2b83fa2577fa44a1",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "60eb66fe72d84d470f5524f9158654a3e653e1c9d098afcc5a0e2a3c99786e0c",
+      "source_line_1based": 212650
+    },
+    {
+      "index": 191,
+      "sample_sha256": "21ea7224466c9caabf04a72197925cb3ad007cffdcac8e518f2126c079a7af97",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "bebb8e17bd53a3b22531dc19f85df978c68cf429d9b0e367dba3cb3e92d6e0b7",
+      "source_line_1based": 55208
+    },
+    {
+      "index": 192,
+      "sample_sha256": "362a7666d26f524fe0c9557647c737478f598992e3ca1065df66db4e850b2af2",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "671ff01c4c542d3c18815444a7465301ddc3de8d3eb19befdc65d62227435464",
+      "source_line_1based": 99096
+    },
+    {
+      "index": 193,
+      "sample_sha256": "0e3bd0519a5a8a08057fd63c13d8d616dd776e87f3e3c49826734a9ea4881f9b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "b5404229c5633bba9f74bbb1eab4e12ea1f8db24025742002dbdffc480b6b363",
+      "source_line_1based": 135303
+    },
+    {
+      "index": 194,
+      "sample_sha256": "8b8496cb1a9951453c6fb83a55a0b718268c7b17e76811a7a99e45a6159c74b5",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "2a3b91d84e3f7189576c040841aa7f3f21c4ffb01e4ba0ffe329491f5ebc4a7d",
+      "source_line_1based": 90816
+    },
+    {
+      "index": 195,
+      "sample_sha256": "9716fae1316a1cbf02463c5e5174c341a4eb36dac21afc5388809030ab7705df",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "cd80157979708517832b38fc29802cef43936744de674eafa46e8ea05ca782cb",
+      "source_line_1based": 50380
+    },
+    {
+      "index": 196,
+      "sample_sha256": "c52a88708d6fe5b5c821c74002ca3b947557c6ff71af11b781603d2216f229d9",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "631e877c7a4795cb5fdc759989626fbe54d65bbad2c839f3ed320483defdba3c",
+      "source_line_1based": 40488
+    },
+    {
+      "index": 197,
+      "sample_sha256": "bf88f9df9f7ab043d31ef2f1a91ec9638a445a887029132f24fc5cf20ebb633b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9edd17c694b6af5e07e227824f652ff04a7ac661e0bab9927ac85d363383251d",
+      "source_line_1based": 230038
+    },
+    {
+      "index": 198,
+      "sample_sha256": "83a29e6c5d538d3c6f34c17b5a4c988b19b8f184fcf933187d81132dd385c9fb",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "766b0a171d49f1ff900c256297db54ccc275746b025572833f38f25266f264e4",
+      "source_line_1based": 41681
+    },
+    {
+      "index": 199,
+      "sample_sha256": "0cefac98e61bfd08846c9394d381b109580c259f88a119e0e76a491f13f8ddad",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "391d1e23ea3c4bf84fbd793de721e81426b64fcbdb96c90cf48aafc432ba8d1b",
+      "source_line_1based": 187593
+    },
+    {
+      "index": 200,
+      "sample_sha256": "ed32b009a5b1af2065eb03567a58f4207f8278f35a0fdd6bacc7af28a5a71734",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "a23ab6a6de01b3f7bccc85277ee9e413e0fb7e571f23ede537d17dc66b9e38bd",
+      "source_line_1based": 41301
+    },
+    {
+      "index": 201,
+      "sample_sha256": "01fc062b559211261a36d360eef6e42f5cd7fff44919765cc83b7a4fbc5c7071",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "d71e2df7d9674977be0dd61bc937ca1c0a4da7de096e911e28fd64f6ce535606",
+      "source_line_1based": 247267
+    },
+    {
+      "index": 202,
+      "sample_sha256": "c97400d90e077476fbe6f354f3a29dde618fd26683c883f7440ff2ea59132349",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "2b8e7814f9fc87c5a816d7b580ac49ea24597f82045c070db8e5140ab64cf9bb",
+      "source_line_1based": 197406
+    },
+    {
+      "index": 203,
+      "sample_sha256": "aaed0c009bc8f0f34cc5270e4a85debf04e7c3ad723e8df9cb3b72c51f669403",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "035056e190093386251c14729e583a666c9a28b7adc004cf7d7df35ad003b9aa",
+      "source_line_1based": 115242
+    },
+    {
+      "index": 204,
+      "sample_sha256": "7f9f1677559b4d1a15730b7f55352f0b72ea394917789b2050c5334cf8786d32",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "36780fa94ab1312c25b0f3ba5edf64a8d7b00926ea65b7700c9d84fda398f57b",
+      "source_line_1based": 21498
+    },
+    {
+      "index": 205,
+      "sample_sha256": "c078e244dbb0bd49c990af1d3858f531f575bef4056e3204793b5581a1b6d1b5",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "260e96db4ee7094c0ef934ca2c60dfd30e78afef6667bdb52f97b4647d8aa6f2",
+      "source_line_1based": 136964
+    },
+    {
+      "index": 206,
+      "sample_sha256": "a98cd39b8591f07b46cf3ec3fe4bbb65a97ca0e6c2cac53a016aacb923c56014",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "9925eb312787c1fc9483d1569123b2d0ed76bd5465713a00df8a3d5ff1788729",
+      "source_line_1based": 41896
+    },
+    {
+      "index": 207,
+      "sample_sha256": "fbe16f76d2ad69972e9d567bfbb05bd22eeadf7e553b8c66b8ad22b5eda3e619",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "ee3ab43cb09a86d98e4beec428e5c382549b030afdb512900452b0ecf654b615",
+      "source_line_1based": 315568
+    },
+    {
+      "index": 208,
+      "sample_sha256": "95c1a5815c258a2d68be36529d7ee8ee1e75c3b80a20520abb01daa6a36bda6a",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "77c7038f01a1dd4af71a4389a90caf880cd5dec83bfaf4a668f80015ddf56328",
+      "source_line_1based": 101913
+    },
+    {
+      "index": 209,
+      "sample_sha256": "39f93f5ecba5a3e30e3a62f9a09fec7371390376fdfa82be29db1527dc303cda",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "44f5421a04f45627e0b17f3bcc1e7cd7bea12118df1a8fa3032b4fbe4f08f70b",
+      "source_line_1based": 6153
+    },
+    {
+      "index": 210,
+      "sample_sha256": "973290fccef8716f92ad254e030cf6dba3f30bceb890d0714ff39206f91bc6af",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "b992230393f89ac16ad723b9b8547817fc347582151ab1717982e79f5b8ba3ca",
+      "source_line_1based": 19545
+    },
+    {
+      "index": 211,
+      "sample_sha256": "02e7f7593a4e397fd485300b25acfd67d65f4f0ccc4f091a37014cc3e9453e68",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "3c74a6603241c9f409f42be0114f72a09c969db9cc6180b80d26f3f7fd8e0eff",
+      "source_line_1based": 168245
+    },
+    {
+      "index": 212,
+      "sample_sha256": "195e536af6a6c9132a184ca035e57645c3e3f18115985bd9803b075345bf9a07",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "4084f6972393e1f4198a345049b1763db5e2478b754cfbe32ab3dba2d6c8fffd",
+      "source_line_1based": 290275
+    },
+    {
+      "index": 213,
+      "sample_sha256": "535e1cba96f58a81f253738d8f7268927a2f397437e7eef1353c2c2fc09a27c1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "dc1958a43149115d776b69a8fea4a07c278d1e66ee038c93d87b007262709a3f",
+      "source_line_1based": 267531
+    },
+    {
+      "index": 214,
+      "sample_sha256": "ca837e071c3deacf867cd4e2201e1882280ce487d40c7a4fbbe16ddd91353112",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "49bdd2fe4f5ee882a037ab7b6cf44c927bb88e5b9efa82a3b09facb2105a8bfe",
+      "source_line_1based": 129594
+    },
+    {
+      "index": 215,
+      "sample_sha256": "8b2863a1b31e99a66e68be5897a4fc720ad12c8cbe60018382fbd783230e1d3a",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "428b2fb0f4938df8e89dcebdfcaa67d603fd870cd95ff2fbf0085920a4edf3f8",
+      "source_line_1based": 288237
+    },
+    {
+      "index": 216,
+      "sample_sha256": "61004ddb21ae266ffed20e78d054aa87368e0caee2cd4fafd8bc3324d0a8c764",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "367f06cee5143a7ee2c921ca593b5af7d8d68d2ec75c54ed0385fc5263a09221",
+      "source_line_1based": 48133
+    },
+    {
+      "index": 217,
+      "sample_sha256": "20afb40e977d0cbd2d631fa1c5904aea18dcac13cdb654682ef8b0495daee82d",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "d36afe872069cdb8d06389c961b6118c188f142a4dd1676e509d65e178e30026",
+      "source_line_1based": 107407
+    },
+    {
+      "index": 218,
+      "sample_sha256": "3c030161ffb26adb086698822ac0d5e07272b6bb63fecc8df57e3f2f4f856f02",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "2cddb32a4d13980e56dbe50e9ee0b1a84a59bab82982ba92804d588cafa45e3f",
+      "source_line_1based": 372219
+    },
+    {
+      "index": 219,
+      "sample_sha256": "b3b3262cb88fd174c7389174eb61c7b8d84ac979603e3c8555ef2b0c9b8e9b2c",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "b7632ee41494461c5f941960b9fbc31bb775277caa1f8f17240f7e8d76b07dc6",
+      "source_line_1based": 286897
+    },
+    {
+      "index": 220,
+      "sample_sha256": "172f141d289b61cf885b3b957943ecf359f7312a4b99fbf98e75cc8ae0018e16",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "c1475c9d6b971ff1acf4050722f71c405b5044a4d0ca03a001db4cc607fe9e36",
+      "source_line_1based": 69332
+    },
+    {
+      "index": 221,
+      "sample_sha256": "1b7ed8ab1122ea5c704b0642e4edce7572bc82b62ac2d55b9402d263dedfd656",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "02b615a63a50379e448b95f3120d7587da5afd555ecf9364e0e2c9df6b233744",
+      "source_line_1based": 243427
+    },
+    {
+      "index": 222,
+      "sample_sha256": "700e09cdfc499c5ed6b758956eb2ef16c9653c91c4e953e8a634be7bc3e09a6a",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "2fc0ae423718f33e16ebe6c23f81a252156d47184ca8ee5b033778feb626f271",
+      "source_line_1based": 331338
+    },
+    {
+      "index": 223,
+      "sample_sha256": "aea8c0ce8dabb016d1f77266488b4502499ec8eb58bd7587e98f20767e2c69d2",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "04b6d246c860f583831d554c57bca9967b08a7d86504e4cdc748cc88f63c4137",
+      "source_line_1based": 71973
+    },
+    {
+      "index": 224,
+      "sample_sha256": "237f03a85d58f00115ab58990dc02cf4c8ecbee758d1e2f2e375d79e7fae31e0",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "17a5a1e40796bf3823ac41ff5676112dd54a072d9b5d4c6dd835dcc989250bd4",
+      "source_line_1based": 195826
+    },
+    {
+      "index": 225,
+      "sample_sha256": "29d3f8c21f553dfb53f401cc40e33f71593cf94975afd3221653be25956668d7",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "9f9569ad1c5a4f22d4c993c774cdd886eb8d9119bb0d933672f1959ec498b1fe",
+      "source_line_1based": 41910
+    },
+    {
+      "index": 226,
+      "sample_sha256": "447637b1e18924cf9c98e354186d59ac55991eb778b4eb69ecaae3c209cf0bec",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "cfb76721bcab51d3b34bea8183cb92cd2478d598b422392da73fb5259921b300",
+      "source_line_1based": 95711
+    },
+    {
+      "index": 227,
+      "sample_sha256": "5f2104de8f708c74a47a5b1b4902bab7414797f773f5a2a4d7121bde84b97e95",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "b3f7b08af79dddda72935270b23678a33fef563536c364113b0637f282ef28dc",
+      "source_line_1based": 234865
+    },
+    {
+      "index": 228,
+      "sample_sha256": "7c3f4c9038277f4ba3c8b58bff5566aa47bdafc415cf23a21394af5dda64cecf",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "d96fa92cf90136bc608c6989bbb3e50401d6cd45c517aadb22ed49c9ae0f9e2a",
+      "source_line_1based": 118923
+    },
+    {
+      "index": 229,
+      "sample_sha256": "4d5259186c1cbedd5e0944811ef022f5db24aa8c785395395e8c032ce435430a",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "b24453765d34826b9a1071897aba68a02dc6f9603428f81984015db1a523bfc5",
+      "source_line_1based": 271820
+    },
+    {
+      "index": 230,
+      "sample_sha256": "b8631bdbf37435148f9a97202f2a6f832e67cfb18cad4c48e02613a1a40738a8",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "28239e4f9e829b5fbe0998feb91948094f5a8b6c35f7dfaf7fbd3c89e7a472c3",
+      "source_line_1based": 90746
+    },
+    {
+      "index": 231,
+      "sample_sha256": "5a40c4559f3ef602402409c56152b2337e398a4294b43efa0c24b130628e3f1f",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "ffee71ef378d02a330925ce8a3863953224d9e19f9f2a7da8552859e69e95587",
+      "source_line_1based": 383020
+    },
+    {
+      "index": 232,
+      "sample_sha256": "b5347a6ca93347f0fd06854b9c0c3ba0cbc6b41705121c2227c4dc5ae45c2515",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "daab1aa39452522df39cef791bc0749112edd42efd893fc33deb5702e7378a4b",
+      "source_line_1based": 144610
+    },
+    {
+      "index": 233,
+      "sample_sha256": "d8fd2c3f2112f515dee04703d824e4d866e6ce71fbd6fa3a3fbaaa42d07ba67a",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "ed12abc3ea1764259f145ff80be4db8195beaede7dbb5b0913eaa4390ff964ec",
+      "source_line_1based": 57068
+    },
+    {
+      "index": 234,
+      "sample_sha256": "76baad3cec9411bfbcca270a7564515f820a83042c95669a183eeefec05b08c1",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "fb5478a2d5ddd1248d48e95acf5ee843c60c357f88ac2404527b39263141c484",
+      "source_line_1based": 202383
+    },
+    {
+      "index": 235,
+      "sample_sha256": "ca5a241bed74d56db0bb59cc3088d1499bbc9849004e8396ade83d906321020b",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "7f07fedb62ed70d31a2d5e3079c6728cf092fa595c84dd21ae40367421e148c1",
+      "source_line_1based": 96457
+    },
+    {
+      "index": 236,
+      "sample_sha256": "8b2157620b78362dcc462c517f36d02f59b5dbdc29f32d73bdce4ee2f91a7620",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "1e6af3bfd40812739276f2f9c29827066af4ce493f36d3e5c720adcdc54a4060",
+      "source_line_1based": 333796
+    },
+    {
+      "index": 237,
+      "sample_sha256": "8d0d3e4cdf67fa947496cb57767a92de509a3c396c912baa39dc790619896fdd",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "0b0594ec0ca69be4192777025c8b8f49f83882c91e632ce1c1b245580d0ad57b",
+      "source_line_1based": 359221
+    },
+    {
+      "index": 238,
+      "sample_sha256": "6c566a028b30699f7cf97e3e4942f23ffd97846e46563b2f70678f7870546aca",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "3d42c04b4ef25e52d4c9e173eea4a4cb4699b538b2fb865047c38405288f221c",
+      "source_line_1based": 56110
+    },
+    {
+      "index": 239,
+      "sample_sha256": "dc42efdfd2a6a77368efcaf7240c4f65acfd5b4d5aa498018b1ec0eb18367559",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "cd5e3cf2769f41a8d1ce2d24859fb3e7746978704f27938aed0f819eff799ef3",
+      "source_line_1based": 86430
+    },
+    {
+      "index": 240,
+      "sample_sha256": "c23b28368ba34050d42a2f152e4ee9c601f4ca620041c86bc633c416582bb228",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "5718105df69e1e0e9aab6dbc85352c974d311949bd7afc034c5f6875ed535096",
+      "source_line_1based": 243778
+    },
+    {
+      "index": 241,
+      "sample_sha256": "7bf538c7af58c438626722ce5219843ab55b96a0841cbcfee85d65a3e1b1603a",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "6055eba2daee0eb5371b6be4059f238669e0ab0b1464ae6a1525a5180f491ba8",
+      "source_line_1based": 228383
+    },
+    {
+      "index": 242,
+      "sample_sha256": "d8c56e19fa64f4f9bc1151613a2089e68766ed22cdacfd04737d4d2766a4a4e9",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "da9d86aefdf8b859b11a16af6928c7b985ce1ad6ea7889f3ae8b601023d0afcc",
+      "source_line_1based": 392467
+    },
+    {
+      "index": 243,
+      "sample_sha256": "83a139e5d0e4b8a03058ce3b018326888c692702bfa7b21bd0cd0d2993d4e6a0",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "bad2830494766041a703821b6fa51469cf6d71dac809b7607308110c1101c482",
+      "source_line_1based": 14371
+    },
+    {
+      "index": 244,
+      "sample_sha256": "3a875b5fd39736efab14ecdac8db6842c2a0ac0ab303edb23ab7c59372a238fc",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "6444ab64ebf00b9b474983d429234916fd6cd7a550ab6bc9bb512b9045f39573",
+      "source_line_1based": 3925
+    },
+    {
+      "index": 245,
+      "sample_sha256": "98c17099cccbadd0d7fdb158ace213350d4df8b1d5d0b623d6497d72163d9821",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "eff1b3ce0f7cc122c3138cdffae453437cff2c6f76c4b73e0655c6063b80bb1f",
+      "source_line_1based": 340546
+    },
+    {
+      "index": 246,
+      "sample_sha256": "ceb4555e6866bd5271d41286ac783f2cfc8d95f0203e3c34d28795bfe0ec2539",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "96a0591b3e2065d4b8260609459db04a2b98791e40c60365f83e9a48fb5aa913",
+      "source_line_1based": 293102
+    },
+    {
+      "index": 247,
+      "sample_sha256": "b125d19c1ca2df03d2f681c0ddca0a4ce6bbc3d2173bdfd0679537ea3019e2d9",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c93195e239617b199855e5450af0ae8885f2d52408c8b48621b5195ac013412e",
+      "source_line_1based": 187602
+    },
+    {
+      "index": 248,
+      "sample_sha256": "963c2a4cefee625091355e3be495cc60212c6d583012db35c0a41972bcdad7ff",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "53e9cf041f54bf9ce08fd55bdd50fa95b2bd04d8376a01b6a38cde0d978734d6",
+      "source_line_1based": 31325
+    },
+    {
+      "index": 249,
+      "sample_sha256": "62e45f927cd2a82a54b00c113e64521fb4e05795d34694fb1dff15a94ef8d9c7",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "e5eb61ad5bcd0a5676caa2907cae7e516d65646222c99122f61ea1865d688df7",
+      "source_line_1based": 192427
+    },
+    {
+      "index": 250,
+      "sample_sha256": "3217bf33cf45437098d8ab404f1fb9bd2045e3ec2e55da305afa2f26f86868c1",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "c00f0ee25b7c53f75ea56dcf0640ebd1323b004811c5f63cd3a63bfe048c06c4",
+      "source_line_1based": 1774
+    },
+    {
+      "index": 251,
+      "sample_sha256": "c91ac816d5fb7e9ec6d873bd4f34b47928705464cb8c13900b03b18eba5caa5b",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "32bb840f3154e556b95821e66122a31b3e89dec16786014bb4b0234d3ea9e681",
+      "source_line_1based": 200228
+    },
+    {
+      "index": 252,
+      "sample_sha256": "b77ed36cf57f1ce9b64d757c46eb84a71b07a2bbb19fa75ec737fa3796ff02f0",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "daaa6a5d31565c7ee88117a73d931c14d57b4ef0aedab26dad38b6d024f259d6",
+      "source_line_1based": 126068
+    },
+    {
+      "index": 253,
+      "sample_sha256": "c006174d5de943f74e37fa0145869990c205c2f28bb89e1dea1043786081905d",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "b66a98d213f95e369be8a26c8092461b3ad87d00c15367cd07aa1c6280dece2b",
+      "source_line_1based": 307288
+    },
+    {
+      "index": 254,
+      "sample_sha256": "12ee9528b9428422939288523a6adc9246f84db297aea4468455e8f04b791e26",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "4b7d9e146ce31213142d0bc402648107b18622a57ef16a65cfd8e93d94828eea",
+      "source_line_1based": 271384
+    },
+    {
+      "index": 255,
+      "sample_sha256": "0c1b76169413dd42d798888787f8204ea0e31f85730c934692c4fd977e2487a1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "c065a138424ebdca6933e634dcdb5aa854106fd0417a6f8225a5368210332d0f",
+      "source_line_1based": 238072
+    },
+    {
+      "index": 256,
+      "sample_sha256": "adf7176dcd4aacdc1f9a7860988e648b4f791aef1d7c195ec1068cdbf6f8ea85",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "07a370d382e2fe40e6ee27c416cf5b8ac1d717ce507abf3fa3d5174cbdbe57f3",
+      "source_line_1based": 109923
+    },
+    {
+      "index": 257,
+      "sample_sha256": "c575a4fd4a596fedb92a06bd9693377bcc078eccf8362081ce72f0c8a17fa6b1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "528d8172e4a134bce17be6580b931dcbfe23b13f2ff751badcbf42ca611da409",
+      "source_line_1based": 335037
+    },
+    {
+      "index": 258,
+      "sample_sha256": "3407939963144b9f72759a23fcea65405f973fb6182128546a56840f9ba76d7e",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "893e3a5ca02afb558d3bfa4f8af4b2914b6063ee9127dd707d7101d31e5100fd",
+      "source_line_1based": 59853
+    },
+    {
+      "index": 259,
+      "sample_sha256": "788cf56fce210bba4baabdadd4917b57f7e3f7f5572c7e9cc79109f33b6440b7",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "6fd88c17629b554a2196405aad5664f693f8a718a5b8a4d3fcadaed8c5781ee0",
+      "source_line_1based": 36470
+    },
+    {
+      "index": 260,
+      "sample_sha256": "28dbe0a6f033d8ee6f84e1e08e0d145f332f0d98873a2ab01bdb5112b0ba392e",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "1640a1d30b91250074c1244abe9568ce4e7a8e2120df381a5fccdc113ad1ac49",
+      "source_line_1based": 116800
+    },
+    {
+      "index": 261,
+      "sample_sha256": "67ac955ba8f5f05e6c41066875e06c5c816d5f539fbda1739b4c0fd197832333",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "52a262ea9690f4dea10f529d1ff974c1aa2d404ad2727c987f690ea5cd60c7c7",
+      "source_line_1based": 80590
+    },
+    {
+      "index": 262,
+      "sample_sha256": "d71392ddc8f8205f006e5e695956e7be5237a19f201170f5b8528835164ce033",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "72c21668b3d4c909bb9fc590af972b9b2c568a6f5975627de6e62bc0c7130208",
+      "source_line_1based": 5423
+    },
+    {
+      "index": 263,
+      "sample_sha256": "28fe94fe57e2813265713717cf70f581da67ba4333914f00425a273a14924d4b",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "a5d1c47e96970cfc88077ac664386f1f5d878218a469be1afb05719149a9dc13",
+      "source_line_1based": 170109
+    },
+    {
+      "index": 264,
+      "sample_sha256": "4d3e56545758e41ae9e4fc134827a5235d5cb95aaa5a76dfca0417f0fd3f85a7",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "3c2a79214984dc2bdc6f6cc292df9b373f312774ee5be984cdc1118ba92915a6",
+      "source_line_1based": 262977
+    },
+    {
+      "index": 265,
+      "sample_sha256": "6da157928a47023ec961381df87cdeee0388127ba853dd5258e58029dc16476a",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "609c12d8ba69ebda3ca344ccdaa54ff6baae79181c162c8cc477005d7d6f408d",
+      "source_line_1based": 73228
+    },
+    {
+      "index": 266,
+      "sample_sha256": "a0e75c72992fe95b973c64e17fd9a7901c501fd218c08d4486576744282ee58d",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "54fd353b40e42509153cc97c03fb5ab09a5d125298254e533c492a6c4c87812e",
+      "source_line_1based": 93911
+    },
+    {
+      "index": 267,
+      "sample_sha256": "c7942d0872dfa050d8ac62287c70fcd9de81968df3d5a049c32638df3a554f3d",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "46f1feb7c303c4bea7dfbbd8fcf99d4a4151a06b419e3c1acdd889d716ae2041",
+      "source_line_1based": 393617
+    },
+    {
+      "index": 268,
+      "sample_sha256": "4693f7b1f4868dba9dd4f5e2e0185d81a3d683a78f113a19415e0f2c1cc35d27",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "33ba8b9e498de5f0ebf5040f5dd51ad3a9ef90049d41665e9e371003ef7ac31b",
+      "source_line_1based": 258880
+    },
+    {
+      "index": 269,
+      "sample_sha256": "f8ca702c4e21c1de93e22050dc004b6be004ee7434843e45d9c444fe3008b3f9",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "aebd3dd16f703ccf6c5f646fe0bcea8e88f6b297cbfb5d1185e4181728b7553a",
+      "source_line_1based": 386697
+    },
+    {
+      "index": 270,
+      "sample_sha256": "40d2880da6b73411917ab0d5505008c5bac3262cddc8125dd6a42ea5730377e9",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "98e7dc0ff51ee5849c31a8fa6bbb3b9e7cf8525afa0fe6d2cb8e7b4585e45d9c",
+      "source_line_1based": 187618
+    },
+    {
+      "index": 271,
+      "sample_sha256": "6ebb3d9e8f3b5ae7d0c29d1adab50073f1a9c7c1deff9b5c55e270fc28437799",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "aae8bc8ac1b24bb94e3294ea0fd408539a3607a2fee46b60ba18925007772550",
+      "source_line_1based": 330892
+    },
+    {
+      "index": 272,
+      "sample_sha256": "39699cd4487d955b1c813fad0839e36ddd92fc8841f7beb5ac7e64ef2d219fa1",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "059cb34708137dd18e4c6b174e52e0b9b071208110e1ba96dde61deeb16308f4",
+      "source_line_1based": 369948
+    },
+    {
+      "index": 273,
+      "sample_sha256": "2876e5ce031fda9af4da1848b8fa598305a1bfa9ef43a152d63b8d05ea637ce0",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "79f933520d4b1482cb278d8336cba32f4aa7a053426e6e7ee879051dc586f65d",
+      "source_line_1based": 5015
+    },
+    {
+      "index": 274,
+      "sample_sha256": "341a49a88b118658fa9ff29f87aed9a42865280bccedf4452ec79c7ee088fd32",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "edf0d232782c8d3e452a370e8888ce624597e0fb9aa92724e14ec536a1ef471f",
+      "source_line_1based": 135080
+    },
+    {
+      "index": 275,
+      "sample_sha256": "244ee0ea9d01d72d2309a05799ad50977efa1c4fea3351cf74b59f3847947a83",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "c6052cf18fbe37cee972538f9b54d3d2e35715d0e4ecc0678c1c71069be0a5fb",
+      "source_line_1based": 14922
+    },
+    {
+      "index": 276,
+      "sample_sha256": "19adbc2b0612b78192964b350ecb53320d4f6f1d324196988631f45a6efa8552",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "0b698bdad67456bd1515f4b6e37c089794024960cf7fc95ae6c9f832cc60c88e",
+      "source_line_1based": 86980
+    },
+    {
+      "index": 277,
+      "sample_sha256": "a3604cc47fd9a52e8bbd8797fd632473daac8044067d0fb2f990a48a31ddfc24",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "7fea205c53845c97a679fc59ad4695ecaf77538c0039a95edbf00d8f66bb912b",
+      "source_line_1based": 384010
+    },
+    {
+      "index": 278,
+      "sample_sha256": "f3484a7ab948280fa1e68d2719eee76a6788e36b66836c83c8bfe8e4088a0a52",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "6696726846e834e32d5a2abe3f6553ac4d824487b6a1ba732b852130691c8994",
+      "source_line_1based": 13260
+    },
+    {
+      "index": 279,
+      "sample_sha256": "e9c75cfe947144ab432c2681adf4f59d86c98d32ae6c3e315a1c8b913ed46aa6",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "67506bea537b1ec577e0290fbb38c9e0d6d122a831ae7bd34a919c2efecfd5ff",
+      "source_line_1based": 319161
+    },
+    {
+      "index": 280,
+      "sample_sha256": "e3a88cbcbcc54d2e4745b39cda1adbe9012d7b8d8e3979493ee5670042f9f99a",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "60699cbe5da7016f3c67f9827d1c29b69a10d87c988e7e2bef6b346e938928fc",
+      "source_line_1based": 121243
+    },
+    {
+      "index": 281,
+      "sample_sha256": "9a610eafe4858c06ee6fe0ad7de53a4e496b7755b0ec4506caaec941a22b59fc",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "70f3eba20520d155758ed14abf4448f78468391b76aca7fbb6ef149ea323b762",
+      "source_line_1based": 243624
+    },
+    {
+      "index": 282,
+      "sample_sha256": "20dcfd74a75a390a5910e1a3a4456446d3052159ce90019a4f4be8b81798a78a",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "fda57edf4a37caead27c4afff6662e138eb6048b025d425141a3493d59db8367",
+      "source_line_1based": 11157
+    },
+    {
+      "index": 283,
+      "sample_sha256": "4fa1dbf71f361be9f429688384e77d5592e98c3b75d742a6525aa85494415512",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "2fd653295b74e324a662ef81e8de2ac79d3584c9d42d1f063f09123968eb34e7",
+      "source_line_1based": 271708
+    },
+    {
+      "index": 284,
+      "sample_sha256": "d6c180672f40484d9132b03bfb8bf00cc54f56a78103dd11a241ac1a65d2aa96",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "1f8cb40d46a69d3472282b697b598a0de941e156bfc05770c9962fc8f88388e7",
+      "source_line_1based": 220661
+    },
+    {
+      "index": 285,
+      "sample_sha256": "0a1bc81031a8deb63ebbdf1ca864680791fabfc0aea053e8598a5081ae24489b",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "da19d532632e5c0c9836f52869d0411180c6118f95b8e9b2f88bee8f34e53279",
+      "source_line_1based": 38724
+    },
+    {
+      "index": 286,
+      "sample_sha256": "21e4269dbf9100352273a38f173c8709fff9f9d92f721b8f0e5890fdbd748770",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "4749e1b32c8272131baf021e5c5f57f0ea4cf9972f9b7366c3d96aeec10476ce",
+      "source_line_1based": 392317
+    },
+    {
+      "index": 287,
+      "sample_sha256": "a051e83d284bbf2961021ec48a24c556167327aba23bfe08c0ed66b000e04a37",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "4ea4f632cca4ec0b18c8be8655ba8f26d9b50f38c7470aa65eab4072ee6a2744",
+      "source_line_1based": 58618
+    },
+    {
+      "index": 288,
+      "sample_sha256": "864309a0915e1a7e1d6179a27fde9cb3deba25c4f890b33d3286d4aa2166c48a",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "28d736c11e3eddd39a77a58f861003acb68f10da0723ed34a978c0bbff3d651c",
+      "source_line_1based": 103364
+    },
+    {
+      "index": 289,
+      "sample_sha256": "e455e7936e20af47a7ecfd36bad223ee58e6b880d2eb29779b7143940c567994",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "a311567e2b7d0689e352b952eecfb6ef0a87c5c7bceccc4ca4698f09233614d7",
+      "source_line_1based": 228679
+    },
+    {
+      "index": 290,
+      "sample_sha256": "e60db595de420affe5c3a4f657f3903bfa024d9441cecd2b9bfc994369d48346",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "dab8ebb982a8b40be263b63e63da127aeb0df285384953a3f2155fc1563412aa",
+      "source_line_1based": 115575
+    },
+    {
+      "index": 291,
+      "sample_sha256": "4a03bafb824f3f126c48e24ca4bd36894b3358ec8206be67d2b381f293f4b84a",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "f230ce29502af26a43c5b667589eda53fe3099fbfbb74d948997b27e029c5244",
+      "source_line_1based": 374264
+    },
+    {
+      "index": 292,
+      "sample_sha256": "b53c8358b9fb20723f25157ae6a2ce699ae1864812f1b8f2853f7356437f2a98",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "5cad76fbe6fd0363d07ddebc33f54da7ddadd64d79f9a563cc544d5bc093bccf",
+      "source_line_1based": 143081
+    },
+    {
+      "index": 293,
+      "sample_sha256": "f94c4c6407bb97d3f0b3fe7c9d5e15f957fbfaccc3585cba75558ef97ae2f49a",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "afe02c6fc3e2730fa35c1332d25657d1d077cc1afa31e93286f6c5f578c58164",
+      "source_line_1based": 219657
+    },
+    {
+      "index": 294,
+      "sample_sha256": "f7d4b657c6784829ee730ed37e126588bb12b4fd239e2d01a8e813c6ad4a654d",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "0cdae66a0e28b8b58fc5864bccf7ece2791ad31946d4c1a0152f775bf29926f2",
+      "source_line_1based": 89892
+    },
+    {
+      "index": 295,
+      "sample_sha256": "9ba2459de64431438f0abf11e308f9f2f828e71fd7073cc67e61aae0169da029",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "1eafd195f886e35d71739a1a4d41da71de5fb8b6e37cd4fc8f4ef5b43ed43e9c",
+      "source_line_1based": 351394
+    },
+    {
+      "index": 296,
+      "sample_sha256": "252b6bb0b6705b30e34a9bcc7ee3d60bbeb748f6387842aa618ba4c35f3004de",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "1cd715848640b2d8a286991430bb9f0e9b1c145d2b4a7843d6dbcad0d00fa285",
+      "source_line_1based": 346570
+    },
+    {
+      "index": 297,
+      "sample_sha256": "92ba02113f81d23b2f433758b07a3767b75481543b3410d0a0cdab8e0b38bff9",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "01077d3e3ea31d95581e5d899047553be838dcaf38feb3c14d57440d142f74ec",
+      "source_line_1based": 288691
+    },
+    {
+      "index": 298,
+      "sample_sha256": "0c5d1926efa93287d4e0e97c128a3e90ea289a125435f0c54cf549f7ff6ed9d6",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c73315a7df2efcf7d4e089967aacd9de7fb0418836d6f9bdbd2e211c68ee87f7",
+      "source_line_1based": 31447
+    },
+    {
+      "index": 299,
+      "sample_sha256": "4ed473af2c7e3a8a7c26e5519836433854840b07d7f7633c06682e227d81d364",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "7ecacc86c9ae01164519622d3b5415bfe215061926ec78a7cf1d8c550d498b2c",
+      "source_line_1based": 270704
+    },
+    {
+      "index": 300,
+      "sample_sha256": "21b680c968c3528fc0a03faa41ea71309e32dc85a770a564272b619731927e46",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "0ea01078831c1e5153fc27d337e0bc90e23032959fb8ccba0ef7e4e2eb86d8de",
+      "source_line_1based": 277083
+    },
+    {
+      "index": 301,
+      "sample_sha256": "0d5a402bf201afdafaa4b6cf512e7b4aacb4401d18e26de3fb79c717849f62b0",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "6a64becc24f146fed3282063c3c9224f3cc7ce25084a9c8b01a3f573030c9e71",
+      "source_line_1based": 98264
+    },
+    {
+      "index": 302,
+      "sample_sha256": "1098627d8e2266c27a50372e95cc8f01775ba085dceacc0be6bdda98f53cecf2",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "4125bc5f039e019e49900a95b9954183a6992ff83742685525f30f888ede2dbb",
+      "source_line_1based": 145734
+    },
+    {
+      "index": 303,
+      "sample_sha256": "cd6a1190e8a78d0723ebd35fd5e0a95786796557876a220446a8da68a427a0f5",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "7f5709a21d11e1ac64737bb88e76a2d9180a2959e36fb725993b9c18ca1954ce",
+      "source_line_1based": 93300
+    },
+    {
+      "index": 304,
+      "sample_sha256": "8cac9fc1cdf9bf721d821157f619b55dce2f475c2a64aad507f7a7127160ebf4",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "a81097c857a6b90e45df4c4d06bafc6c9aec04326fb3ffd0f78cf3943bc00da7",
+      "source_line_1based": 131365
+    },
+    {
+      "index": 305,
+      "sample_sha256": "4edac22965d2175c788ec2a8c2b4939ccc469fb19d47aaa10c572259bc700fce",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "94cde7d9bf8472ff2fbb47c81460869d500f30ae583f2a8b52590cefe4b65979",
+      "source_line_1based": 276112
+    },
+    {
+      "index": 306,
+      "sample_sha256": "0aa729a8d57b32c938b8d2b2abdf3a00d17ccd8af375ac5591bc5d6d87c7b728",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "27a7aef2c0c3c0615632026600fcf71eea092070df2eb4c9c8e1df1dd92991b0",
+      "source_line_1based": 337251
+    },
+    {
+      "index": 307,
+      "sample_sha256": "96e900a70956e760de5d04fe7ba375b23f70500f547ba930897385dfa7c1de4b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "068cc22d274536bad4277449a3156a7b67616db3b5be8b61309b3497bfc604c8",
+      "source_line_1based": 140196
+    },
+    {
+      "index": 308,
+      "sample_sha256": "8d8db011817ffadf27e154c4bed0cb38d602ca449f9d360f3cc1411481736f10",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "b79da12cf7e878557b1dc3ca9ab14880bb5d1148fcb687dbca759bde83909c35",
+      "source_line_1based": 265354
+    },
+    {
+      "index": 309,
+      "sample_sha256": "6ba86e683e699ba91a9709369d82217830dfeaa424ae82fc4eb05b8da4bed5c1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "5a7bba5d6c9f146f774cdfd7884b93f6c8cad696f03d4a74870ec7a86f6d1be1",
+      "source_line_1based": 52813
+    },
+    {
+      "index": 310,
+      "sample_sha256": "c8aa06b1eaf8f0addf7307286544ae44e9fdf408b93f341e6a3e544a9248f49f",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "b885f31343b9621e77f839140343362a55d53b980b6879e9e58ba5230c8732d8",
+      "source_line_1based": 362438
+    },
+    {
+      "index": 311,
+      "sample_sha256": "45fefd44a65fa33747d7d807a5248bb26a14939b16e38a9c9a5212ab6e033ccf",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "f478a567771d8f252f86f6bd0bea9dc9c123ba632c7e878ee1ea8c9d20abbb3a",
+      "source_line_1based": 287485
+    },
+    {
+      "index": 312,
+      "sample_sha256": "5a7508055eb85ccd14052a3004e0c766bc8a76cc074de6199350d8ddf8490f3a",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "78d75f58ec0509b41d8ba0b80db086cd1440a7164ab3b6c92e7cfa215a3ac463",
+      "source_line_1based": 114016
+    },
+    {
+      "index": 313,
+      "sample_sha256": "f2516dc6d319a495e29146414a418ba71e1e65ab42ae036baa56ec47c6dca852",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "9ccc04c4f442989a37528c9e359f9955f018dfb01f03f576236bbe63098ed9cc",
+      "source_line_1based": 331999
+    },
+    {
+      "index": 314,
+      "sample_sha256": "9bdb9425cfa40eec0df0ea67622fa953ee99373efe91f3497836c5485f1876ed",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "3a2364fd67e121447f7d20d7dc33e0bf842cf4791b073e584863ec918eac59c1",
+      "source_line_1based": 226267
+    },
+    {
+      "index": 315,
+      "sample_sha256": "c7c004149fe8eae4fd957d97f4522742dbb26b2943e2f7999c1537ca9a4e2194",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "1b642161dedd5c608741e0cb33fc579ac610e32861315be53ed87673b5ebf389",
+      "source_line_1based": 48496
+    },
+    {
+      "index": 316,
+      "sample_sha256": "e370e0acca209bc67b17b9553552861f92b1dbe2cfe8375cd08d079d77afca43",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "bcfb3fc1be8b2bb400e6dd72d78617d6a5c928188e53b2ebab11a8e20974ea4c",
+      "source_line_1based": 179707
+    },
+    {
+      "index": 317,
+      "sample_sha256": "82472c35bb7890e885874045cec9f76de471c665559324052da4fa50e9b82a12",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "b3fea71586b314ba2ca04aabf915f4545ef755c24ba5d763abae1ae7bdf1a51f",
+      "source_line_1based": 260955
+    },
+    {
+      "index": 318,
+      "sample_sha256": "22b351269a91916eb493c8d74766561903b2390d6749e552c8c676b6ca144434",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "eab3d25a649c23037e05810604a326cdf354057ec8003051bc1999034c8eda59",
+      "source_line_1based": 21044
+    },
+    {
+      "index": 319,
+      "sample_sha256": "b4395ef83c055273c4b3fbf9c9e59a71a9bf697d6d3f9cb95055ad774c6383df",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "310805078da03bce593872b0022444443dce6c9ea05a310c8eda8f3e53c24b74",
+      "source_line_1based": 32006
+    },
+    {
+      "index": 320,
+      "sample_sha256": "538903021b1a023c3c451c0a2c763280a43f33b4299a051f5b9c4618570847f6",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "7860d1594358f8f3aaa6a17b7dad4237a7746a389b37c5da4640dca127af1939",
+      "source_line_1based": 84417
+    },
+    {
+      "index": 321,
+      "sample_sha256": "c372c9a9119fc777852a585ab2919251b5e8127845e2251acee9a508884db8d5",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "4b75ebba37bfe6321766fe316ba3c8bfe88215d1d59ee09c53a43c0da11ca94c",
+      "source_line_1based": 20860
+    },
+    {
+      "index": 322,
+      "sample_sha256": "0df53ae2ecde0aca1d93bf52adae65a8a4dd9bcba591de525b5ea0b7e839c0af",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "7f7096f2ce17035531c312103c1829f5c0a12902dc551d87ca2b4192826b74f6",
+      "source_line_1based": 54191
+    },
+    {
+      "index": 323,
+      "sample_sha256": "e4f7b9972dbe2be0264d33668f43c4ef18bb200b592865015a3e0d2a65683ab7",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "a4a3f79c78d89d8e8e2a1f97b0c440952b813af47ca5539dbe628f5d31d79fcb",
+      "source_line_1based": 46002
+    },
+    {
+      "index": 324,
+      "sample_sha256": "f5cea5df7c50cf468cf977f9316a648436c57375aadbe5587ec4e299cf73f8d9",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "02608263bda6e46f90ce72335ef9304bec2e715e3437484a13e0773667a01699",
+      "source_line_1based": 118153
+    },
+    {
+      "index": 325,
+      "sample_sha256": "660605bd8577fd896b934cca4b8fc20b4da70a749af6add77a83a801a7d7bbd2",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "06b5e9efa43b6958fc7c89d1804300b0c45e3f2d9a3599dd0623bff51aa828bd",
+      "source_line_1based": 262461
+    },
+    {
+      "index": 326,
+      "sample_sha256": "1d6b890ffc54de28d13c27377a4d7f4bbd073dc9c83ef938105f887133afbd3e",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "ebed1bfb04ee6b5e0ef4382134ddfca573579e2d1a7dcc5351b3132d277bccfc",
+      "source_line_1based": 178524
+    },
+    {
+      "index": 327,
+      "sample_sha256": "a1701ed3a361ec23339218b6bac761e4a23091a811083768c4e67585a17e27ef",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "2f58cc19a6eb021a533feec67c0fdd4f6b98de7bf320c758fe531fb931c80f95",
+      "source_line_1based": 110166
+    },
+    {
+      "index": 328,
+      "sample_sha256": "42d1cda874300bf6a278a8569976e80e444699a43c49bda717b2d3de2a3d3626",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "77f65436ec739214c1118f077dfb436008371356a19a338b056e81156c3fed54",
+      "source_line_1based": 332526
+    },
+    {
+      "index": 329,
+      "sample_sha256": "107466991d774607262b2e9d7146d074df1bd404301877a99e313d348663d92f",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "59316d15ca742997b574a7f7587e8ccd4bdc677f1074f0b2bb36da93a977e921",
+      "source_line_1based": 67936
+    },
+    {
+      "index": 330,
+      "sample_sha256": "b1b108606e94f2794d6cfbdae72b7a3f24db025a18c8bb69318eeb86c2974712",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "90f6e45421f39d2bb061b2db20601e14beb51fee502acedcd6ad3da0db4036eb",
+      "source_line_1based": 392203
+    },
+    {
+      "index": 331,
+      "sample_sha256": "1a1f2a90fae24696d5c22d38a83081a007f4e7bdf149556287bce83138450945",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "77b541c045282a276641a8668f384099754d63d670cc1c66f318f826b2ee1d9e",
+      "source_line_1based": 318759
+    },
+    {
+      "index": 332,
+      "sample_sha256": "3c787c09c6f9bea264c515194d2edcca55a21fc941c9631dc4406e70e70728cb",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "111788ec6e1ad74e7e599a7c9fc7cea98afced5daaf1dea0a8d500280a0d05b2",
+      "source_line_1based": 14817
+    },
+    {
+      "index": 333,
+      "sample_sha256": "b18d2bb9fe0a814d8a5378fe9c4fc2db2b4b24699eeacb1ecf9057b5d1d04d93",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "ca88a25f4f88b80735f292509ecf6f588ec61be44e66f8e32da1384231d11e9c",
+      "source_line_1based": 392394
+    },
+    {
+      "index": 334,
+      "sample_sha256": "179a8af6ecabbaf83692dfc481f2516e93b5672a762f2ec8bf81af010305267b",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "dc9fd2a7b770bf72254fce4f90ee06aa28ecad085a526050fa9596b8cd3598d9",
+      "source_line_1based": 366919
+    },
+    {
+      "index": 335,
+      "sample_sha256": "1b3a6b34ff099506634f42e5140f92d019e8b6178498885cc92e1adc838ee0c0",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "3cea259311eb16c7228ec10b9415270fc0e6b653685c28f6c399cfc5de707f19",
+      "source_line_1based": 355863
+    },
+    {
+      "index": 336,
+      "sample_sha256": "b1b0ec34b13cb885ce31fab4391f124202df8f86836d6bf420128614458bc396",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "4520cd55d4cd491ff01df957f9fa8a1150e15696446fd20bd72822eb64d03df4",
+      "source_line_1based": 388049
+    },
+    {
+      "index": 337,
+      "sample_sha256": "8c03352ca6d68e6c63c89bbcfa1a12215ff31496b4b14f104abb558c4ea6dd5a",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "df596f7a0cca32cf38b1ea104193b342714869de8d91ad17cea0f67f65a2bbbe",
+      "source_line_1based": 363723
+    },
+    {
+      "index": 338,
+      "sample_sha256": "145d2cfbfb7280a0cb597329ca9162909aff617f57bf7f5acfabe068924f27b1",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "ca68c0286f28123a429a474000459e15059845046df2ecc8c5f59b818b244fa5",
+      "source_line_1based": 264658
+    },
+    {
+      "index": 339,
+      "sample_sha256": "c8d8db568bc9a04409f4aab09135745a4a3a5bf06bc8d00048fc72c728300c47",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "ad689b5f35fe9da219d04d730e8dfa189d34afd6c16caca2c10015efc740c2f7",
+      "source_line_1based": 342352
+    },
+    {
+      "index": 340,
+      "sample_sha256": "95768b648fd8858c861bcd66ee0c7c192abc16bc20d671e20c2b736f377ed428",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "ea229d9d4bcab89f0c10c788e3e538f95a9c8b6e8be7c51b0e50e13b806e5edf",
+      "source_line_1based": 209579
+    },
+    {
+      "index": 341,
+      "sample_sha256": "ff592548e006984850adc4705e0eb58bc4cba7af51340338f4b3916eee7bb4b8",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "d4a07e783c9f7d727bd8b7b275bb29c84ca971086ab796ac2d96c7a257172996",
+      "source_line_1based": 121582
+    },
+    {
+      "index": 342,
+      "sample_sha256": "e7d6efdc6784888ed768f002719d0a01dcc52bdab4a5fd4a46a9badea5e9f73c",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "76cf413a5163830f414763a3cd6141ce9f23dad5b782f2bbe368ca7d594a1d7c",
+      "source_line_1based": 99790
+    },
+    {
+      "index": 343,
+      "sample_sha256": "8edcb242075093936ec9411243d3ce8fa2227b0aa9725fc93f3f24c3045670ed",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "be89174bed686eee70f94e5001525db134541ae480a4d8e0dce07cba4edf0819",
+      "source_line_1based": 214874
+    },
+    {
+      "index": 344,
+      "sample_sha256": "96678157bca15ea3b23afbbbfee7ae9ba42a4a1f130ffc2c9aeeda1a413b6f4b",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "09081ca71a386b3ec9f73602b75b0f8231ab297f4092c36d13a4c5d181c4f3ea",
+      "source_line_1based": 24832
+    },
+    {
+      "index": 345,
+      "sample_sha256": "c83a85b644a1d5eb33df81d882b1cf412f7a1595d8d6f2276c753c359900582a",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "ba0d96b90b154458a2bf03535fca8610d0aff1ee4bde2cc9de3813940219e33b",
+      "source_line_1based": 169550
+    },
+    {
+      "index": 346,
+      "sample_sha256": "afd6f8d175edc15c43921fed3f04aa45547fc1a0ae9baca11439e911ee07eef1",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "a144371b41c881bfb5b7fc423bf3b80976a555ff1534caa4c692984e8eb72399",
+      "source_line_1based": 195702
+    },
+    {
+      "index": 347,
+      "sample_sha256": "cc9f2c8c4585f88db128f90daffb78386d8e72b5cb9e2a6725ecb3eeff4d891f",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "c586e68f064b48f1c9c75cba6f75b8501003959d182c49ba1fe571a5dfa991fc",
+      "source_line_1based": 164942
+    },
+    {
+      "index": 348,
+      "sample_sha256": "14cb364456b094b7ee45ebdae21e0305e06235689548ffc7bf32b351321f2564",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "4b778264de07e7859e1034c15f3cbc60126209b88dcf3a078cae6398d26c8a97",
+      "source_line_1based": 314258
+    },
+    {
+      "index": 349,
+      "sample_sha256": "7c4957704aa415de0712e71c69e157080eb85b5564b5e19ab25c4548c3cfaa7e",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "bee497bc35d2158e50bc5c567392529a965449a845d4a213b0854cc4813bd6c1",
+      "source_line_1based": 55831
+    },
+    {
+      "index": 350,
+      "sample_sha256": "ce7af14374fabd8e841eaeb62c4aa34632150a2c820ed35c924ee3c4a1de5107",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "f4c6d4feb36ba6eeec2b0703493a173ff5164c79f907df8ddae5715bd03469c7",
+      "source_line_1based": 90204
+    },
+    {
+      "index": 351,
+      "sample_sha256": "4b841521c65b285d05f64fe0f0a0aa6a4a08a2d3cfb847e7d21101b84d53afcd",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "96c7f151ebef064df07cd0bf6fa951f58b0ab51201625fa777264cf1095b4f94",
+      "source_line_1based": 49808
+    },
+    {
+      "index": 352,
+      "sample_sha256": "c1d23e605be5740eb33c727e8fed2dcdfb0f6869bc71a3ee802e6c89b59768a4",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "62563278a69a8061a581fb63612259b4434717ab19ec320a0b04f418a4567ccd",
+      "source_line_1based": 382390
+    },
+    {
+      "index": 353,
+      "sample_sha256": "bc91b7cb16e07a7e1cbf02e7b39050f9e523e8f660d4cf4fe1f04131309a7d12",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "87232f9cd86bd3ddb8c10a7aec91a5784572091979e387793be8c702469cd7ed",
+      "source_line_1based": 208043
+    },
+    {
+      "index": 354,
+      "sample_sha256": "575d8c1d449d3ffc47e3f4d77f7c0f4312e3a57e1aa304e05deb8cf0feb8823e",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "3c00b603182cc330a8d20c0a6205868bff322acb6cc5d94193abcce2a9cece5d",
+      "source_line_1based": 305351
+    },
+    {
+      "index": 355,
+      "sample_sha256": "6133623364847378664ccc55e905365bc540c7f391622ec4ad7402c0e69d707a",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "7d4400e476e1255b46eeeb1c79ebccc13844cf2a4cbea703cbd8057ac99e692b",
+      "source_line_1based": 218228
+    },
+    {
+      "index": 356,
+      "sample_sha256": "755b124ee23b1f95f9decb806b0d3a927944bf4b13cfa4fb3ec705ae96c07bb4",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "63cfa052f263414a447180aa51d1aee27ca834fed23eb4cf517edc6d639985a9",
+      "source_line_1based": 98942
+    },
+    {
+      "index": 357,
+      "sample_sha256": "384ee27946cd0a6946283c8abc24ece0f9a641c2ca5416c83266302643fc11c5",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "c1ba348ae038593aa33214a4411e1575bc82a77500644716b6ec0d84fa4784d2",
+      "source_line_1based": 300293
+    },
+    {
+      "index": 358,
+      "sample_sha256": "b5f605c698a001294b9841140b1b76c0361897b7f77f3e0f8ad9256dccdf8bc2",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "53a013d33e1293bda57f8a157fa9c92c2f5ba57ab0d123f042942fae3ecf185e",
+      "source_line_1based": 256275
+    },
+    {
+      "index": 359,
+      "sample_sha256": "399f3b379165a68b8412f5d4bdef511e934605aa9be741c317f3fd4ef58d1f97",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "6fee006b5ef4d6a9d498a1f7e04d6a5e5c7811f5718bf538ff6e3db7148fdc8d",
+      "source_line_1based": 285167
+    },
+    {
+      "index": 360,
+      "sample_sha256": "3354e7babd309252f2c4ed0cc8b545da96677d7c67960d5515b4e8795a40c545",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "2aa830537294e34aef25ca0076d0e16cb411e62013fcb4e651df8f6dfa77a57a",
+      "source_line_1based": 186877
+    },
+    {
+      "index": 361,
+      "sample_sha256": "a941f30b96b4003c424bf3e0bf03d71388fa9988bfdc92af41beb78dba0b8945",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "ded89beda0c3576223b557ee01e98d10259fc6c66a687ccbf0ab71a8ed65564f",
+      "source_line_1based": 268800
+    },
+    {
+      "index": 362,
+      "sample_sha256": "cc0739e875a2083529f734069747adbe7230f835266d890606db899bdcfbe5a3",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "3c27dd97c0ff507b500f77fd02f14bd5491258e3d9dfee44e0cb4b5168649645",
+      "source_line_1based": 335280
+    },
+    {
+      "index": 363,
+      "sample_sha256": "93b987edcb2366d3893442ad93c491cbc50b082b060de04ce41c85ab25855533",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "63296b2ee38ba3c3a9933f57260ddf1f3e24e7389c1515bc4c62af16f1b760af",
+      "source_line_1based": 21594
+    },
+    {
+      "index": 364,
+      "sample_sha256": "8068da9b5dc8e040c987f20718104d98762be9c0979b76c8f983ba6d767c5113",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "fb3cda33f350382dd2c84490cf829a8f731a175152067f954febb2af1913901c",
+      "source_line_1based": 123397
+    },
+    {
+      "index": 365,
+      "sample_sha256": "fe804b134e8894590964083e3c96dd1f7d651db04830017a76dbbb3aceb0b364",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "eb3f119256062730275241b116d7b224c2057c73f1ca7dc4fc9827fba39e736a",
+      "source_line_1based": 216071
+    },
+    {
+      "index": 366,
+      "sample_sha256": "69fdcdbabe873437bf3cd3caaeaa7b258f66e9e4979dfe23112e583622399113",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "9fee2feb8aef934c3cc10b6120b5524b228ba71dd059c0f1e387f4db98951695",
+      "source_line_1based": 193132
+    },
+    {
+      "index": 367,
+      "sample_sha256": "c9ece2fa9b28a67b9551bda6a619e30b289acfcbcc9d1417da3a53857f99a150",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "5bb33d6ec214b2be247a46c78c6b5ce992f7d391217c1f5d0424b18c5b01ee05",
+      "source_line_1based": 271101
+    },
+    {
+      "index": 368,
+      "sample_sha256": "c1a8daa4ce7432240dbbf74cc358f3706bc2b875732e1f5fdfe4b74f52632d66",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "55291d69b83074e835cc2cb8ac8c2954cc6fa54274791480689311046bf038e1",
+      "source_line_1based": 331922
+    },
+    {
+      "index": 369,
+      "sample_sha256": "c3fb41cc96400e6228c99045e00b7fd6419cdd8571eb50dd6a9035eff8b832b0",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "a91b7e20390a79326867db0efa40e0b56951676c43017fd923dc6cfa1cb81242",
+      "source_line_1based": 48078
+    },
+    {
+      "index": 370,
+      "sample_sha256": "7e1f554802e0a57ee135e2cb4c71f869be020a42b69e1f6fdfd29141bd91da3a",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "a3dc84f0226b9599c97cb5dcd5d41284fcc72e863ec9b66d09d77e75cd97b73a",
+      "source_line_1based": 270444
+    },
+    {
+      "index": 371,
+      "sample_sha256": "08079924c814a83413df3e0082b8dd94327b67da3390d6e49e9e0330a34a2565",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "13646872e935bcba925454ca095c0b2cc38127a6cd01a03ac8dff70578791981",
+      "source_line_1based": 122350
+    },
+    {
+      "index": 372,
+      "sample_sha256": "ef1e4ff194e3d9d28e62739dec2523c5e87c45585132accfda149e54501b38f0",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "7460e4cfadd36fe5a5d15675b91f7c9756d606a7473287b147162ca4abd50cf1",
+      "source_line_1based": 290385
+    },
+    {
+      "index": 373,
+      "sample_sha256": "f792754a669fae971d165baf65b357af348e3018603814a6247b60f681349f58",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "d7af2f6229fa795da34bb89ac8a70ba91c8c8af5f3506a056f684668c4cd5681",
+      "source_line_1based": 385241
+    },
+    {
+      "index": 374,
+      "sample_sha256": "e4337a9cc7e40fbd03820fa23bcd4eab9986993e35584e982cfaee5902d25b1c",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "5fc39e84a805ecd39ca0f4bf7910499adc261f01912022a7ad4683de28ae2a8a",
+      "source_line_1based": 252897
+    },
+    {
+      "index": 375,
+      "sample_sha256": "c9cf5cd0e45fbe5fd2ce45e0b56c7619749228bd1f165a5e7aa798499074acc0",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "dd01d78ebde733f662aab83763c84c2216d060a7a09b75bd7c2d24991dd171d0",
+      "source_line_1based": 205092
+    },
+    {
+      "index": 376,
+      "sample_sha256": "c13565d894ec6c74cefaae1db63ef12d1fce7c78f57371ddb4085bce8ec06096",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "0ee314c016f7fcad764008a93eb516e5cfd25a06bdedfebb82369ea057a0f74f",
+      "source_line_1based": 73973
+    },
+    {
+      "index": 377,
+      "sample_sha256": "0d5aa13009dac52b3c7135028cf34849f9594dd03d74d5cc6c7b3c4ed4dc21a3",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "c5baa62e8f44571b9a53c1ca1501909d43f11123d9b010869920cfb15fb9f894",
+      "source_line_1based": 158746
+    },
+    {
+      "index": 378,
+      "sample_sha256": "d59e1b60f3f99e3dece3b1edc4132a5ad5b4640237820c8409661b798a8fb56c",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "41cb4e6f41ead4104ac25d88a5818d5bea79a5f5fa721f1fd2710d5917778a98",
+      "source_line_1based": 285593
+    },
+    {
+      "index": 379,
+      "sample_sha256": "1a2c85529cd1b5c202ba170d1389e694a8700a6065b4b00ab8b35e0adb6006f0",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "44f829159da8748a483ab453bad1ac49c6fdc79142628d95361ec8f1c7001e9a",
+      "source_line_1based": 211536
+    },
+    {
+      "index": 380,
+      "sample_sha256": "30c63aa9ed36e5fd21e6e7ae82e14403e3168027be1a7c1849e9053a9a9e4f79",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "b8a9c55d50db40739d4cec7461081b9bc864079e0a08f42f9f341d19a47ec89a",
+      "source_line_1based": 261053
+    },
+    {
+      "index": 381,
+      "sample_sha256": "7312244af74608584899f2e155f9133e4baa1c591eb1bea6809de54b15bd6cf7",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "3082d4553d92af6a5e9b8eeddd00831323985892d9a7cffd5c166e6b444eb5f8",
+      "source_line_1based": 198446
+    },
+    {
+      "index": 382,
+      "sample_sha256": "21041c4b130b4b56e3f37c5ad33475d1afebe7310b30b1e2620721acfd5e834e",
+      "family": "MATH",
+      "source_type": "MATH_SV",
+      "original_question_sha256": "61c391845077f3cb9ad9ac294bdeab13b8ae12cebac01be5479f7e08d34c4f1d",
+      "source_line_1based": 235135
+    },
+    {
+      "index": 383,
+      "sample_sha256": "70d6829b71cef6be5435b036b8bc944f41c19846759a9eb3c2379f8ea36f9976",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "0348df7a7a96f84092cbdacec253346974507837f999035b8e221ff034f931cb",
+      "source_line_1based": 394708
+    },
+    {
+      "index": 384,
+      "sample_sha256": "78069be67933c3a3d26d46f81c2a307ec24f4435b6e0706094699413b2f92133",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "b3a868bb6417620cccc75f1dbd625072525e9d4b89a05553f56e28a87054ef79",
+      "source_line_1based": 276919
+    },
+    {
+      "index": 385,
+      "sample_sha256": "cd00638d33e06675db3c3db4c5986cba139eb0b317f941584c33245224d2717f",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "481ed6946119fc0de3584b66ab4d0aac72176e9548aeef0412de39c0f8ded50e",
+      "source_line_1based": 38427
+    },
+    {
+      "index": 386,
+      "sample_sha256": "e748c67e6bd58b02a70e468d03c4f2936a6f37e786e28eb0e3734d26217e8891",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "0253a8c905db2b7a58c7f0ed4bb12f98abed5f2ccad67f23cd21b5c342700d74",
+      "source_line_1based": 369576
+    },
+    {
+      "index": 387,
+      "sample_sha256": "c8b8672a0f17ab1f3846fa8d6be9d855407af92960c7aea2a1706f9969c9f8cb",
+      "family": "MATH",
+      "source_type": "MATH_FOBAR",
+      "original_question_sha256": "e36d8394d0fee76ac03eccec05b1da8a2f532577222c235f142447edd3573594",
+      "source_line_1based": 199928
+    },
+    {
+      "index": 388,
+      "sample_sha256": "7fd8d04a378a92838180e27259e0f89f0a93ead068ff329d286bc63f5aa9960f",
+      "family": "GSM",
+      "source_type": "GSM_Rephrased",
+      "original_question_sha256": "35bca7c3aa042487ad71d24317eb39b82edc8e993dd3403630b0aaa69faa240f",
+      "source_line_1based": 83565
+    },
+    {
+      "index": 389,
+      "sample_sha256": "d698b42723e0daa4340b97a28445fac04656841998a127ccbe5ba5d799e6a33b",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "0a87ea5b2100e5fc642d30866fe074651565d04c4e1574039fea7820338c42f9",
+      "source_line_1based": 25375
+    },
+    {
+      "index": 390,
+      "sample_sha256": "e0826fcc1e0acd7eccc3c64c929e86f1e9554419b7081852d78df6e3d07a2694",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "6a0f7dbfdde61bb39414964e38c984a0c15abf98a356ad500140cebbb9492536",
+      "source_line_1based": 246268
+    },
+    {
+      "index": 391,
+      "sample_sha256": "c52b66d9277bfc66048dabb3b0d05d5a145904164e6f7618578f2118648b9d1e",
+      "family": "MATH",
+      "source_type": "MATH_Rephrased",
+      "original_question_sha256": "8e22306a409f183f203e8cdd6a1e90316f66b853e44793ecc06e72e1ca57b1c0",
+      "source_line_1based": 4700
+    },
+    {
+      "index": 392,
+      "sample_sha256": "7956bd193009a71a79cf2c039098bf29b1fedc2f83a13708af1bbacb00328096",
+      "family": "GSM",
+      "source_type": "GSM_SV",
+      "original_question_sha256": "ce62d9cf448aa62aa98fe0381bb6f30536ff383600e74b02a5eb1c2ad9bbebec",
+      "source_line_1based": 160784
+    },
+    {
+      "index": 393,
+      "sample_sha256": "390e877c61d526d67ebaa8e4d23354bee745e3213ccc85b9e969b9f76ba879c4",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "a9634a0b02329d7c7848d5805f678c4185db30d9a7b97a97866a3e53f3960df0",
+      "source_line_1based": 33210
+    },
+    {
+      "index": 394,
+      "sample_sha256": "e89fa02b87be26eb95e1fb1c2c56dd1f48ba1b4aa558e86165818b5918d8ca4d",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "07f6f8f88992a6d8e123813f6ddddccf52812ec0b6c800a8191d7320644ddd51",
+      "source_line_1based": 105082
+    },
+    {
+      "index": 395,
+      "sample_sha256": "3e2dda4356008c5adfbe1872bcc3d7d06a24ef2635a712f89ccce329d90e0a67",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "5e6375912f4d30ca87208a1c8563e9a958f310666a05401996edc159c1ba9bcc",
+      "source_line_1based": 388692
+    },
+    {
+      "index": 396,
+      "sample_sha256": "2742f6c7a45c798fe4320fcbab8580c8d1ea5124efc815e7e0db2b1bd9f37357",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "f8d11c2c5ab6a84e564c149832e91a079a2211ae9fadf9ed1cb35506d690557a",
+      "source_line_1based": 383358
+    },
+    {
+      "index": 397,
+      "sample_sha256": "e3673ffb44753ad6f7f6c6aca7d0030151c186303d789af32590b772437808cb",
+      "family": "MATH",
+      "source_type": "MATH_AnsAug",
+      "original_question_sha256": "89a251f8951444945678e096cb4d6fb7b50a2075292e9e4bb48591c11e7dae45",
+      "source_line_1based": 353089
+    },
+    {
+      "index": 398,
+      "sample_sha256": "1fa8283f87043303ecadf14479823826fe647c8808b21dd2ea2b908427509185",
+      "family": "GSM",
+      "source_type": "GSM_FOBAR",
+      "original_question_sha256": "1f5685564dcef9be75d32eed193e6379b3b2032511eb2a55e53fa3aa4461f6c7",
+      "source_line_1based": 240105
+    },
+    {
+      "index": 399,
+      "sample_sha256": "8b22721e76cb8b5f84e09a7130570595c542667e8ebc110f0e3801fde4efe006",
+      "family": "GSM",
+      "source_type": "GSM_AnsAug",
+      "original_question_sha256": "5133c0d5ae1025c7808c27f76beb495353e11096c411486235c32f09c828a617",
+      "source_line_1based": 282131
+    }
+  ]
+}
