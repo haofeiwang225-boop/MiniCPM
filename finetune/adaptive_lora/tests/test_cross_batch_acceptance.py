@@ -1,5 +1,9 @@
 """CPU-only tests; no real checkpoints or training runs."""
 import copy
+from dataclasses import asdict
+import json
+from pathlib import Path
+import tempfile
 import random
 from types import SimpleNamespace
 import unittest
@@ -10,7 +14,8 @@ from torch import nn
 from transformers import default_data_collator
 from adaptive_lora.audit_cross_batch_acceptance import (
     audit_candidates, validate_groups, directional_slopes, temporary_candidates,
-    candidate_check, generate_candidates, preserved_state)
+    candidate_check, extract_historical_candidates, bind_historical_candidates, preserved_state, main, verified)
+from adaptive_lora.data_provenance import file_sha256
 from adaptive_lora.dense_init import make_dense_layer
 from adaptive_lora.official import LoRAConfig
 from evaluate_adapter_loss import evaluate_dataset
@@ -79,8 +84,8 @@ class CrossBatchTests(unittest.TestCase):
     def test_trust_violation_rejected(self):
         c = candidate(self.model); c['target'].mul_(.1)
         self.assertFalse(candidate_check(c, .05)['feasible'])
-        r = audit_candidates(self.model, [c], self.data, self.groups, .05)
-        self.assertEqual(r['policies']['all_candidates']['num_updated_modules'], 0)
+        with self.assertRaisesRegex(ValueError, 'violates rank/trust'):
+            audit_candidates(self.model, [c], self.data, self.groups, .05)
 
     def test_indices_and_content_isolation(self):
         validate_groups(self.groups, 4, ['a', 'b', 'c', 'd'])
@@ -193,21 +198,134 @@ class CrossBatchTests(unittest.TestCase):
                                [default_data_collator([sample()])])
         self.assertEqual(flags, [p.requires_grad for p in self.model.parameters()])
 
-    def test_v1_probe_and_planner_integration(self):
-        args = SimpleNamespace(analysis_device='cpu', adaptive_residual_energy_threshold=.1,
-            direction_function_tolerance=.05, direction_min_gain=.001,
-            direction_eta_start=1., direction_eta_decay=.5, direction_eta_min=.03125)
+    def payloads(self):
+        spec = dict(structure='dense', config=asdict(self.model.layer.lora_config),
+                    scaling=self.model.layer.lora_scaler,
+                    state={k: getattr(self.model.layer, k).detach().clone() for k in ('weight_a','weight_b')})
+        pre = dict(format_version=1, base_model='/toy/base', layers={'layer': spec})
+        post = copy.deepcopy(pre)
+        post['layers']['layer']['state']['weight_b'].mul_(.99)
+        history = dict(step=1600, invariants_passed=True, num_modules=1,
+                       actual_changed_sides={'A':0, 'B':1, 'none':0})
+        return pre, post, history
+
+    def test_historical_candidates_integration(self):
+        pre, post, history = self.payloads()
         before = self.snapshot()
-        with preserved_state(self.model):
-            candidates, rows = generate_candidates(self.model, ['layer'],
-                [default_data_collator([sample()])], args)
-        self.assertEqual(len(rows), 1)
-        self.assertTrue(math_isfinite(rows[0]['gid_full']))
+        records, rows, counts = extract_historical_candidates(pre, post, .05, history)
+        candidates = bind_historical_candidates(self.model, pre, records)
+        self.assertEqual(counts, history['actual_changed_sides'])
+        self.assertEqual(rows[0]['side'], 'B')
+        self.assertTrue(torch.equal(candidates[0]['target'], post['layers']['layer']['state']['weight_b']))
+        result = audit_candidates(self.model, candidates, self.data, self.groups, .05)
+        self.assertEqual(result['policies']['all_candidates']['num_updated_modules'], 1)
         for n,p in self.model.named_parameters(): self.assertTrue(torch.equal(p,before[n]))
 
+    def test_extract_mixed_a_b_none(self):
+        pre, post, history = self.payloads()
+        pre['layers']['other'] = copy.deepcopy(pre['layers']['layer'])
+        pre['layers']['unchanged'] = copy.deepcopy(pre['layers']['layer'])
+        post['layers']['other'] = copy.deepcopy(pre['layers']['other'])
+        post['layers']['other']['state']['weight_a'].mul_(.99)
+        post['layers']['unchanged'] = copy.deepcopy(pre['layers']['unchanged'])
+        history.update(num_modules=3, actual_changed_sides={'A':1,'B':1,'none':1})
+        records, rows, counts = extract_historical_candidates(pre, post, .05, history)
+        self.assertEqual(counts, {'A':1,'B':1,'none':1})
+        self.assertEqual(len(records), 2)
+        self.assertEqual([r['side'] for r in rows], ['B','A','none'])
 
-def math_isfinite(value):
-    return bool(torch.isfinite(torch.tensor(value)))
+    def test_reject_both_factors_changed(self):
+        pre, post, history = self.payloads()
+        post['layers']['layer']['state']['weight_a'].mul_(.99)
+        with self.assertRaisesRegex(ValueError, 'Both factors changed'):
+            extract_historical_candidates(pre, post, .05, history)
+
+    def test_checkpoint_metadata_mismatches(self):
+        for kind in ('base','targets','rank','scaling','shape','dtype','missing','nonfinite','format'):
+            with self.subTest(kind=kind):
+                pre, post, history = self.payloads()
+                spec = post['layers']['layer']
+                if kind == 'base': post['base_model'] = '/other'
+                elif kind == 'targets': post['layers']['other'] = post['layers'].pop('layer')
+                elif kind == 'rank': spec['config']['lora_rank'] += 1
+                elif kind == 'scaling': spec['scaling'] += 1
+                elif kind == 'shape': spec['state']['weight_a'] = torch.ones(1,4)
+                elif kind == 'dtype': spec['state']['weight_a'] = spec['state']['weight_a'].double()
+                elif kind == 'missing': del spec['state']['weight_a']
+                elif kind == 'nonfinite': spec['state']['weight_b'][0] = float('nan')
+                elif kind == 'format': post['format_version'] = 2
+                with self.assertRaises(ValueError): extract_historical_candidates(pre, post, .05, history)
+
+    def test_historical_count_mismatch_aborts(self):
+        pre, post, history = self.payloads()
+        history['actual_changed_sides'] = {'A':1,'B':0,'none':0}
+        with self.assertRaisesRegex(ValueError, 'actual=.*expected='):
+            extract_historical_candidates(pre, post, .05, history)
+
+    def test_historical_trust_failure_aborts(self):
+        pre, post, history = self.payloads()
+        post['layers']['layer']['state']['weight_b'].mul_(.5)
+        with self.assertRaisesRegex(ValueError, 'violates rank/trust'):
+            extract_historical_candidates(pre, post, .05, history)
+
+    def test_historical_rank_failure_aborts(self):
+        pre, post, history = self.payloads()
+        post['layers']['layer']['state']['weight_b'].zero_()
+        with self.assertRaisesRegex(ValueError, 'violates rank/trust'):
+            extract_historical_candidates(pre, post, .05, history)
+
+    def test_loaded_pre_mismatch_aborts(self):
+        pre, post, history = self.payloads()
+        records, _, _ = extract_historical_candidates(pre, post, .05, history)
+        with torch.no_grad(): self.model.layer.weight_a.add_(1)
+        with self.assertRaisesRegex(ValueError, 'Loaded PRE factor mismatch'):
+            bind_historical_candidates(self.model, pre, records)
+
+    def test_hash_mismatch_aborts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)/'post.pt'; path.write_bytes(b'toy')
+            with self.assertRaisesRegex(ValueError, 'SHA256'):
+                verified(path, '0'*64)
+
+    def test_no_candidate_regeneration_imports(self):
+        import inspect
+        from adaptive_lora import audit_cross_batch_acceptance as module
+        source = inspect.getsource(module)
+        for forbidden in ('probe_weight', 'svd_with_gid', 'plan_geometric_direction_correction', 'generate_candidates'):
+            self.assertNotIn(forbidden, source)
+
+    def test_model_load_failure_does_not_reserve_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pre, post, history = self.payloads()
+            pre_path, post_path = root/'pre.pt', root/'post.pt'
+            torch.save(pre, pre_path); torch.save(post, post_path)
+            data = root/'train.json'
+            data.write_text(json.dumps([{'text': str(i)} for i in range(48)]))
+            calibration = root/'calibration.json'
+            calibration.write_text(json.dumps(dict(split='train', dataset_source=str(data),
+                batch_size=1, batch_indices=[[i] for i in range(8)], dataset_length=48)))
+            history.update(checkpoint_pre_sha256=file_sha256(pre_path),
+                           checkpoint_post_sha256=file_sha256(post_path))
+            audit = root/'audit.json'; audit.write_text(json.dumps(history))
+            cfg = dict(model_family='minicpm5', lora_structure='dense', batch_size=1,
+                model_name_or_path='/toy/base', train_data_path=str(data),
+                calibration_indices_path=str(calibration), train_data_sha256=file_sha256(data),
+                calibration_indices_sha256=file_sha256(calibration), train_samples=48,
+                targets=['layer'], direction_function_tolerance=.05, seed=42,
+                model_max_length=2048, dynamic_length=True, dtype='float32')
+            config = root/'config.json'; config.write_text(json.dumps(cfg))
+            output = root/'output'
+            argv = ['audit', '--run_config',str(config),'--pre_adapter',str(pre_path),
+                    '--post_adapter',str(post_path),'--historical_audit',str(audit),
+                    '--expected_adapter_sha256',file_sha256(pre_path),'--output_dir',str(output),
+                    '--device','cpu']
+            with patch('sys.argv', argv), patch('transformers.AutoTokenizer.from_pretrained') as tok, \
+                    patch('adaptive_lora.training_data.ChatTrainingDataset'), \
+                    patch('adaptive_lora.model_loading.load_training_model', side_effect=RuntimeError('load failure')):
+                tok.return_value.chat_template = 'toy'
+                with self.assertRaisesRegex(RuntimeError, 'load failure'): main()
+            self.assertFalse(output.exists())
 
 
 if __name__ == '__main__': unittest.main()

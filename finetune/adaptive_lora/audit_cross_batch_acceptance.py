@@ -19,14 +19,9 @@ import torch
 from transformers import default_data_collator
 
 from evaluate_adapter_loss import evaluate_dataset
-from .gradient_probe import probe_weight
-from .official import LinearWithLoRA, dense_factors
-from .residual_gid import svd_with_gid
-from .subspace_matching import match_subspaces, orth
-from .residual_gradient import residual_gradient
-from .tangent_metrics import tangent_metrics
-from .direction_correction import (plan_geometric_direction_correction,
-    relative_A_projection_change, relative_B_projection_change)
+from .official import LinearWithLoRA
+from .subspace_matching import orth
+from .direction_correction import relative_A_projection_change, relative_B_projection_change
 from .data_provenance import file_sha256, git_version
 
 
@@ -78,37 +73,94 @@ def validate_groups(groups, size, fingerprints=None):
             hashes.update(current)
 
 
-def generate_candidates(model, names, batches, args):
-    """Compose existing v1 probe/residual/SVD/planner without changing geometry."""
+def extract_historical_candidates(pre, post, tolerance, history):
+    """Recover actual PRE/POST changes, never regenerate geometric directions.
+
+    orth() is used only for small-factor numerical-rank validation, not gradient
+    SVD, GID estimation, or candidate planning. Any invalid historical change
+    aborts the entire audit; there is no feasible-subset fallback.
+    """
+    if not math.isfinite(tolerance) or tolerance < 0:
+        raise ValueError('Invalid historical trust tolerance')
+    if pre.get('format_version') != post.get('format_version'):
+        raise ValueError('PRE/POST format mismatch')
+    if Path(pre['base_model']).resolve() != Path(post['base_model']).resolve():
+        raise ValueError('PRE/POST base model mismatch')
+    if not pre['layers'] or set(pre['layers']) != set(post['layers']):
+        raise ValueError('PRE/POST target modules mismatch')
     candidates, rows = [], []
-    for name in names:
-        layer = model.get_submodule(name)
-        if type(layer) is not LinearWithLoRA:
-            raise ValueError('Audit supports ordinary Dense LoRA only')
-        g = probe_weight(model, layer, batches).to(args.analysis_device)
-        a, b = (v.to(g.device) for v in dense_factors(layer))
-        u, s, vh, gid = svd_with_gid(g)
-        qa, qb, ca, cb = match_subspaces(a, b, u, s, vh)
-        residual = residual_gradient(g, qa, qb)
-        if residual.norm() <= 1e-6 * g.norm():
-            residual.zero_()
-        metrics = tangent_metrics(g, residual, s, layer.lora_rank, ca, cb)
-        plan, factors = plan_geometric_direction_correction(
-            g, a, b, metrics['oracle_tangent_coverage'], layer.lora_scaler,
-            residual_threshold=args.adaptive_residual_energy_threshold,
-            function_tolerance=args.direction_function_tolerance,
-            min_gain=args.direction_min_gain, eta_start=args.direction_eta_start,
-            eta_decay=args.direction_eta_decay, eta_min=args.direction_eta_min)
-        row = dict(module=name, gid_full=gid, **metrics, plan=plan)
+    for name, old in pre['layers'].items():
+        new = post['layers'][name]
+        if old.get('structure') != 'dense' or new.get('structure') != 'dense':
+            raise ValueError(f'Non-Dense checkpoint: {name}')
+        if old['config'] != new['config'] or old['scaling'] != new['scaling']:
+            raise ValueError(f'PRE/POST rank/config/scaling mismatch: {name}')
+        rank = old['config']['lora_rank']
+        if type(rank) is not int or rank <= 0 or not math.isfinite(old['scaling']):
+            raise ValueError(f'Invalid rank/scaling: {name}')
+        if set(old['state']) != {'weight_a', 'weight_b'} or set(new['state']) != set(old['state']):
+            raise ValueError(f'Unexpected or missing factors: {name}')
+        expected = {'weight_a': (rank, old['config']['in_features']),
+                    'weight_b': (old['config']['out_features'], rank)}
+        changed = []
+        for key, side in [('weight_a', 'A'), ('weight_b', 'B')]:
+            x, y = old['state'][key], new['state'][key]
+            if (not torch.is_tensor(x) or not torch.is_tensor(y)
+                    or tuple(x.shape) != expected[key] or x.shape != y.shape
+                    or x.dtype != y.dtype or not x.is_floating_point()
+                    or not torch.isfinite(x).all() or not torch.isfinite(y).all()):
+                raise ValueError(f'PRE/POST factor shape/dtype/value mismatch: {name}.{key}')
+            if not torch.equal(x, y):
+                changed.append(side)
+        if len(changed) > 1:
+            raise ValueError(f'Both factors changed: {name}')
+        side = changed[0] if changed else 'none'
+        row = dict(module=name, rank=rank, scaling=old['scaling'], side=side)
+        if changed:
+            a, b = old['state']['weight_a'], old['state']['weight_b']
+            if orth(a.T).shape[1] != rank or orth(b).shape[1] != rank:
+                raise ValueError(f'PRE factor rank deficient: {name}')
+            key = 'weight_a' if side == 'A' else 'weight_b'
+            layer = SimpleNamespace(weight_a=a, weight_b=b, lora_rank=rank)
+            c = dict(module=name, side=side, target=new['state'][key].clone(),
+                     parameter=old['state'][key], layer=layer)
+            check = candidate_check(c, tolerance)
+            if not check['feasible']:
+                raise ValueError(f'Historical candidate violates rank/trust: {name}: {check}')
+            row['check'] = check
+            candidates.append(dict(module=name, side=side, target=c['target']))
         rows.append(row)
-        if factors is not None:
-            side = plan['applied_side']
-            if side not in ('A', 'B'):
-                raise ValueError('Expected exactly one candidate factor per layer')
-            p = layer.weight_a if side == 'A' else layer.weight_b
-            candidates.append(dict(module=name, layer=layer, side=side, parameter=p,
-                                   target=factors[0 if side == 'A' else 1].to(p).detach().clone()))
-    return candidates, rows
+    counts = {side: sum(r['side'] == side for r in rows) for side in ('A', 'B', 'none')}
+    expected = history.get('actual_changed_sides', {})
+    if (history.get('invariants_passed') is not True or history.get('step') != 1600
+            or set(expected) != set(counts)
+            or any(type(n) is not int or n < 0 for n in expected.values())
+            or history.get('num_modules') != len(rows) or counts != expected):
+        raise ValueError(f'Historical side-count mismatch or invalid audit: actual={counts}, '
+                         f'expected={expected}, modules={len(rows)}')
+    return candidates, rows, counts
+
+
+def bind_historical_candidates(model, pre, records):
+    """Require exact loaded PRE values and exact representability of POST."""
+    for name, spec in pre['layers'].items():
+        layer = model.get_submodule(name)
+        if (type(layer) is not LinearWithLoRA or layer.lora_rank != spec['config']['lora_rank']
+                or layer.lora_scaler != spec['scaling']):
+            raise ValueError(f'Loaded PRE structure mismatch: {name}')
+        for key in ('weight_a', 'weight_b'):
+            p, saved = getattr(layer, key), spec['state'][key]
+            if p.dtype != saved.dtype or not torch.equal(p.detach().cpu(), saved.cpu()):
+                raise ValueError(f'Loaded PRE factor mismatch: {name}.{key}')
+    candidates = []
+    for record in records:
+        layer = model.get_submodule(record['module'])
+        p = layer.weight_a if record['side'] == 'A' else layer.weight_b
+        target = record['target']
+        if target.dtype != p.dtype or target.shape != p.shape:
+            raise ValueError(f'POST factor cannot be loaded exactly: {record["module"]}')
+        candidates.append(dict(record, layer=layer, parameter=p, target=target.to(p.device)))
+    return candidates
 
 
 def directional_slopes(model, candidates, batches):
@@ -180,26 +232,27 @@ def audit_candidates(model, candidates, dataset, groups, tolerance):
     if len({c['module'] for c in candidates}) != len(candidates):
         raise ValueError('Duplicate candidate module')
     with preserved_state(model):
+        checks = [candidate_check(c, tolerance) for c in candidates]
+        for c, check in zip(candidates, checks):
+            if not check['feasible']:
+                raise ValueError(f'Historical candidate violates rank/trust: {c["module"]}: {check}')
         batches = {k: [default_data_collator([dataset[i]]) for i in groups[k]]
                    for k in ('proposal', 'selector')}
         pd = directional_slopes(model, candidates, batches['proposal'])
         sd = directional_slopes(model, candidates, batches['selector'])
-        rows, feasible, selected = [], [], []
-        for c in candidates:
+        rows, selected = [], []
+        for c, check in zip(candidates, checks):
             name = c['module']
-            check = candidate_check(c, tolerance)
             passed = check['feasible'] and pd[name]['mean'] < 0 and sd[name]['mean'] < 0
             rows.append(dict(module=name, side=c['side'], proposal=pd[name], selector=sd[name],
                              check=check, selected=passed,
                              reason='both_down' if passed else check['reason'] if not check['feasible']
                              else 'nonnegative_directional_derivative'))
-            if check['feasible']:
-                feasible.append(c)
             if passed:
                 selected.append(c)
         results = {}
         audit_data = [dataset[i] for i in groups['audit']]
-        for policy, updates in [('original', []), ('all_candidates', feasible), ('filtered', selected)]:
+        for policy, updates in [('original', []), ('all_candidates', candidates), ('filtered', selected)]:
             with temporary_candidates(updates):
                 summary, samples = evaluate_dataset(model, audit_data, next(model.parameters()).device)
             for row, index in zip(samples, groups['audit']):
@@ -208,7 +261,7 @@ def audit_candidates(model, candidates, dataset, groups, tolerance):
         baseline = results['original']['token_weighted_nll']
         for result in results.values():
             result['delta_from_original'] = result['token_weighted_nll'] - baseline
-    return dict(candidates=rows, policies=results, all_candidates_definition='all storage-precision rank/trust-feasible v1 candidates',
+    return dict(candidates=rows, policies=results, all_candidates_definition='all historical PRE/POST changed factors; invalid candidates abort',
                 slope_loss='mean_per_sample', audit_loss='token_weighted',
                 audit_used_for_selection=False, optimizer_created=False, scheduler_created=False)
 
@@ -223,10 +276,12 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run_config', type=Path, required=True)
     p.add_argument('--pre_adapter', type=Path, required=True)
+    p.add_argument('--post_adapter', type=Path, required=True)
+    p.add_argument('--historical_audit', type=Path, required=True,
+                   help='Existing cpu_audit.json: checkpoint hashes and actual_changed_sides')
     p.add_argument('--expected_adapter_sha256', required=True)
     p.add_argument('--output_dir', type=Path, required=True)
     p.add_argument('--device', default='cuda')
-    p.add_argument('--analysis_device', default=None, help='Defaults to --device')
     p.add_argument('--dtype', choices=['float32', 'bfloat16'], default=None,
                    help='Base precision override; saved LoRA factors must load exactly')
     p.add_argument('--selector_indices', nargs='+', type=int, default=list(range(8, 16)))
@@ -242,6 +297,10 @@ def main():
     hashes = {str(data): verified(data, cfg.get('train_data_sha256')),
               str(calibration_path): verified(calibration_path, cfg.get('calibration_indices_sha256')),
               str(options.pre_adapter): verified(options.pre_adapter, options.expected_adapter_sha256)}
+    history = json.loads(options.historical_audit.read_text())
+    verified(options.pre_adapter, history.get('checkpoint_pre_sha256'))
+    hashes[str(options.post_adapter)] = verified(options.post_adapter, history.get('checkpoint_post_sha256'))
+    hashes[str(options.historical_audit)] = file_sha256(options.historical_audit)
     calibration = json.loads(calibration_path.read_text())
     if (calibration['split'] != 'train' or Path(calibration['dataset_source']).resolve() != data.resolve()
             or data.name != 'train.json' or calibration['batch_size'] != 1
@@ -259,7 +318,9 @@ def main():
         p.error('PRE base model / target modules mismatch')
     if any(s.get('structure') != 'dense' for s in payload['layers'].values()):
         p.error('Only Dense PRE adapters supported')
-    options.output_dir.mkdir(parents=True, exist_ok=False)
+    post = torch.load(options.post_adapter, map_location='cpu', weights_only=True)
+    records, changes, counts = extract_historical_candidates(
+        payload, post, cfg['direction_function_tolerance'], history)
     from transformers import AutoTokenizer
     from .model_loading import load_training_model
     from .checkpoint import load_adapter
@@ -273,6 +334,7 @@ def main():
     model = load_training_model(cfg['model_name_or_path'], getattr(torch, options.dtype or cfg['dtype']), 'minicpm5').to(options.device)
     model.config.use_cache = False
     names = load_adapter(model, options.pre_adapter)
+    candidates = bind_historical_candidates(model, payload, records)
     originals = {}
     for name in names:
         for key in ('weight_a', 'weight_b'):
@@ -287,17 +349,18 @@ def main():
                   run_config_sha256=file_sha256(options.run_config), groups=groups,
                   sample_sha256={k: [fingerprints[i] for i in v] for k, v in groups.items()},
                   dtype=options.dtype or cfg['dtype'], historical_training_state_restored=False,
-                  device=options.device, analysis_device=options.analysis_device or options.device,
+                  device=options.device,
+                  pre_sha256=hashes[str(options.pre_adapter)], post_sha256=hashes[str(options.post_adapter)],
+                  historical_changes=changes, actual_changed_sides=counts,
+                  historical_expected_sides=history['actual_changed_sides'], historical_counts_match=True,
+                  num_candidates=len(candidates), candidate_source='historical_PRE_POST_difference',
                   warning='Audit samples are training data; never use audit NLL to tune selection.',
                   tensor_version_note='Temporary copy_ restores values, not Tensor version counters.')
+    # Only reserve output after all input validation and model/adapter loading succeed.
+    options.output_dir.mkdir(parents=True, exist_ok=False)
     try:
         with preserved_state(model):
-            batches = [default_data_collator([dataset[i]]) for i in groups['proposal']]
-            planning_args = SimpleNamespace(**cfg)
-            planning_args.analysis_device = options.analysis_device or options.device
-            candidates, plans = generate_candidates(model, names, batches, planning_args)
             report.update(audit_candidates(model, candidates, dataset, groups, cfg['direction_function_tolerance']))
-            report['geometric_plans'] = plans
     except BaseException as error:
         report['error'] = repr(error)
         raise
