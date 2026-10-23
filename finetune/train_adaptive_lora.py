@@ -74,7 +74,13 @@ def get_args():
     p.add_argument('--adaptive_rank_max', type=int, default=256)
     p.add_argument('--adaptive_rank_step_cap', type=int, default=4)
     p.add_argument('--residual_init_scale', type=float, default=0.001)
-    p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric', 'reset_only'], default='none')
+    p.add_argument('--direction_correction', choices=['none', 'blend', 'geometric', 'reset_only', 'geometric_v2'], default='none')
+    p.add_argument('--rsc_selection_samples', type=int, default=8)
+    p.add_argument('--rsc_selection_indices', nargs='+', type=int)
+    p.add_argument('--rsc_proposal_descent_margin', type=float, default=0.)
+    p.add_argument('--rsc_selection_descent_margin', type=float, default=0.)
+    p.add_argument('--rsc_loss_min_improvement', type=float, default=0.)
+    p.add_argument('--rsc_trial_strengths', nargs='+', type=float, default=[1., .5, .25])
     p.add_argument('--reset_side_manifest', type=Path)
     p.add_argument('--direction_correction_steps', nargs='+', type=int, default=[])
     p.add_argument('--direction_function_tolerance', type=float, default=0.05)
@@ -130,7 +136,7 @@ def get_args():
         p.error('Invalid Dense rank bounds')
     if args.dense_lora_param_budget is not None and args.dense_lora_param_budget < 1:
         p.error('Dense parameter budget must be positive')
-    if args.direction_correction in ('geometric', 'reset_only'):
+    if args.direction_correction in ('geometric', 'reset_only', 'geometric_v2'):
         if args.lora_structure != 'dense' or args.adaptive_lora:
             p.error('Geometric/reset_only mode requires Dense LoRA and adaptive_lora=false; expansion is forbidden')
         if not args.direction_correction_steps:
@@ -157,6 +163,20 @@ def get_args():
         p.error('Invalid LoRA-update trust region')
     if not math.isfinite(args.direction_min_gain) or args.direction_min_gain <= 0:
         p.error('direction_min_gain must be positive and finite')
+    if args.direction_correction == 'geometric_v2':
+        if args.batch_size != 1 or args.rsc_selection_samples < 1:
+            p.error('RSC requires batch_size=1 and positive selection sample count')
+        for name in ('rsc_proposal_descent_margin', 'rsc_selection_descent_margin', 'rsc_loss_min_improvement'):
+            if not math.isfinite(getattr(args,name)) or getattr(args,name) < 0:
+                p.error(name + ' must be finite and nonnegative')
+        strengths = args.rsc_trial_strengths
+        if not strengths or len(strengths)>8 or any(not math.isfinite(x) or not 0<x<=1 for x in strengths) or any(a<=b for a,b in zip(strengths,strengths[1:])):
+            p.error('RSC trial strengths must be 1..8 strictly decreasing values in (0,1]')
+        from adaptive_lora.rsc_calibration import training_source
+        try:
+            training_source(args.train_data_path, args.tiny_model)
+        except (ValueError, OSError) as error:
+            p.error(str(error))
     args.adaptive_stats_dir = args.adaptive_stats_dir or args.output_dir/'adaptive_stats'
     return args
 
@@ -240,6 +260,11 @@ def main():
         return load_calibration_batches(args.calibration_indices_path,
             args.calibration_indices_sha256, dataset, default_data_collator)
 
+    if args.direction_correction == 'geometric_v2':
+        from adaptive_lora.rsc_calibration import write_rsc_manifest
+        args.rsc_manifest_path = args.output_dir/'rsc_training_samples.json'
+        args.rsc_manifest_sha256 = write_rsc_manifest(args.rsc_manifest_path, dataset, args)
+
     from adaptive_lora.dense_init import attach_dense, dense_first_probe
     names = (attach_dense(model, args) if args.lora_structure == 'dense'
              else attach_ralora(model, args))
@@ -292,6 +317,13 @@ def main():
                 from adaptive_lora.reset_only import reset_only_step
                 reset_only_step(model, names, optimizer, scheduler, step, args.output_dir,
                                 side_manifest=args.reset_side_manifest)
+            elif step in args.direction_correction_steps and args.direction_correction == 'geometric_v2':
+                from adaptive_lora.adaptation_v2 import geometric_v2_step
+                correction_dir = args.output_dir/'correction_checkpoints_v2'
+                correction_dir.mkdir(exist_ok=True)
+                save_adapter(model,names,correction_dir/f'step_{step}_pre.pt',args.model_name_or_path)
+                geometric_v2_step(model,names,dataset,default_data_collator,args,optimizer,scheduler,step)
+                save_adapter(model,names,correction_dir/f'step_{step}_post.pt',args.model_name_or_path)
             elif step in args.direction_correction_steps:
                 from adaptive_lora.adaptation import geometric_correction_step
                 correction_dir = args.output_dir/'correction_checkpoints'
