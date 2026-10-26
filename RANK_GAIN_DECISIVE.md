@@ -85,15 +85,46 @@ plus every question's NLL, NLL sum, tokens, GSM/MATH family, source indices/hash
 - Random direction is projected into the old A row-space orthogonal complement.
 - Both added A have unit norm; zero B and unit scaling are identical.
 - Estimate full `G_audit` on the disjoint 32 audit samples.
-- Record `score(a)=||G_audit a.T||_F^2`, B/C scores and C/B ratio. If B score is
-  zero, record a null ratio and explicit reason, not infinity or fabricated win.
+- Preserve full-gradient scores `S_full(a)=||G_audit a.T||_F^2` for B/C and
+  their C/B ratio. Legacy `random_score` / `residual_score` still mean the
+  **full-gradient** scores of the random / residual-SVD directions; their
+  semantics are not changed. Explicit new fields are `full_gradient_scores`.
+- Additionally compute `R_audit=(I-P_B)G_audit(I-P_A)` with the existing
+  identity-free residual formula, and `S_res(a)=||R_audit a.T||_F^2` for B/C,
+  saved as `residual_gradient_scores` with a separate C/B ratio. Audit basis
+  QR and score reductions use float64. A zero B score produces a null ratio
+  and explicit reason, never infinity or an invented win.
+- Generate 128 unit random directions orthogonal to old A with an independent
+  CPU generator. Its fixed seed is `seed_stream(20261026,
+  'audit_random_reference_v1')`, independent of the experimental B-direction
+  seed and global RNG. These reference directions never depend on audit loss
+  or gradients. Save all residual scores, mean, median, linear-interpolated
+  95th percentile, C's descending rank among the 128 references plus C, tie
+  range/counts and midrank percentile. Rank 1 is best; ties are explicit.
 - Record absolute cosine between the two **construction half** residual-leading
-  right vectors. A vanished residual/rank-deficient factor fails explicitly.
+  right vectors. A vanished construction residual/rank-deficient factor fails
+  explicitly, since no C direction exists. A zero audit gradient gives zero
+  scores, null ratios and a failed resource gate.
 
-The independent audit gradient is **not** used to choose, rotate or reject C,
-and scores have no automated training trigger or tuned threshold. The human
-reviewer decides whether to proceed; stopping here means the training endpoint
-is unobserved, not a negative or positive training result.
+The preregistered **heuristic resource screen** is:
+
+1. C residual audit score **strictly exceeds** the 128 reference scores' 95th
+   percentile (equality fails).
+2. Construction-half absolute cosine is **at least 0.20** (equality passes).
+
+`audit_gate_pass` is their conjunction. Thresholds, individual checks and failure
+reasons are logged. A failure means **方向证据不足、暂停本方案训练**, not proof that
+this method is mathematically ineffective. A pass is not a mathematical or
+statistical guarantee of generalization benefit. Thresholds must not be revised
+in response to real audit scores.
+
+The audit gradient never selects or adjusts C, B, or a reference direction. The
+new gate is a logged resource-screen recommendation for human review after
+`probe-audit`; it does not automatically launch training. This audit-only patch
+also leaves the existing explicit `train` command unchanged, so the reviewer is
+responsible for pausing training when the gate fails. If paused, the training
+endpoint remains unobserved. The step-200 statistical success criteria below
+are unchanged and separate from this heuristic screen.
 
 ## Gate 2: fixed complete paired training
 

@@ -86,6 +86,73 @@ class ProtocolTests(unittest.TestCase):
         _,_,r=run.direction_audit(self.model.target.weight_a,self.model.target.weight_b,[(g,1),(g,4)],torch.zeros_like(g),42)
         self.assertIsNone(r['C_over_B_score']); self.assertEqual(r['ratio_undefined_reason'],'zero_random_score')
 
+    def test_residual_audit_scores_match_explicit_projectors(self):
+        a,b=self.model.target.weight_a,self.model.target.weight_b
+        g,ga=torch.randn(12,12),torch.randn(12,12)
+        ra,ca,r=run.direction_audit(a,b,[(g,1),(g,1)],ga,42)
+        qa=torch.linalg.qr(a.detach().double().T,mode='reduced')[0]
+        qb=torch.linalg.qr(b.detach().double(),mode='reduced')[0]
+        residual=(torch.eye(12,dtype=torch.float64)-qb@qb.T)@ga.double()@(torch.eye(12,dtype=torch.float64)-qa@qa.T)
+        expected=[float((residual@v.double().T).square().sum()) for v in (ra,ca)]
+        self.assertAlmostEqual(r['residual_gradient_scores']['B'],expected[0],places=12)
+        self.assertAlmostEqual(r['residual_gradient_scores']['C'],expected[1],places=12)
+        self.assertAlmostEqual(r['residual_gradient_scores']['C_over_B'],expected[1]/expected[0],places=12)
+        self.assertEqual(r['full_gradient_scores']['B'],r['random_score'])
+        self.assertEqual(r['full_gradient_scores']['C'],r['residual_score'])
+
+    def test_random_audit_reference_reproducible_unit_orthogonal_independent_rng(self):
+        a=self.model.target.weight_a; rng=torch.get_rng_state().clone()
+        x,seed=run.audit_reference_directions(a)
+        self.assertTrue(torch.equal(rng,torch.get_rng_state()))
+        torch.manual_seed(999)
+        y,seed2=run.audit_reference_directions(a)
+        self.assertTrue(torch.equal(x,y)); self.assertEqual(seed,seed2)
+        self.assertEqual(tuple(x.shape),(128,12))
+        torch.testing.assert_close(x.norm(dim=1),torch.ones(128,dtype=torch.float64))
+        self.assertLess(float((x@a.double().T).abs().max()),1e-10)
+        g,ga=torch.randn(12,12),torch.randn(12,12)
+        _,_,r1=run.direction_audit(a,self.model.target.weight_b,[(g,1),(g,1)],ga,42)
+        _,_,r2=run.direction_audit(a,self.model.target.weight_b,[(g,1),(g,1)],ga,43)
+        self.assertEqual(r1['audit_random_reference'],r2['audit_random_reference'])
+
+    def test_audit_gate_threshold_boundaries(self):
+        self.assertTrue(run.audit_resource_gate(2.,1.,.20)['audit_gate_pass'])
+        self.assertFalse(run.audit_resource_gate(1.,1.,.20)['audit_gate_pass'])
+        self.assertFalse(run.audit_resource_gate(2.,1.,float(np.nextafter(.20,0)))['audit_gate_pass'])
+        self.assertFalse(run.audit_resource_gate(0.,0.,1.)['audit_gate_pass'])
+        r=run.audit_resource_gate(0.,1.,0.)
+        self.assertEqual(r['audit_gate_failed_checks'],['residual_score','half_cosine'])
+        self.assertEqual(r['audit_gate_recommendation'],'方向证据不足、暂停本方案训练')
+        with self.assertRaisesRegex(ValueError,'Nonfinite'): run.audit_resource_gate(float('nan'),1.,1.)
+
+    def test_zero_audit_residual_distribution_and_gate(self):
+        g=torch.randn(12,12)
+        _,_,r=run.direction_audit(self.model.target.weight_a,self.model.target.weight_b,[(g,1),(g,1)],torch.zeros_like(g),42)
+        self.assertEqual(r['residual_gradient_scores']['B'],0.)
+        self.assertEqual(r['residual_gradient_scores']['C'],0.)
+        self.assertIsNone(r['residual_gradient_scores']['C_over_B'])
+        self.assertEqual(r['audit_random_reference']['scores'],[0.]*128)
+        self.assertEqual(r['audit_random_reference']['C_descending_rank_range'],[1,129])
+        self.assertFalse(r['audit_gate_pass'])
+        # No valid construction direction: preserve original explicit failure.
+        with self.assertRaisesRegex(AssertionError,'residual'):
+            run.direction_audit(self.model.target.weight_a,self.model.target.weight_b,[(torch.zeros_like(g),1),(torch.zeros_like(g),1)],g,42)
+
+    def test_audit_distribution_fields_quantiles_and_rank(self):
+        g,ga=torch.randn(12,12),torch.randn(12,12)
+        _,_,r=run.direction_audit(self.model.target.weight_a,self.model.target.weight_b,[(g,1),(g,1)],ga,42)
+        for key in ['full_gradient_scores','residual_gradient_scores','audit_random_reference',
+                    'audit_gate_pass','audit_gate_checks','audit_gate_thresholds','audit_gate_interpretation',
+                    'audit_gate_recommendation','audit_gate_failed_checks','construction_half_abs_cosine']:
+            self.assertIn(key,r)
+        ref=r['audit_random_reference']; scores=np.array(ref['scores']); c=r['residual_gradient_scores']['C']
+        self.assertAlmostEqual(ref['mean'],float(scores.mean()),places=12)
+        self.assertAlmostEqual(ref['median'],float(np.median(scores)),places=12)
+        self.assertAlmostEqual(ref['p95'],float(np.quantile(scores,.95)),places=12)
+        self.assertEqual(ref['C_descending_rank'],1+int((scores>c).sum()))
+        self.assertEqual(r['audit_gate_pass'],c>ref['p95'] and r['construction_half_abs_cosine']>=.20)
+        json.dumps(r,allow_nan=False)
+
     def test_training_weighted_normalization_and_frozen_parameters(self):
         target=self.model.target; state=copy.deepcopy(self.model.state_dict())
         r=run.train_arm(self.model,target,self.examples,[0,1],'cpu',None,[10,11])

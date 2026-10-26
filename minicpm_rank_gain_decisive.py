@@ -90,6 +90,38 @@ def weighted_probe(model, layer, examples, device):
     return gradient, rows
 
 
+def audit_resource_gate(c_residual_score, random_p95, half_cosine):
+    """Fixed heuristic resource screen; never a claim of generalization."""
+    require(all(math.isfinite(x) for x in (c_residual_score,random_p95,half_cosine)), 'Nonfinite gate input')
+    require(c_residual_score>=0 and random_p95>=0 and 0<=half_cosine<=1, 'Invalid gate input')
+    score_pass=c_residual_score>random_p95
+    cosine_pass=half_cosine>=.20
+    passed=score_pass and cosine_pass
+    return dict(audit_gate_pass=passed,
+        audit_gate_checks=dict(C_residual_above_random_p95=score_pass,construction_half_cosine_at_least_020=cosine_pass),
+        audit_gate_thresholds=dict(random_reference_count=128,quantile=.95,score_comparison='strict >',
+                                   construction_half_abs_cosine_min=.20,cosine_comparison='>='),
+        audit_gate_interpretation='heuristic resource screen, not a mathematical guarantee',
+        audit_gate_recommendation='可供人工审核是否继续训练' if passed else '方向证据不足、暂停本方案训练',
+        audit_gate_failed_checks=[name for name,ok in [('residual_score',score_pass),('half_cosine',cosine_pass)] if not ok])
+
+
+def audit_reference_directions(a):
+    """128 fixed independent CPU-RNG draws; no audit-gradient input."""
+    reference_seed=seed_stream(20261026,'audit_random_reference_v1')
+    require(old.orth(a.T).shape[1]==a.shape[0], 'Reference projection requires full-rank old A')
+    qa=torch.linalg.qr(a.detach().double().T,mode='reduced')[0]
+    require(qa.shape[1]<a.shape[1], 'No orthogonal complement for random references')
+    generator=torch.Generator(device='cpu').manual_seed(reference_seed)
+    directions=torch.randn(128,a.shape[1],dtype=torch.float64,generator=generator).to(a.device)
+    directions=directions-(directions@qa)@qa.T
+    norms=directions.norm(dim=1,keepdim=True)
+    require(torch.isfinite(norms).all() and (norms>1e-12).all(), 'Invalid random reference projection')
+    directions=directions/norms
+    require(float((directions@qa).abs().max())<1e-10, 'Random references not orthogonal')
+    return directions,reference_seed
+
+
 def direction_audit(a,b,construction_halves,audit_gradient,random_seed):
     """Only construction data generates C. Audit scores never select candidates."""
     (g1,n1),(g2,n2) = construction_halves
@@ -102,7 +134,33 @@ def direction_audit(a,b,construction_halves,audit_gradient,random_seed):
     sb,sc=score(random_a),score(residual_a)
     cosine=float((v1.double() @ v2.double().T).abs().item()/(v1.double().norm()*v2.double().norm()))
     require(all(math.isfinite(x) for x in (sb,sc,cosine)), 'Nonfinite audit')
-    return random_a,residual_a,dict(**diag,random_score=sb,residual_score=sc,
+    cosine=min(1.,cosine)
+    qa=torch.linalg.qr(a.detach().double().T,mode='reduced')[0]
+    qb=torch.linalg.qr(b.detach().double(),mode='reduced')[0]
+    residual_audit=old.residual_gradient(audit_gradient.double(),qa,qb)
+    rb=float((residual_audit@random_a.double().T).square().sum())
+    rc=float((residual_audit@residual_a.double().T).square().sum())
+    references,reference_seed=audit_reference_directions(a)
+    scores=(residual_audit@references.T).square().sum(dim=0)
+    require(torch.isfinite(scores).all() and math.isfinite(rb) and math.isfinite(rc), 'Nonfinite residual audit score')
+    median=float(torch.quantile(scores,.5)); p95=float(torch.quantile(scores,.95))
+    greater=int((scores>rc).sum()); tied=int((scores==rc).sum()); lower=int((scores<rc).sum())
+    gate=audit_resource_gate(rc,p95,cosine)
+    return random_a,residual_a,dict(**diag,**gate,
+        full_gradient_scores=dict(B=sb,C=sc,C_over_B=sc/sb if sb>0 else None,
+                                  ratio_undefined_reason=None if sb>0 else 'zero_B_score'),
+        residual_gradient_scores=dict(B=rb,C=rc,C_over_B=rc/rb if rb>0 else None,
+                                      ratio_undefined_reason=None if rb>0 else 'zero_B_score',
+                                      definition='||R_audit @ a.T||_F^2; R_audit=(I-P_B)G_audit(I-P_A)'),
+        audit_random_reference=dict(seed=reference_seed,count=128,scores=scores.cpu().tolist(),
+            mean=float(scores.mean()),median=median,p95=p95,quantile_interpolation='linear',
+            C_descending_rank=1+greater,C_descending_rank_range=[1+greater,1+greater+tied],
+            reference_scores_above_C=greater,reference_scores_equal_C=tied,reference_scores_below_C=lower,
+            C_midrank_percentile=100*(lower+.5*tied)/128,
+            rank_definition='C among 128 references plus C; rank 1 is best, tie range inclusive',
+            max_unit_norm_error=float((references.norm(dim=1)-1).abs().max()),
+            max_old_A_orthogonality_error=float((references@qa).abs().max())),
+        random_score=sb,residual_score=sc,
         C_over_B_score=sc/sb if sb>0 else None,ratio_undefined_reason=None if sb>0 else 'zero_random_score',
         construction_half_abs_cosine=min(1.,cosine),half_effective_tokens=[n1,n2],
         score_definition='||G_audit @ a.T||_F^2; full audit gradient, not residual',
