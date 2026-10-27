@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent global84 dry-run / probe / allocate / train stages (no auto GPU)."""
+"""Independent global84 dry-run / gpu-smoke / probe / benchmark / allocate / train."""
 from __future__ import annotations
 import argparse
 import copy
@@ -22,11 +22,13 @@ from minicpm_rank_gain_decisive import digest, effective_tokens
 
 require=core.require
 ROOT=core.ROOT
-PROTOCOL=dict(version='global84_stratified_v1',seeds=[42,43,44],split_seed=20261027,
+PROTOCOL=dict(version='global84_stratified_v2_alignment',seeds=[42,43,44],split_seed=20261027,
     adapter_sha256='d79b1b86a36a9809f465ef8c2d0a3251cf18f176832e0e3a48bb719e065d6769',
-    train_samples=400,construction_samples=32,selection_samples=32,audit_samples=32,dev_samples=400,
+    train_samples=400,construction_samples=32,alignment_samples=32,selection_samples=32,audit_samples=32,dev_samples=400,
     blocks_per_probe_group=4,samples_per_block=8,steps=400,batch_size=1,lr=5e-5,weight_decay=.01,
     dropout=False,scheduler='none',dtype='bfloat16',max_length=2048,
+    minimum_meaningful_nll_improvement=.0005,primary_familywise_alpha=.05,
+    primary_interval='Bonferroni two primary comparisons: two-sided 97.5% intervals',
     added_q_ranks=4,added_v_ranks=4,added_parameters=25600,added_scaling=1.,added_A_norm=1.,
     uncertainty_penalty=1.,max_candidates_per_layer=4,krylov_basis=128,eigen_tolerance=1e-4,
     objective='token weighted: per-step mean NLL * sample_tokens / mean_training_tokens',
@@ -35,7 +37,7 @@ PROTOCOL=dict(version='global84_stratified_v1',seeds=[42,43,44],split_seed=20261
     DE_same_allocation=True,endpoint='Dev400 token-weighted NLL at step 400',
     scope='q/v-stratified budget; not freely optimized across q/v',
     prior_method='single-layer residual-SVD did not meet its success criteria; not validated effective')
-ROLES=('construction','selection','audit')
+ROLES=('construction','alignment','selection','audit')
 ARMS=('A','B','C','D','E')
 
 
@@ -72,8 +74,8 @@ def prepare(args):
     tm=shared.build_source_metadata(args.train_data,args.source_data)
     dm=shared.build_source_metadata(args.dev_data,args.source_data)
     require(len(dm['samples'])==400,'Fixed Dev400 required')
-    split=shared.isolated_split(tm,dm,400,400,96,PROTOCOL['split_seed'])
-    indices=dict(train=split['train'],construction=split['probe'][:32],selection=split['probe'][32:64],audit=split['probe'][64:],dev=list(range(400)))
+    split=shared.isolated_split(tm,dm,400,400,128,PROTOCOL['split_seed'])
+    indices=dict(train=split['train'],construction=split['probe'][:32],alignment=split['probe'][32:64],selection=split['probe'][64:96],audit=split['probe'][96:],dev=list(range(400)))
     require(sum(x['family']=='GSM' for x in dm['samples'])==200 and sum(x['family']=='MATH' for x in dm['samples'])==200,'Dev must be GSM200/MATH200')
     from transformers import AutoTokenizer
     tokenizer=AutoTokenizer.from_pretrained(args.model,local_files_only=True,trust_remote_code=True)
@@ -131,9 +133,10 @@ def gpu_admission(min_free_gib):
 
 def probe(args,report):
     plan,datasets=prepare(args)
-    cache_bytes=sum(r['d_in']*r['d_out']*4 for r in plan['common']['inventory']['modules'])*12
+    cache_bytes=sum(r['d_in']*r['d_out']*4 for r in plan['common']['inventory']['modules'])*16
     require(shutil.disk_usage(args.output_dir).free>cache_bytes*1.1,'Insufficient disk space for all gradients; no omissions allowed')
     report['expected_gradient_cache_bytes']=cache_bytes
+    print(f'Full probe: 128 samples, 1344 FP32 matrices, {cache_bytes} raw tensor bytes; requires 10% disk headroom',flush=True)
     report['gpu']=gpu_admission(args.min_free_gib)
     model,layers,base,report['loading']=load_full(plan)
     snapshot={n:{k:core.tensor_hash(getattr(l,k)) for k in ('weight_a','weight_b')} for n,l in layers.items()}
@@ -151,12 +154,15 @@ def probe(args,report):
                 artifacts[str(file.relative_to(args.output_dir))]=shared.sha256(file)
             del gradients; gc.collect()
             report['blocks'][role].append(profile)
+            print(f'Probe {role} block {block+1}/4 completed: 8 backward calls, all 84 matrices',flush=True)
             write(args.output_dir/'report.json',report)
     report['base_tensors_verified']=shared.verify_disk_weights(base,plan['common']['inventory']['model'])
     require(all(core.tensor_hash(getattr(layers[n],k))==h for n,fs in snapshot.items() for k,h in fs.items()),'Probe changed adapter')
-    report.update(adapter_unchanged=True,total_forward_calls=96,total_backward_calls=96,
+    report.update(adapter_unchanged=True,total_forward_calls=128,total_backward_calls=128,
         probe_peak_allocated_bytes=max(p['cuda_memory_after']['peak_allocated'] for ps in report['blocks'].values() for p in ps))
     write(args.output_dir/'gradient_artifacts.json',artifacts)
+    report['actual_gradient_file_bytes']=sum((args.output_dir/n).stat().st_size for n in artifacts)
+    report['disk_free_bytes_after']=shutil.disk_usage(args.output_dir).free
     report['status']='PASS'
 
 
@@ -198,43 +204,119 @@ def audit_scores(gc,construction_blocks,selection_blocks,audit_blocks,counts,V):
         audit_used_for_selection=False,claim='predictive proxy, not a true post-training gain guarantee')
 
 
-def allocate(args,report):
-    require(args.probe_dir is not None,'allocate requires --probe-dir')
+def gpu_smoke(args,report):
+    """One real sample, all targets. Deliberately produces NO full-probe artifacts."""
+    plan,datasets=prepare(args)
+    report['gpu']=gpu_admission(args.min_free_gib)
+    model,layers,base,report['loading']=load_full(plan)
+    snapshot={n:core.tensor_hash(p) for n,p in model.named_parameters()}
+    torch.cuda.reset_peak_memory_stats()
+    gradients,profile=core.collect_weight_gradients(model,layers,[shared.batch(datasets['construction'][0],'cpu')])
+    require(len(gradients)==84 and profile['forward_calls']==profile['backward_calls']==1,'Incomplete smoke backward')
+    require(all(torch.isfinite(g).all() for g in gradients.values()),'Nonfinite smoke gradient')
+    require(all(core.tensor_hash(p)==snapshot[n] for n,p in model.named_parameters()),'Smoke changed original weights')
+    report.update(status='PASS',profile=profile,all_original_weights_unchanged=True,
+        base_tensors_verified=shared.verify_disk_weights(base,plan['common']['inventory']['model']),
+        gradient_norms={n:float(g.norm()) for n,g in gradients.items()},
+        allocation_eligible=False,sample_index=plan['common']['indices']['construction'][0],
+        peak_allocated_bytes=torch.cuda.max_memory_allocated(),peak_reserved_bytes=torch.cuda.max_memory_reserved())
+
+
+def analysis_cache_key(plan,artifacts,index,seed,device):
+    names={f'gradients/{role}/{block}/{index:02d}.pt' for role in ROLES for block in range(4)}
+    return digest(dict(plan=plan['fingerprint'],module_index=index,seed=seed,device=device,
+                       gradients={n:artifacts[n] for n in sorted(names)}))
+
+
+def reuse_analysis(folder,index,key):
+    """Incomplete entries may be recomputed; completed but inconsistent entries fail."""
+    marker=Path(folder)/'module_cache'/f'{index:02d}.json'
+    if not marker.exists(): return None
+    cache=json.loads(marker.read_text())
+    require(cache['status']=='PASS' and cache['key']==key,'Module cache protocol/input/seed mismatch')
+    require(set(cache['files'])=={f'directions/{index:02d}.pt',f'module_cache/{index:02d}.record.json'},'Incomplete module cache hashes')
+    check_hashes(cache['files'],folder)
+    record=json.loads((Path(folder)/'module_cache'/f'{index:02d}.record.json').read_text())
+    require(set(record['solver'])==set(methods.FAMILIES)-{'random'},'Incomplete cached solver families')
+    require(all(d['converged'] and len(d['relative_ritz_residuals'])==4 and
+                all(math.isfinite(x) and 0<=x<=PROTOCOL['eigen_tolerance'] for x in d['relative_ritz_residuals'])
+                for d in record['solver'].values()),'Unconverged cached solver')
+    return record
+
+
+def analyze_module(source,artifacts,plan,payload,i,row,seed,device):
+    counts={role:block_tokens(plan,role) for role in ROLES}
+    name=row['module']; state=payload['layers'][name]['state']
+    a=state['weight_a'].to(device); b=state['weight_b'].to(device)
+    shape=(row['d_out'],row['d_in'])
+    cb=load_gradient_blocks(source,artifacts,'construction',i,shape,device)
+    alignment=load_gradient_blocks(source,artifacts,'alignment',i,shape,device)
+    gc_=methods.weighted_mean(cb,counts['construction'])
+    ga=methods.weighted_mean(alignment,counts['alignment'])
+    frames,solver=methods.candidate_frames(a,b,gc_,ga,4,methods.stream(seed,name),PROTOCOL['krylov_basis'],PROTOCOL['eigen_tolerance'])
+    del alignment,ga
+    # Allocation scoring data is only read AFTER direction fitting finishes.
+    sb=load_gradient_blocks(source,artifacts,'selection',i,shape,device)
+    qa,qb=methods.basis(a.T),methods.basis(b)
+    rc=shared.residual_gradient(gc_,qa,qb)
+    rs=[shared.residual_gradient(g,qa,qb) for g in sb]
+    c,_=methods.proxy_prefixes(rc,rs,counts['selection'],frames['residual_svd'],row['cost_per_added_rank'],PROTOCOL['uncertainty_penalty'])
+    d,_=methods.proxy_prefixes(gc_,sb,counts['selection'],frames['cross_alignment'],row['cost_per_added_rank'],PROTOCOL['uncertainty_penalty'])
+    ab=load_gradient_blocks(source,artifacts,'audit',i,shape,device)
+    scores={f:audit_scores(gc_,cb,sb,ab,counts,V) for f,V in frames.items()}
+    record=dict(module=name,cost_per_added_rank=row['cost_per_added_rank'],solver=solver,candidates=scores,
+                direction_fit_roles=dict(random=[],residual_svd=['construction'],projected_full_svd=['construction'],
+                                        cross_alignment=['construction','alignment']),allocation_score_role='selection',
+                C_prefix_options=c,DE_prefix_options=d)
+    return {f:V.float().cpu() for f,V in frames.items()},record
+
+
+def allocate(args,report,benchmark=False):
+    require(args.probe_dir is not None,'Analysis requires --probe-dir')
     source=args.probe_dir; plan=load_plan(source)
     old_report=json.loads((source/'report.json').read_text())
-    require(old_report['status']=='PASS' and old_report['mode']=='probe','Completed probe required')
+    require(old_report['status']=='PASS' and old_report['mode']=='probe','Completed full probe required; smoke is ineligible')
+    require(old_report.get('total_backward_calls')==128 and old_report.get('total_forward_calls')==128,'Full 128-sample probe required')
     artifacts=json.loads((source/'gradient_artifacts.json').read_text())
     expected={f'gradients/{role}/{block}/{i:02d}.pt' for role in ROLES for block in range(4) for i in range(84)}
     require(set(artifacts)==expected,'Expected every target/group/block gradient')
     write(args.output_dir/'plan.json',plan)
     payload=torch.load(plan['common']['inventory']['adapter'],map_location='cpu',weights_only=True)
+    if benchmark: require(args.analysis_device=='cpu' and args.module is not None,'Benchmark requires --module and CPU')
     if args.analysis_device=='cuda': report['gpu']=gpu_admission(args.min_free_gib)
-    rows=plan['common']['inventory']['modules']; options_C={}; options_DE={}; files={}; diagnostics=[]
-    counts={role:block_tokens(plan,role) for role in ROLES}
+    rows=plan['common']['inventory']['modules']; options_C={}; options_DE={}; files={}
+    selected=[(i,r) for i,r in enumerate(rows) if not benchmark or r['module']==args.module]
+    require(bool(selected),'Unknown benchmark module')
     frame_dir=args.output_dir/'directions'; frame_dir.mkdir()
-    started=time.perf_counter()
-    for i,row in enumerate(rows):
-        name=row['module']; state=payload['layers'][name]['state']; a=state['weight_a'].to(args.analysis_device); b=state['weight_b'].to(args.analysis_device)
-        shape=(row['d_out'],row['d_in'])
-        cb=load_gradient_blocks(source,artifacts,'construction',i,shape,args.analysis_device)
-        sb=load_gradient_blocks(source,artifacts,'selection',i,shape,args.analysis_device)
-        gc_,gs=methods.weighted_mean(cb,counts['construction']),methods.weighted_mean(sb,counts['selection'])
-        frames,solver=methods.candidate_frames(a,b,gc_,gs,4,methods.stream(args.seed,name),PROTOCOL['krylov_basis'],PROTOCOL['eigen_tolerance'])
-        qa,qb=methods.basis(a.T),methods.basis(b)
-        rc=shared.residual_gradient(gc_,qa,qb)
-        rs=[shared.residual_gradient(g,qa,qb) for g in sb]
-        options_C[name],_=methods.proxy_prefixes(rc,rs,counts['selection'],frames['residual_svd'],row['cost_per_added_rank'],PROTOCOL['uncertainty_penalty'])
-        options_DE[name],_=methods.proxy_prefixes(gc_,sb,counts['selection'],frames['cross_alignment'],row['cost_per_added_rank'],PROTOCOL['uncertainty_penalty'])
-        # Audit is loaded only AFTER candidate frames and allocation scores exist.
-        ab=load_gradient_blocks(source,artifacts,'audit',i,shape,args.analysis_device)
-        scores={f:audit_scores(gc_,cb,sb,ab,counts,V) for f,V in frames.items()}
-        file=frame_dir/f'{i:02d}.pt'; torch.save({f:V.float().cpu() for f,V in frames.items()},file)
+    cache_dir=args.output_dir/'module_cache'; cache_dir.mkdir()
+    started=time.perf_counter(); reused=[]
+    for i,row in selected:
+        name=row['module']; tick=time.perf_counter()
+        key=analysis_cache_key(plan,artifacts,i,args.seed,args.analysis_device)
+        record=reuse_analysis(args.reuse_dir,i,key) if args.reuse_dir else None
+        file=frame_dir/f'{i:02d}.pt'
+        if record is None:
+            frames,record=analyze_module(source,artifacts,plan,payload,i,row,args.seed,args.analysis_device)
+            torch.save(frames,file); del frames
+        else:
+            # Verify the actual source gradients as well as the reusable cache.
+            subset={n:h for n,h in artifacts.items() if n.endswith(f'/{i:02d}.pt')}
+            check_hashes(subset,source)
+            shutil.copyfile(args.reuse_dir/'directions'/f'{i:02d}.pt',file); reused.append(name)
+        record_path=cache_dir/f'{i:02d}.record.json'; write(record_path,record)
+        marker_files={str(p.relative_to(args.output_dir)):shared.sha256(p) for p in (file,record_path)}
+        # Completion marker is written last; a failed module is never reusable.
+        write(cache_dir/f'{i:02d}.json',dict(status='PASS',key=key,files=marker_files))
         files[str(file.relative_to(args.output_dir))]=shared.sha256(file)
-        record=dict(module=name,cost_per_added_rank=row['cost_per_added_rank'],solver=solver,candidates=scores,
-                    C_prefix_options=options_C[name],DE_prefix_options=options_DE[name])
-        diagnostics.append(record)
+        options_C[name]=record['C_prefix_options']; options_DE[name]=record['DE_prefix_options']
         with (args.output_dir/'candidates.jsonl').open('a') as f: f.write(json.dumps(record,allow_nan=False)+'\n')
-        del frames,cb,sb,ab,rc,rs,a,b,gc_,gs; gc.collect()
+        print(f'Analysis {i+1}/84 {name}: {time.perf_counter()-tick:.2f}s, reused={name in reused}',flush=True)
+        gc.collect()
+    report['reused_modules']=reused
+    if benchmark:
+        report.update(status='PASS',cpu_only=True,module=args.module,seconds=time.perf_counter()-started,
+                      solver=record['solver'],allocation_eligible=False)
+        return
     c,cr=methods.exact_stratified_allocation(options_C,rows)
     d,dr=methods.exact_stratified_allocation(options_DE,rows)
     b=methods.random_allocation(rows,args.seed)
@@ -246,7 +328,7 @@ def allocate(args,report):
     result=dict(seed=args.seed,plan_fingerprint=plan['fingerprint'],allocations=allocations,
                 direction_family=dict(A=None,B='random',C='residual_svd',D='random',E='cross_alignment'),
                 C_optimization=cr,DE_optimization=dr,audit_used_for_allocation=False,
-                scoring_bias='E directions reuse selection for optimization/scoring; block SE is descriptive, not an unbiased CI',
+                scoring_bias='Directions fitted on construction/alignment, allocation scored on independent selection; four-block SE remains heuristic',
                 frames_sha256=files,source_probe=str(source.resolve()),source_probe_report_sha256=shared.sha256(source/'report.json'))
     write(args.output_dir/'allocation.json',result)
     files['allocation.json']=shared.sha256(args.output_dir/'allocation.json'); files['candidates.jsonl']=shared.sha256(args.output_dir/'candidates.jsonl')
@@ -313,7 +395,23 @@ def train_adapters(model,layers,expanded,examples,order,device,log_path=None):
     optimizer.zero_grad(set_to_none=True)
     changes={key:dict(initial_norm=float(initial[key].float().norm()),final_norm=float(p.detach().float().norm()),
         change_norm=float((p.detach().float()-initial[key].float()).norm())) for key,p in factors.items()}
-    return dict(completed_steps=len(records),steps=records,trainable_parameters=sum(p.numel() for p in factors.values()),
+    modules={}
+    for name in layers:
+        keys=[k for k in factors if k.rsplit('.',1)[0]==name]
+        details={k.rsplit('.',1)[1]:dict(**changes[k],
+            max_gradient_norm=max(r['gradient_norms'][k] for r in records),
+            nonzero_gradient_steps=sum(r['gradient_norms'][k]>0 for r in records)) for k in keys}
+        for key,d in details.items():
+            require(d['max_gradient_norm']>0 and d['change_norm']>0,
+                    f'Inactive factor (no effective gradient or no actual update): {name}.{key}')
+        ba=None
+        if name in expanded:
+            w=expanded[name]; aa=w.add_a.detach().double(); bb=w.add_b.detach().double()
+            ba=float(torch.trace((bb.T@bb)@(aa@aa.T)).clamp_min(0).sqrt())
+            require(math.isfinite(ba) and ba>0,f'Inactive added BA branch: {name}')
+        modules[name]=dict(factors=details,added_BA_fro_norm=ba,effective=True)
+    return dict(module_diagnostics=modules,all_factors_effective=True,
+                completed_steps=len(records),steps=records,trainable_parameters=sum(p.numel() for p in factors.values()),
                 factor_changes=changes,fresh_AdamW=True,historical_moments_restored=False,optimizer_defaults=optimizer.defaults,
                 mean_train_tokens=mean_tokens)
 
@@ -410,7 +508,7 @@ def train(args,report):
 
 def parser():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode',choices=['dry-run','probe','allocate','train'])
+    p.add_argument('mode',choices=['dry-run','gpu-smoke','probe','benchmark','allocate','train'])
     p.add_argument('--model',type=Path,default=core.DEFAULT_MODEL)
     p.add_argument('--adapter',type=Path,default=core.DEFAULT_ADAPTER)
     p.add_argument('--train-data',type=Path,default=shared.DATA/'train.json')
@@ -419,6 +517,8 @@ def parser():
     p.add_argument('--output-dir',type=Path,required=True)
     p.add_argument('--probe-dir',type=Path)
     p.add_argument('--allocation-dir',type=Path)
+    p.add_argument('--reuse-dir',type=Path,help='Read-only completed per-module analysis cache; hash mismatches fail')
+    p.add_argument('--module',help='Exact module name for single-layer CPU benchmark')
     p.add_argument('--seed',type=int,choices=[42,43,44],default=42)
     p.add_argument('--analysis-device',choices=['cpu','cuda'],default='cpu')
     p.add_argument('--arms',nargs='+',choices=ARMS,default=list(ARMS))
@@ -434,7 +534,9 @@ def main():
     try:
         if args.mode=='dry-run':
             plan,_=prepare(args); report.update(status='PASS',cpu_only=True,plan_fingerprint=plan['fingerprint'],inventory=plan['common']['inventory'])
+        elif args.mode=='gpu-smoke': gpu_smoke(args,report)
         elif args.mode=='probe': probe(args,report)
+        elif args.mode=='benchmark': allocate(args,report,benchmark=True)
         elif args.mode=='allocate': allocate(args,report)
         else: train(args,report)
         plan=json.loads((args.output_dir/'plan.json').read_text()); check_hashes(plan['common']['input_sha256'])

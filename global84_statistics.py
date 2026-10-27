@@ -10,6 +10,7 @@ from minicpm_rank_gain_statistics import crossed_bootstrap
 
 SEEDS=[42,43,44]
 ARMS=['A','B','C','D','E']
+MIN_MEANINGFUL_IMPROVEMENT=0.0005  # predeclared practical resolution, ~0.05% PPL
 COMPARISONS={'E-D':(4,3),'E-C':(4,2),'D-B':(3,1),'E-B':(4,1),'E-A':(4,0)}
 
 
@@ -34,7 +35,7 @@ def load(paths):
         folder=Path(folder); report=json.loads((folder/'report.json').read_text()); plan=json.loads((folder/'plan.json').read_text())
         require(report['mode']=='train' and report['status']=='PASS' and report['input_files_unchanged'],'Only completed, intact training outputs accepted')
         require(plan['fingerprint']==digest(plan['common'])==report['plan_fingerprint'],'Plan fingerprint mismatch')
-        require(plan['common']['protocol']['version']=='global84_stratified_v1','Wrong protocol')
+        require(plan['common']['protocol']['version']=='global84_stratified_v2_alignment','Wrong protocol')
         if common is None: common=plan['common']
         require(common==plan['common'],'Data/code/versions/protocol differ')
         seed=report['seed']; require(seed in SEEDS,'Unexpected seed')
@@ -93,6 +94,7 @@ def analyze(sums,tokens,metadata,repeats=10000):
             individual=(x[0,:,hi,:]-x[0,:,lo,:])/n
             average=individual.mean(axis=0)
             comparisons[name]=dict(mean_token_nll_difference=float(dif.mean()),ci95=np.quantile(bootstrap,[.025,.975]).tolist(),
+                primary_ci97_5_bonferroni=np.quantile(bootstrap,[.0125,.9875]).tolist() if name in ('E-D','E-C') and family=='overall' else None,
                 per_seed={str(s):float(dif[i]) for i,s in enumerate(SEEDS)},better_seeds=int((dif<0).sum()),
                 question_counts=dict(improved=int((average<0).sum()),worsened=int((average>0).sum()),equal=int((average==0).sum())),
                 per_question=[dict(source=metadata[int(j)],mean_nll_difference=float(average[i]),seed_differences=individual[:,i].tolist()) for i,j in enumerate(idx)])
@@ -101,12 +103,16 @@ def analyze(sums,tokens,metadata,repeats=10000):
             mean_question_nll={a:float((x[0,:,i,:]/n).mean()) for i,a in enumerate(ARMS)},
             per_seed_nll={str(s):{a:float(means[0,j,i]) for i,a in enumerate(ARMS)} for j,s in enumerate(SEEDS)},comparisons=comparisons)
     primary=[result['overall']['comparisons'][c] for c in ('E-D','E-C')]
-    result['scientific_interpretation']=('主要比较均观察到改善，仍需独立验证' if all(x['ci95'][1]<0 for x in primary)
-        else '主要比较存在退化证据' if any(x['ci95'][0]>0 for x in primary) else '主要比较的收益证据不足')
+    result['scientific_interpretation']=('主要比较均观察到改善，仍需独立验证' if all(x['primary_ci97_5_bonferroni'][1]<0 and x['mean_token_nll_difference']<=-MIN_MEANINGFUL_IMPROVEMENT for x in primary)
+        else '主要比较存在退化证据' if any(x['primary_ci97_5_bonferroni'][0]>0 for x in primary) else '主要比较的收益证据不足')
     result['statistical_protocol']=dict(repeats=repeats,seed=42,method='paired crossed bootstrap: original-question clusters and 3 seed IDs',
+        minimum_meaningful_improvement=MIN_MEANINGFUL_IMPROVEMENT,
+        minimum_effect_rationale='Predeclared operational resolution: 0.0005 nats/token is approximately 0.05% perplexity reduction; not fitted to old outcomes',
+        primary_multiplicity='Bonferroni: two two-sided 97.5% overall primary intervals; nominal familywise alpha=0.05, subject to bootstrap validity',
+        success_rule='Both primary means <= -0.0005 and both adjusted upper bounds < 0',
         primary=['E-D','E-C'],secondary=['D-B','E-B','E-A'],engineering_PASS_is_not_efficacy=True,
-        caveats=['Only 3 seeds; uncertainty estimate is imprecise.','Intervals are descriptive 95%, not simultaneous multiple-comparison guarantees.',
-                 'No minimum-effect success margin was supplied for this new protocol; no previous margin is imported.',
+        caveats=['Only 3 seeds; uncertainty estimate is imprecise.','Secondary and subgroup 95% intervals are exploratory, not confirmatory.',
+                 'With only 3 seeds, bootstrap coverage can be inaccurate; nominal multiplicity correction does not cure small-seed uncertainty.',
                  'Existing Dev is not blind. Proxy improvement does not prove post-training benefit.'])
     return result
 

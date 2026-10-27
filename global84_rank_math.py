@@ -6,6 +6,8 @@ Audit gradients are deliberately excluded from every allocation function.
 import hashlib
 import math
 import random
+import time
+import resource
 
 import torch
 import minicpm_single_layer_rank_gain as shared
@@ -78,15 +80,16 @@ def symmetric_ritz(operator,q,k,seed,max_basis=128,tolerance=1e-4):
     for j in range(k):
         if V[V[:,j].abs().argmax(),j]<0: V[:,j].neg_()
     return V,dict(eigenvalues=values.cpu().tolist(),relative_ritz_residuals=relative.cpu().tolist(),
+                  absolute_ritz_residuals=residuals.cpu().tolist(),ritz_normalization=scale,
                   tolerance=tolerance,operator_calls=count,krylov_dimension=count,
                   algorithm='full-reorthogonalized Krylov largest-algebraic Rayleigh-Ritz',
                   dense_gram_constructed=False,converged=True)
 
 
-def candidate_frames(a,b,gc,gs,k,seed,max_basis=128,tolerance=1e-4):
-    """All four families; selection is used ONLY by cross-alignment directions."""
+def candidate_frames(a,b,gc,alignment_gradient,k,seed,max_basis=128,tolerance=1e-4):
+    """Fit using construction and alignment only. No allocation-selection input."""
     qa,qb=basis(a.T),basis(b)
-    gc,gs=gc.double(),gs.double()
+    gc,gs=gc.double(),alignment_gradient.double()
     require(gc.shape==gs.shape==(b.shape[0],a.shape[1]),'Gradient/factor shape mismatch')
     require(torch.isfinite(gc).all() and torch.isfinite(gs).all(),'Nonfinite candidate gradients')
     residual=shared.residual_gradient(gc,qa,qb)
@@ -99,7 +102,14 @@ def candidate_frames(a,b,gc,gs,k,seed,max_basis=128,tolerance=1e-4):
         return project((gc.T@(gs@x)+gs.T@(gc@x))*.5,qa)
     frames={'random':random_frame(qa,k,stream(seed,'random'))}; diagnostics={}
     for family,op in [('residual_svd',residual_gram),('projected_full_svd',gram),('cross_alignment',alignment)]:
+        started=time.perf_counter()
         frames[family],diagnostics[family]=symmetric_ritz(op,qa,k,stream(seed,family),max_basis,tolerance)
+        V=frames[family]
+        diagnostics[family].update(seconds=time.perf_counter()-started,
+            process_peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+            memory_note='Linux process lifetime peak RSS; not incremental solver allocation',
+            orthogonality_error=float((V.T@V-torch.eye(k,device=V.device,dtype=V.dtype)).abs().max()),
+            old_A_orthogonality_error=float((qa.T@V).abs().max()) if qa.shape[1] else 0.)
     for name,V in frames.items():
         require(V.shape==(a.shape[1],k),'Wrong candidate count')
         require(float((V.T@V-torch.eye(k,device=V.device,dtype=V.dtype)).abs().max())<1e-6,'Directions not mutually orthogonal')
@@ -116,8 +126,8 @@ def proxy_prefixes(reference,selection_blocks,token_counts,V,cost,penalty=1.):
     """Prefix U and heuristic uncertainty across independent 8-sample blocks.
 
     Covariance among directions is retained by summing each block's gains
-    before computing prefix uncertainty. For optimized directions these are
-    in-selection diagnostics, NOT unbiased confidence bounds.
+    before computing prefix uncertainty. Directions were fitted on separate
+    construction/alignment samples. Four-block SE is heuristic, not a confidence bound.
     """
     require(cost>0 and penalty>=0 and len(selection_blocks)>=2,'Invalid scoring inputs')
     weights=torch.tensor(token_counts,dtype=torch.float64,device=V.device); weights/=weights.sum()
