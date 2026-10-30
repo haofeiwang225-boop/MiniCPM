@@ -70,3 +70,40 @@ done
 CUDA_VISIBLE_DEVICES='' "$PY" -B global84_temporal_rank_demand.py summarize --runs "$RUN/seed42" "$RUN/seed43" "$RUN/seed44" --output-dir "$RUN/summary"
 ```
 All output directories must be new. Do not execute GPU commands before review.
+
+## Round-two audit supplement
+
+`trajectory_scope` explicitly identifies step1600_pre followed by 400 fresh
+AdamW updates, not the original step0–2000 optimizer-continuous trajectory.
+
+Keep M unchanged and expose M_full=M plus Q_residual=sum(top-k sigma²)/residual
+energy. Check M_full≈ER*Q_residual for nonzero gradients. Zero denominators use
+1e-30; zero-gradient M/Q remain zero. Q is relative concentration, whereas M
+also reflects how much full gradient lies outside the tangent space.
+
+Overlap columns are residual_svd_left, residual_svd_right and
+cross_alignment_right. The latter is an eigen-subspace, not an SVD left/right
+pair. Each prefix is rank-aware orthogonalized before comparison; deficient
+prefixes yield null. Zero alignment eigenvalues are excluded. Repeated or
+nearly repeated eigenvalues still make cut-through top-k boundaries ambiguous.
+
+Normalized diagnostics divide each directional block dot product by the product
+of construction and selection Frobenius norms: residual norms for C, full norms
+for DE. Report four per-direction scores, their cumulative prefixes and the
+four block scores. Aggregate blocks with original token weights. Undefined zero
+norms yield null, not an invented agreement. These diagnostics never enter DP.
+Transition reports add normalized temporal Spearman and raw-vs-normalized
+Spearman for k=1..4; original raw temporal Spearman remains available.
+
+training_activity.json records initial/final/change norms and maximum gradient
+norm/nonzero-gradient steps for each A/B. effective_update_observed requires
+both a nonzero gradient and a real parameter change: decay alone is insufficient.
+No optimizer, schedule, correction or allocation behavior changes.
+
+summarize now requires temporal_metrics.csv for all three trajectories, with
+420 unique stage/module rows each. results.json includes stage/module mean,
+sample standard deviation (ddof=1), range and valid count for CT/ER, all four
+M_full/Q_residual values, six block-pair cosines per data role and all four
+Audit U scores per candidate family. Existing paired allocation turnovers stay
+in cross_seed_stability.csv. Missing/degenerate diagnostics retain valid counts;
+three trajectories are not converted into fifteen independent seeds.
