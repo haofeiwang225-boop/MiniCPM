@@ -26,10 +26,11 @@ by the single-sample smoke. The smoke checks original weights and simultaneous
 84-gradient collection on provisional zero-B factors, not full initialization.
 
 ## Data
-Use all historical train2000 and Dev400 for provenance exclusion. Scan original
-MetaMath in source order, choosing first64 distinct GSM and64 distinct MATH
-original-question groups outside BOTH pools. Deterministic seed20261031 shuffles
-128 groups before splitting into four groups of32; per-role family counts are
+Use all historical train2000 and Dev400 for provenance exclusion. Scan the complete original
+MetaMath source, deduplicate by original-question SHA256 outside BOTH pools,
+sort group hashes and use probe_sampling_seed=20261031 to sample64 GSM and64
+MATH groups without replacement. A separate local RNG with that fixed seed
+shuffles the128 selected groups before splitting into four groups of32; family counts are
 recoverable from metadata. No length-based replacement: invalid/overlong samples
 fail. Tokenization/labels reuse ChatTrainingDataset. Data and model files/code
 hashes and token counts are recorded. All probe samples are fixed across seeds
@@ -131,3 +132,44 @@ were [0.5087690353393555, 1.131565809249878], with bitwise matching factors and
 Adam states after the inserted probe. All84 A/B factors had nonzero gradient
 activity over the two steps; 381 base tensors verified unchanged. Peak allocated
 6445760000 bytes. No full GID initialization or 2000-step training executed.
+
+
+## Final seed/sampling isolation
+
+Training seeds42/43/44 govern only training order and dropout after loading the
+shared initial adapter. analysis_seed=20261031 is enforced at equal_stage's
+boundary irrespective of its caller's training seed. The unchanged path is:
+stage -> analyze_module -> stream(analysis_seed,module) -> candidate_frames ->
+stream(module_seed,family) -> symmetric_ritz local torch.Generator. Both initial
+Krylov vectors and breakdown restarts use that generator. Random diagnostic
+frames also use the same analysis-derived stream. Initialization remains seed42.
+plan.json records all responsibilities; actual training seed is in report.json
+so initialization manifests remain identical for the three training seeds.
+
+Sampling scans every source line. Candidate pools contain independent eligible
+question groups; the representative is the minimum SHA256 of [query,response]
+within each group. Conflicting family labels fail. Sampling from sorted group
+hashes makes selected groups and content invariant to source-line permutation;
+recorded source line numbers and source file hash appropriately change. Sampling
+never inspects length or NLL. Overlong selected examples fail during tokenization,
+without dropping/replacing them. plan.json records pool sizes, scanned lines,
+seed, representative rule, per-role family counts and full effective-token lists
+plus min/max/mean. Probe groups are fixed before initialization/training, never
+resampled inside the trajectory.
+
+Only CPU seed routing and source sampling changed in this patch. The previous
+real training-mode GPU smoke remains applicable to the unchanged model loading,
+loss, checkpointing, optimizer, probe gradient weighting and restoration logic;
+it is not a GPU execution on the newly sampled128 examples. No new GPU run is
+needed for these CPU-only changes; full-stage GPU experiments remain unrun.
+
+Final isolation validation: all108 CPU tests passed. Same A/B and probe
+matrices under training seeds42/43/44 produced identical candidate frames,
+prefix scores and C/DE DP allocations through the stage/analysis call chain.
+Reordering a complete synthetic source (including multiple variants per group)
+preserved selected original-question groups and representative content.
+Real dry-run PASS at /tmp/zero_fullpool_dry_20261031/report.json: scanned395000
+lines; eligible distinct groups GSM6190/MATH5339; selected64/64. Role GSM/MATH
+counts were construction20/12, alignment12/20, selection16/16, audit16/16.
+All four roles contain32 samples, disjoint from train2000/dev400 and one another.
+No sampled answer was discarded or replaced. This patch ran no GPU workload.

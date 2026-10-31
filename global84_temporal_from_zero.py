@@ -10,6 +10,8 @@ import global84_rank_math as m
 from adaptive_lora.residual_gid import svd_with_gid
 from rank_gain_probe_support import load_original_lora_class
 STAGES=(0,100,400,800,1200,1600,2000)
+ANALYSIS_SEED=20261031
+PROBE_SAMPLING_SEED=20261031
 SCOPE='pretrained base -> GID initialization -> continuous 2000-step fresh AdamW trajectory'
 HISTORY=w.ROOT/'finetune/adaptive_lora/outputs/metamath_pilot_control_2000_seed42/run_config.json'
 
@@ -37,7 +39,9 @@ def equal_stage(*args):
     analysis=bound_function(w.analyze_module,block_tokens=equal_counts)
     local_core=types.SimpleNamespace(**vars(w.core));local_core.collect_weight_gradients=collect_equal_gradients
     local_w=types.SimpleNamespace(**vars(w));local_w.core=local_core;local_w.block_tokens=equal_counts;local_w.analyze_module=analysis
-    return bound_function(t.stage,w=local_w)(*args)
+    w.require(len(args)==8,'Expected complete stage arguments')
+    fixed=list(args);fixed[5]=ANALYSIS_SEED
+    return bound_function(t.stage,w=local_w)(*fixed)
 
 
 def check_history(hist):
@@ -101,6 +105,37 @@ def allocator(records):
     ns={'math':math};exec(compile(ast.Module(body=[node],type_ignores=[]),str(path),'exec'),ns)
     return ns['allocate_dense_ranks'](records,480256,1,4)
 
+def sample_probe_pool(source,banned,per_family=64):
+    """Full-source group sampling; canonical representative independent of line order."""
+    source=Path(source);before=w.shared.sha256(source);groups={};lines=0
+    with source.open() as f:
+        for lines,line in enumerate(f,1):
+            r=json.loads(line);family=r.get('type','').split('_')[0];original=r.get('original_question')
+            if family not in ('GSM','MATH') or not isinstance(original,str):continue
+            h=hashlib.sha256(original.encode()).hexdigest()
+            if h in banned:continue
+            w.require(isinstance(r.get('query'),str) and isinstance(r.get('response'),str),'Invalid candidate text')
+            sample=hashlib.sha256(json.dumps([r['query'],r['response']],ensure_ascii=False).encode()).hexdigest()
+            old=groups.get(h)
+            if old:w.require(old['family']==family,'Conflicting family for original question')
+            if old is None or sample<old['sample_sha256']:
+                groups[h]=dict(original_question_sha256=h,family=family,source_line_1based=lines,sample_sha256=sample)
+    rng=random.Random(PROBE_SAMPLING_SEED);selected=[];sizes={}
+    for family in ('GSM','MATH'):
+        pool=sorted(h for h,r in groups.items() if r['family']==family);sizes[family]=len(pool)
+        w.require(len(pool)>=per_family,f'Insufficient {family} independent candidate groups')
+        selected.extend(groups[h] for h in rng.sample(pool,per_family))
+    wanted={r['source_line_1based'] for r in selected};rows={}
+    with source.open() as f:
+        for i,line in enumerate(f,1):
+            if i in wanted:
+                r=json.loads(line);rows[i]={'messages':[{'role':'user','content':r['query']},{'role':'assistant','content':r['response']}]}
+    w.require(w.shared.sha256(source)==before,'Source changed during full-pool sampling')
+    return [rows[r['source_line_1based']] for r in selected],selected,dict(
+        seed=PROBE_SAMPLING_SEED,source_sha256=before,scanned_lines=lines,candidate_group_counts=sizes,
+        method='full scan, group hash sorting, uniform sample without replacement within family',
+        representative='minimum query/response SHA256 per original-question group; no token-length filtering')
+
 def prepare(args):
     out=args.output_dir
     hist=json.loads(HISTORY.read_text())
@@ -112,21 +147,8 @@ def prepare(args):
     tok=AutoTokenizer.from_pretrained(args.model,local_files_only=True,trust_remote_code=True)
     if tok.chat_template is None:tok.chat_template=(args.model/'chat_template.jinja').read_text()
     tok.pad_token=tok.eos_token
-    chosen=[];metadata=[];counts={'GSM':0,'MATH':0}
-    # Deterministic source-order selection, balanced 64/64; tokenizer failure is
-    # a hard error, never silently filter an overlength answer.
-    with args.source_data.open() as f:
-        for line_number,line in enumerate(f,1):
-            r=json.loads(line);family=r.get('type','').split('_')[0];original=r.get('original_question')
-            if family not in counts or not isinstance(original,str) or counts[family]==64:continue
-            h=hashlib.sha256(original.encode()).hexdigest()
-            if h in banned:continue
-            banned.add(h);counts[family]+=1
-            chosen.append({'messages':[{'role':'user','content':r['query']},{'role':'assistant','content':r['response']}]})
-            metadata.append(dict(original_question_sha256=h,family=family,source_line_1based=line_number))
-            if len(chosen)==128:break
-    w.require(len(chosen)==128,'Insufficient independent source groups')
-    indices=list(range(128));random.Random(20261031).shuffle(indices)
+    chosen,metadata,sampling=sample_probe_pool(args.source_data,banned)
+    indices=list(range(128));random.Random(PROBE_SAMPLING_SEED).shuffle(indices)
     data={'train':w.shared.ChatTrainingDataset(args.train_data,tok,2048,dynamic_length=True)}
     meta={'train':tm['samples'],'dev':dm['samples']};tokens={}
     for j,role in enumerate(w.ROLES):
@@ -134,9 +156,11 @@ def prepare(args):
         data[role]=w.shared.ChatTrainingDataset(p,tok,2048,dynamic_length=True)
         meta[role]=[metadata[i] for i in ids]
         tokens[role]=[w.effective_tokens(x) for x in data[role]]
+    sampling['role_effective_tokens']={r:dict(values=tokens[r],min=min(tokens[r]),max=max(tokens[r]),mean=sum(tokens[r])/len(tokens[r])) for r in w.ROLES}
+    sampling['role_family_counts']={r:{f:sum(x['family']==f for x in meta[r]) for f in ('GSM','MATH')} for r in w.ROLES}
     files=[args.train_data,args.dev_data,args.source_data,HISTORY]+list(args.model.glob('*.json'))+list(args.model.glob('*.safetensors'))+list(args.model.glob('*.jinja'))
     code=dict(w.code_hashes());code.update({str(p):w.shared.sha256(p) for p in [Path(__file__),Path(t.__file__),w.ROOT/'finetune/adaptive_lora/dense_init.py',w.ROOT/'finetune/adaptive_lora/residual_gid.py']})
-    plan=dict(trajectory_scope=SCOPE,metadata=meta,tokens=tokens,input_sha256={str(p.resolve()):w.shared.sha256(p) for p in files},code_sha256=code,
+    plan=dict(seed_roles=dict(training=dict(allowed=[42,43,44],responsibility='training order and dropout only; actual seed is recorded in report.json'),analysis=dict(value=ANALYSIS_SEED,responsibility='all stage Krylov starts, restarts and candidate random frames'),probe_sampling=dict(value=PROBE_SAMPLING_SEED,responsibility='full-pool group sampling and role ordering'),initialization=dict(value=42,responsibility='one shared GID initial adapter')),probe_sampling=sampling,trajectory_scope=SCOPE,metadata=meta,tokens=tokens,input_sha256={str(p.resolve()):w.shared.sha256(p) for p in files},code_sha256=code,
         protocol=dict(loss='historical per-example masked mean NLL (NOT Global84 token-weighted training)',dropout=.1,gradient_checkpointing=True,use_reentrant=False,probe_weighting='equal samples within and across blocks; tokens retained only for audit',lr=5e-5,scheduler='linear 1-step/2000',initial_probe='first eight historical training examples; separate from temporal probe128',stages=list(STAGES)),historical_config=hist)
     w.write(out/'plan.json',plan);return plan,data
 
@@ -202,7 +226,7 @@ def allocation_audit(records,inventory,initial):
     return result
 
 def run(args):
-    args.output_dir.mkdir(parents=True,exist_ok=False);report=dict(status='RUNNING',trajectory_scope=SCOPE,mode=args.mode,seed=args.seed)
+    args.output_dir.mkdir(parents=True,exist_ok=False);report=dict(status='RUNNING',trajectory_scope=SCOPE,mode=args.mode,seed=args.seed,analysis_seed=ANALYSIS_SEED,probe_sampling_seed=PROBE_SAMPLING_SEED)
     try:
         plan,data=prepare(args)
         if args.mode=='dry-run':report['status']='PASS';return

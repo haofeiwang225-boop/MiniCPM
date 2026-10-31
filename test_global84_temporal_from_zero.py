@@ -48,7 +48,7 @@ class ConsistencyTests(unittest.TestCase):
   def fake(*args):
    return w.block_tokens(None,None),w.analyze_module.__globals__['block_tokens'](None,None),w.core.collect_weight_gradients
   with patch.object(z.t,'stage',fake):
-   first,second,collector=z.equal_stage()
+   first,second,collector=z.equal_stage(None,None,None,None,0,42,None,{})
    self.assertEqual(first,[8]*4);self.assertEqual(second,[8]*4)
    self.assertIs(collector,z.collect_equal_gradients)
   self.assertIs(z.w.block_tokens,original)
@@ -66,3 +66,47 @@ class ConsistencyTests(unittest.TestCase):
   with self.assertRaises(ValueError):z.validate_initial(layers,ranks,total+1)
   layers[next(iter(layers))].weight_b[0,0]=1
   with self.assertRaisesRegex(ValueError,'zero-B'):z.validate_initial(layers,ranks,total)
+
+class FinalProtocolTests(unittest.TestCase):
+ def test_full_pool_order_invariance(self):
+  import json,tempfile,hashlib,random
+  from pathlib import Path
+  rows=[dict(type=f+'_test',original_question=f+'_'+str(i),query=str(i),response='answer') for f in ('GSM','MATH') for i in range(70)]
+  rows.append(dict(rows[5],response='alternative'))
+  banned={hashlib.sha256(b'GSM_0').hexdigest()}
+  with tempfile.TemporaryDirectory() as d:
+   p=Path(d)/'source.jsonl';p.write_text(''.join(json.dumps(x)+'\n' for x in rows))
+   samples,metadata,info=z.sample_probe_pool(p,banned)
+   random.Random(9).shuffle(rows);p.write_text(''.join(json.dumps(x)+'\n' for x in rows))
+   other,meta2,info2=z.sample_probe_pool(p,banned)
+   self.assertEqual(samples,other)
+   self.assertEqual([x['original_question_sha256'] for x in metadata],[x['original_question_sha256'] for x in meta2])
+   self.assertEqual(info['candidate_group_counts'],{'GSM':69,'MATH':70});self.assertEqual(info['scanned_lines'],141)
+   self.assertEqual(len({x['original_question_sha256'] for x in metadata}),128)
+   self.assertFalse(banned & {x['original_question_sha256'] for x in metadata})
+ def test_stage_zero_analysis_independent_of_training_seed(self):
+  from unittest.mock import patch
+  from test_global84_experiment import inventory
+  torch.manual_seed(77)
+  rows=[dict(r,d_in=12,d_out=8) for r in inventory()]
+  a=torch.randn(2,12);b=torch.zeros(8,2)
+  payload=dict(layers={r['module']:dict(state=dict(weight_a=a,weight_b=b)) for r in rows})
+  gradients={role:[torch.randn(8,12,dtype=torch.float64) for _ in range(4)] for role in z.w.ROLES}
+  plan=dict(common=dict(tokens={r:list(range(1,33)) for r in z.w.ROLES}))
+  def fake_stage(model,layers,plan,data,step,seed,out,previous):
+   frames={};options={'C':{},'DE':{}}
+   for i,row in enumerate(rows):
+    frame,record=w.analyze_module(None,None,plan,payload,i,row,seed,'cpu')
+    frames[row['module']]=frame
+    for kind in options:options[kind][row['module']]=record[kind+'_prefix_options']
+   return frames,options,{kind:z.m.exact_stratified_allocation(x,rows)[0] for kind,x in options.items()}
+  def blocks(folder,artifacts,role,index,shape,device):return gradients[role]
+  with patch.object(z.t,'stage',fake_stage),patch.object(z.w,'load_gradient_blocks',side_effect=blocks):
+   results=[]
+   for training_seed in (42,43,44):
+    torch.manual_seed(training_seed)
+    results.append(z.equal_stage(None,None,plan,None,0,training_seed,None,{}))
+  for other in results[1:]:
+   self.assertEqual(results[0][1:],other[1:])
+   for n,frames in results[0][0].items():
+    for family,v in frames.items():self.assertTrue(torch.equal(v,other[0][n][family]))
