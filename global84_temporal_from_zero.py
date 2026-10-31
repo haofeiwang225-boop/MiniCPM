@@ -1,5 +1,5 @@
 """Independent base-to-2000 fixed-rank study. No historical adapter loading."""
-import ast, argparse, copy, hashlib, json, random, sys, tempfile, traceback, csv, itertools
+import ast, argparse, copy, hashlib, json, random, sys, tempfile, traceback, csv, itertools, types
 from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
@@ -13,6 +13,85 @@ STAGES=(0,100,400,800,1200,1600,2000)
 SCOPE='pretrained base -> GID initialization -> continuous 2000-step fresh AdamW trajectory'
 HISTORY=w.ROOT/'finetune/adaptive_lora/outputs/metamath_pilot_control_2000_seed42/run_config.json'
 
+def collect_equal_gradients(model,layers,batches):
+    """Singleton reuse: exactly one backward/sample, equal sample means, no layer loop."""
+    w.require(bool(batches),'Empty equal-example probe')
+    total=None; profiles=[]
+    for batch in batches:
+        gs,profile=w.core.collect_weight_gradients(model,layers,[batch])
+        if total is None:total={n:torch.zeros_like(g) for n,g in gs.items()}
+        for n,g in gs.items():total[n].add_(g,alpha=1/len(batches))
+        profiles.append(profile)
+    return total,dict(num_target_matrices=len(layers),forward_calls=len(batches),backward_calls=len(batches),
+        weighting='equal per-example masked mean loss',sample_weights=[1/len(batches)]*len(batches),
+        effective_tokens=sum(p['effective_tokens'] for p in profiles),singleton_profiles=profiles)
+
+
+def bound_function(fn,**dependencies):
+    # Private function globals: NEVER monkeypatch old experiment modules.
+    return types.FunctionType(fn.__code__,dict(fn.__globals__,**dependencies),fn.__name__,fn.__defaults__,fn.__closure__)
+
+
+def equal_stage(*args):
+    equal_counts=lambda plan,role:[8]*4
+    analysis=bound_function(w.analyze_module,block_tokens=equal_counts)
+    local_core=types.SimpleNamespace(**vars(w.core));local_core.collect_weight_gradients=collect_equal_gradients
+    local_w=types.SimpleNamespace(**vars(w));local_w.core=local_core;local_w.block_tokens=equal_counts;local_w.analyze_module=analysis
+    return bound_function(t.stage,w=local_w)(*args)
+
+
+def check_history(hist):
+    expected=dict(max_steps=2000,batch_size=1,learning_rate=5e-5,weight_decay=.01,lora_dropout=.1,dense_lora_param_budget=480256,
+        model_family='minicpm5',lora_structure='dense',lora_rank=2,lora_alpha=4.,dense_rank_min=1,dense_rank_max=4,
+        weight_a_init_method='kaiming',dynamic_length=True,model_max_length=2048,gradient_checkpointing=True,
+        adaptive_lora=False,direction_correction='none')
+    for k,v in expected.items():w.require(k in hist and hist[k]==v,f'Historical protocol mismatch: {k}; expected {v!r}, got {hist.get(k)!r}')
+
+
+def validate_initial(layers,ranks,total):
+    names={f'model.layers.{i}.self_attn.{kind}' for i in range(42) for kind in ('q_proj','v_proj')}
+    w.require(set(layers)==set(ranks)==names,'Incomplete initialized targets')
+    actual=0
+    for n,l in layers.items():
+        r=ranks[n];w.require(type(r)==int and 1<=r<=4 and l.lora_rank==r,f'Invalid rank: {n}')
+        w.require(l.weight_a.shape==(r,l.in_features) and l.weight_b.shape==(l.out_features,r),f'Invalid factors: {n}')
+        w.require(torch.isfinite(l.weight_a).all() and torch.count_nonzero(l.weight_b)==0,f'Invalid zero-B initialization: {n}')
+        actual+=l.weight_a.numel()+l.weight_b.numel()
+    w.require(actual==total and actual<=480256,'Allocator/actual budget mismatch')
+    return actual
+
+
+def training_smoke(model,layers,data):
+    initial=t.snapshot(layers);results=[]
+    for probe in (False,True):
+        with torch.no_grad():
+            for n,s in initial.items():
+                for k,v in s.items():getattr(layers[n],k).copy_(v)
+        set_seed(42);params=[getattr(l,k) for l in layers.values() for k in ('weight_a','weight_b')]
+        optimizer=torch.optim.AdamW(params,lr=5e-5,weight_decay=.01)
+        scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda step:1-step/2000)
+        losses=[];activity={n:{k:dict(max_gradient_norm=0.,nonzero_gradient_steps=0) for k in s} for n,s in initial.items()}
+        for step in range(2):
+            model.train();optimizer.zero_grad(set_to_none=True)
+            loss=model(**w.shared.batch(data['train'][step],'cuda')).loss
+            w.require(torch.isfinite(loss),'Smoke loss nonfinite');loss.backward();t.activity_update(layers,activity)
+            optimizer.step();scheduler.step();optimizer.zero_grad(set_to_none=True);losses.append(float(loss.detach()))
+            if probe and step==0:
+                _,profile=collect_equal_gradients(model,layers,[w.shared.batch(data['construction'][i],'cpu') for i in range(2)])
+        for p in params:
+            state=optimizer.state[p];w.require(int(state['step'])==2,'Adam step mismatch')
+            w.require(torch.isfinite(state['exp_avg']).all() and torch.isfinite(state['exp_avg_sq']).all(),'Invalid Adam moments')
+        results.append(dict(factors=t.snapshot(layers),losses=losses,states={i:{k:v.detach().cpu().clone() for k,v in optimizer.state[p].items()} for i,p in enumerate(params)},activity=activity))
+    a,b=results
+    w.require(a['losses']==b['losses'],'Probe changed subsequent loss')
+    for n,s in a['factors'].items():
+        for k,v in s.items():w.require(torch.equal(v,b['factors'][n][k]),'Probe changed subsequent parameters')
+    for i,state in a['states'].items():
+        for k,v in state.items():w.require(torch.equal(v,b['states'][i][k]),'Probe changed subsequent Adam state')
+    w.require(all(x['max_gradient_norm']>0 for s in b['activity'].values() for x in s.values()),'Inactive smoke factor')
+    return dict(losses=a['losses'],probe=profile,continuation_bitwise_equal=True,optimizer_steps=2,activity=b['activity'],
+        dropout=.1,use_reentrant=False,input_require_grads_hook=False,peak_allocated_bytes=torch.cuda.max_memory_allocated())
+
 def allocator(records):
     # Execute the unchanged pure allocation function, avoiding unrelated official
     # package eager imports (DeepSpeed). Source hash is part of the manifest.
@@ -25,7 +104,7 @@ def allocator(records):
 def prepare(args):
     out=args.output_dir
     hist=json.loads(HISTORY.read_text())
-    for k,v in dict(max_steps=2000,batch_size=1,learning_rate=5e-5,weight_decay=.01,lora_dropout=.1,dense_lora_param_budget=480256).items():w.require(hist[k]==v,f'Historical protocol mismatch: {k}')
+    check_history(hist)
     tm=w.shared.build_source_metadata(args.train_data,args.source_data);dm=w.shared.build_source_metadata(args.dev_data,args.source_data)
     w.require(len(tm['samples'])==2000 and len(dm['samples'])==400,'Expected historical train2000/dev400')
     banned={x['original_question_sha256'] for meta in (tm,dm) for x in meta['samples']}
@@ -58,12 +137,12 @@ def prepare(args):
     files=[args.train_data,args.dev_data,args.source_data,HISTORY]+list(args.model.glob('*.json'))+list(args.model.glob('*.safetensors'))+list(args.model.glob('*.jinja'))
     code=dict(w.code_hashes());code.update({str(p):w.shared.sha256(p) for p in [Path(__file__),Path(t.__file__),w.ROOT/'finetune/adaptive_lora/dense_init.py',w.ROOT/'finetune/adaptive_lora/residual_gid.py']})
     plan=dict(trajectory_scope=SCOPE,metadata=meta,tokens=tokens,input_sha256={str(p.resolve()):w.shared.sha256(p) for p in files},code_sha256=code,
-        protocol=dict(loss='historical per-example masked mean NLL (NOT Global84 token-weighted training)',dropout=.1,gradient_checkpointing=True,lr=5e-5,scheduler='linear 1-step/2000',initial_probe='first eight historical training examples; separate from temporal probe128',stages=list(STAGES)),historical_config=hist)
+        protocol=dict(loss='historical per-example masked mean NLL (NOT Global84 token-weighted training)',dropout=.1,gradient_checkpointing=True,use_reentrant=False,probe_weighting='equal samples within and across blocks; tokens retained only for audit',lr=5e-5,scheduler='linear 1-step/2000',initial_probe='first eight historical training examples; separate from temporal probe128',stages=list(STAGES)),historical_config=hist)
     w.write(out/'plan.json',plan);return plan,data
 
 def base(args):
     model,info=w.shared.load_probe_model(args.model,torch.bfloat16);model.to('cuda');model.config.use_cache=False
-    model.gradient_checkpointing_enable();model.enable_input_require_grads()
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={'use_reentrant':False})
     return model,dict(model.named_parameters()),info
 
 def attach(model,ranks):
@@ -95,8 +174,12 @@ def init(model,data,out):
         parent,_,child=n.rpartition('.');setattr(model.get_submodule(parent),child,new);layers[n]=new
     for r in records:
         l=layers[r['module']];r.update(rank=l.lora_rank,A_shape=list(l.weight_a.shape),B_shape=list(l.weight_b.shape),scaling=l.lora_scaler,A_numerical_rank=m.basis(l.weight_a.T).shape[1],B_numerical_rank=m.basis(l.weight_b).shape[1])
+    validate_initial(layers,ranks,total)
     payload=dict(ranks=ranks,factors=t.snapshot(layers),records=records,actual_parameters=total)
     torch.save(payload,out/'initial_adapter.pt');w.write(out/'initial_gid.json',dict(records=records,actual_parameters=total,nominal_budget=480256,sha256=w.shared.sha256(out/'initial_adapter.pt')))
+    loaded=torch.load(out/'initial_adapter.pt',map_location='cpu',weights_only=True)
+    w.require(all(torch.equal(v,loaded['factors'][n][k]) for n,s in payload['factors'].items() for k,v in s.items()),'Initial adapter serialization mismatch')
+    w.require(w.shared.sha256(out/'initial_adapter.pt')==json.loads((out/'initial_gid.json').read_text())['sha256'],'Initial adapter SHA mismatch')
     return payload
 
 def allocation_audit(records,inventory,initial):
@@ -125,9 +208,8 @@ def run(args):
         if args.mode=='dry-run':report['status']='PASS';return
         report['gpu']=w.gpu_admission(30);set_seed(42);model,weights,report['loading']=base(args)
         if args.mode=='smoke':
-            layers=attach(model,None);before=t.snapshot(layers)
-            _,report['probe']=w.core.collect_weight_gradients(model,layers,[w.shared.batch(data['construction'][0],'cpu')])
-            w.require(all(torch.equal(v,getattr(layers[n],k).detach().cpu()) for n,s in before.items() for k,v in s.items()),'Smoke changed factors')
+            layers=attach(model,None);torch.cuda.reset_peak_memory_stats()
+            report['training_smoke']=training_smoke(model,layers,data)
         elif args.mode=='initialize':init(model,data,args.output_dir)
         else:
             w.require(args.initial_adapter is not None,'Supply shared --initial-adapter')
@@ -141,6 +223,7 @@ def run(args):
             with torch.no_grad():
                 for n,s in payload['factors'].items():
                     for k,v in s.items():getattr(layers[n],k).copy_(v)
+            validate_initial(layers,payload['ranks'],payload['actual_parameters'])
             set_seed(args.seed);params=[getattr(l,k) for l in layers.values() for k in ('weight_a','weight_b')]
             optimizer=torch.optim.AdamW(params,lr=5e-5,weight_decay=.01);scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda step:max(0,1-step/2000))
             loader=iter(DataLoader(data['train'],batch_size=1,shuffle=True,generator=torch.Generator().manual_seed(args.seed),collate_fn=default_data_collator))
@@ -157,7 +240,7 @@ def run(args):
                     with (args.output_dir/'train.jsonl').open('a') as f:f.write(json.dumps(dict(step=step,loss=float(loss.detach()),lr_used=lr,lr_next=scheduler.get_last_lr()[0],update_beyond_decay_norm=beyond_decay))+'\n')
                 if step in STAGES:
                     rng=torch.get_rng_state().clone();cuda_rng=torch.cuda.get_rng_state().clone();state_versions={id(p):{k:v._version for k,v in state.items() if torch.is_tensor(v)} for p,state in optimizer.state.items()}
-                    rr,aa,previous,ss=t.stage(model,layers,temporal_plan,data,step,args.seed,args.output_dir,previous)
+                    rr,aa,previous,ss=equal_stage(model,layers,temporal_plan,data,step,args.seed,args.output_dir,previous)
                     w.require(torch.equal(rng,torch.get_rng_state()) and torch.equal(cuda_rng,torch.cuda.get_rng_state()),'Stage changed RNG')
                     w.require(state_versions=={id(p):{k:v._version for k,v in state.items() if torch.is_tensor(v)} for p,state in optimizer.state.items()},'Stage changed optimizer state')
                     w.require(all(l.lora_rank==payload['ranks'][n] for n,l in layers.items()),'Rank changed')

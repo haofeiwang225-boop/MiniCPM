@@ -87,3 +87,47 @@ sample GPU smoke PASS at /tmp/temporal_zero_gpu_smoke_20261031/report.json:
 peak allocated6457571840 bytes, reserved6585057280 bytes. No full initial GID
 run or 2000-step training was executed. Initial actual budget/hash are pending
 the explicit initialize command, not inferred from the old step1600 adapter.
+
+## Equal-example / checkpointing consistency correction
+
+Supersedes the earlier token-weighted temporal probe and one-forward smoke.
+Temporal construction/alignment/selection/audit gradients now all average
+per-example masked mean loss gradients. collect_equal_gradients reuses the
+original collector on singleton batches, with one forward/backward per example
+collecting all84 weights, then accumulates with 1/K. All four block means and
+allocation/diagnostic scores use equal block weights [8,8,8,8]. Actual effective
+token counts remain in plan.json and per-sample probe profiles for audit only.
+Original Global84 functions are NOT modified or monkeypatched: private function
+global bindings inject equal counts/collector into the reused stage and analysis
+functions. Initialization's original eight equal-example means are unchanged.
+
+Historical fields are explicitly validated, including model family, Dense
+structure, provisional rank2, alpha4, bounds1..4, Kaiming, dynamic length2048,
+checkpointing, no adaptation or correction. Any mismatch fails. Initialization
+checks all84 names, factor shapes, zero B, rank bounds and actual parameter sum
+against allocator output/budget. Serialized factors and initial SHA are checked;
+training checks the shared initial file's SHA and revalidates loaded factors.
+
+Checkpointing now explicitly uses use_reentrant=False as in the original
+training entry. No enable_input_require_grads hook is installed: non-reentrant
+checkpointing supports parameter gradients without requiring frozen embedding
+outputs to require grad. Real smoke verifies this rather than assuming it.
+
+smoke now runs two fresh-AdamW trajectories of TWO consecutive optimizer steps
+each, dropout0.1, provisional rank2 on all84 actual model modules. One trajectory
+inserts a two-example equal-weight probe after step1; the other does not. It
+requires bitwise equal subsequent losses, factors and Adam step/exp_avg/exp_avg_sq,
+finite gradients/moments, nonzero A/B gradient activity across the two steps, and
+unchanged disk-verified base weights. A's first-step gradient may be zero because
+B starts zero. No full GID initialization or 2000-step training is run by smoke.
+This does not validate a real seven-stage run or post-GID allocation by itself.
+
+Consistency-fix validation: 106 CPU tests passed (including unequal supervised
+lengths vs independent per-example gradient mean, private block-count binding,
+historical config rejection and initialization invariants). Dry-run PASS:
+/tmp/zero_equal_dry_20261031/report.json. Real training-mode smoke PASS:
+/tmp/zero_equal_training_smoke_20261031/report.json. Both two-step loss traces
+were [0.5087690353393555, 1.131565809249878], with bitwise matching factors and
+Adam states after the inserted probe. All84 A/B factors had nonzero gradient
+activity over the two steps; 381 base tensors verified unchanged. Peak allocated
+6445760000 bytes. No full GID initialization or 2000-step training executed.
