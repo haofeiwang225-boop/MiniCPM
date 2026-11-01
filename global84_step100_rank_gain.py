@@ -10,7 +10,7 @@ import global84_temporal_from_zero as z
 import global84_experiment as w
 import global84_rank_math as m
 import global84_temporal_rank_demand as t
-ARMS=('base','random','static_C','current_C','current_DE')
+ARMS=('base','random','static_C','current_C','static_DE','current_DE')
 
 class SharedDropoutExpansion(nn.Module):
     """Original Dense forward arithmetic; exactly ONE dropout shared by both branches."""
@@ -29,6 +29,14 @@ class SharedDropoutExpansion(nn.Module):
         result=result+l.lora_scaler*original
         added=F.linear(F.linear(dropped.float(),self.add_a),self.add_b).to(result.dtype)
         return result+added
+
+def gradient_contribution(before, after, grad_norm, lr, weight_decay):
+    """AdamW decay-only counterfactual, evaluated in the actual factor dtype."""
+    decay_only=before.clone().mul_(1-lr*weight_decay)
+    contribution=float((after.detach().double()-decay_only.double()).norm())
+    w.require(grad_norm>0 and contribution>0,'No measurable gradient contribution beyond weight decay')
+    return dict(gradient_norm=grad_norm,decay_only_change_norm=float((decay_only.double()-before.double()).norm()),
+                update_beyond_decay_norm=contribution)
 
 def order(seed):
     # DataLoader consumes a base seed before RandomSampler, like the historical entry.
@@ -63,7 +71,7 @@ def inspect(args):
     selected={}
     for seed in states:
         a=allocations[seed]
-        selected[seed]=dict(base={r['module']:0 for r in rows},random=m.random_allocation(rows,seed),static_C=a['0']['C'],current_C=a['100']['C'],current_DE=a['100']['DE'])
+        selected[seed]=dict(base={r['module']:0 for r in rows},random=m.random_allocation(rows,seed),static_C=a['0']['C'],current_C=a['100']['C'],static_DE=a['0']['DE'],current_DE=a['100']['DE'])
         for arm,allocation in selected[seed].items():validate_budget(allocation,rows,arm=='base')
     hashes[str(args.initial_adapter.resolve())]=ih
     return initial,states,selected,rows,hashes,plans[0]
@@ -134,7 +142,7 @@ def run(args):
             set_seed(args.seed);start=time.perf_counter();torch.cuda.reset_peak_memory_stats()
             evaluations={};steps=2 if args.mode=='smoke' else 300
             if args.mode=='train':evaluations['0']=evaluate(model,dev,plan['metadata']['dev'])
-            activity={};all_gradient_max=[0.]*len(ps);start_params={id(p):p.detach().clone() for p in ps}
+            early_gradients={};decay_audit={};activity={};all_gradient_max=[0.]*len(ps);start_params={id(p):p.detach().clone() for p in ps}
             for step,index in enumerate(sequence[:steps],1):
                 model.train();optimizer.zero_grad(set_to_none=True);lr=5e-5*(1-(100+step-1)/2000)
                 for group in optimizer.param_groups:group['lr']=lr
@@ -145,7 +153,12 @@ def run(args):
                     for key in ('add_a','add_b'):
                         v=float(getattr(wr,key).grad.norm());activity[n+'.'+key]=max(activity.get(n+'.'+key,0),v)
                         if step==1 and key=='add_b':w.require(v>0,'New B has no first-step gradient')
+                if step<=2:
+                    early_gradients[str(step)]={n:{key:float(getattr(wr,key).grad.norm()) for key in ('add_a','add_b')} for n,wr in added.items()}
+                before_a={n:wr.add_a.detach().clone() for n,wr in added.items()} if step==2 else {}
                 optimizer.step()
+                if step==2:
+                    decay_audit={n:gradient_contribution(before_a[n],wr.add_a,early_gradients['2'][n]['add_a'],lr,.01) for n,wr in added.items()}
                 if step==1:w.require(all(torch.count_nonzero(wr.add_b)>0 for wr in added.values()),'New B failed to update on first step')
                 if step==2:w.require(all(not torch.equal(wr.add_a.detach(),start_params[id(wr.add_a)]) for wr in added.values()),'New A failed to update by second step')
                 with (folder/'train.jsonl').open('a') as f:f.write(json.dumps(dict(step=step,global_step=100+step,index=index,loss=float(loss.detach()),lr=lr))+'\n')
@@ -154,7 +167,7 @@ def run(args):
             w.require(all(not torch.equal(p.detach(),start_params[id(p)]) for p in ps),'Unchanged trainable factor')
             w.require(all(l.lora_scaler==scaling[n] for n,l in layers.items()),'Scaling changed')
             verified=w.shared.verify_disk_weights(base,args.model)
-            result=dict(status='PASS',arm=arm,seed=args.seed,evaluations=evaluations,added_parameters=added_count,trainable_parameters=sum(p.numel() for p in ps),activity=activity,all_factor_max_gradients=all_gradient_max,allocation=allocations[args.seed][arm],
+            result=dict(status='PASS',arm=arm,seed=args.seed,evaluations=evaluations,added_parameters=added_count,trainable_parameters=sum(p.numel() for p in ps),activity=activity,first_two_step_gradient_norms=early_gradients,second_step_A_decay_counterfactual=decay_audit,order_sha256=report['order_sha256'],all_factor_max_gradients=all_gradient_max,allocation=allocations[args.seed][arm],
                 added_BA_norms={n:float(torch.trace((wr.add_b.detach().double().T@wr.add_b.detach().double())@(wr.add_a.detach().double()@wr.add_a.detach().double().T)).clamp_min(0).sqrt()) for n,wr in added.items()},
                 optimizer_state_bytes=sum(v.numel()*v.element_size() for state in optimizer.state.values() for v in state.values() if torch.is_tensor(v)),seconds=time.perf_counter()-start,peak_allocated_bytes=torch.cuda.max_memory_allocated(),base_verified=verified,insertion_train_eval_logits_equal=True)
             w.write(folder/'result.json',result)

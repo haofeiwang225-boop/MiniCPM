@@ -31,6 +31,15 @@ class Tests(unittest.TestCase):
   a[rows[0]['module']]+=1
   with self.assertRaises(ValueError):g.validate_budget(a,rows)
 
+ def test_decay_only_is_rejected(self):
+  before=torch.ones(5);lr=.1;wd=.1
+  after=before.clone().mul_(1-lr*wd)
+  with self.assertRaises(ValueError):g.gradient_contribution(before,after,1.,lr,wd)
+  self.assertGreater(g.gradient_contribution(before,after-.01,1.,lr,wd)['update_beyond_decay_norm'],0)
+  with self.assertRaises(ValueError):g.gradient_contribution(before,after-.01,0.,lr,wd)
+ def test_six_arms(self):
+  self.assertEqual(set(g.ARMS),{'base','random','static_C','current_C','static_DE','current_DE'})
+
 class EvaluationTests(unittest.TestCase):
  def test_masked_token_weighted_evaluation(self):
   model=TinyLM();data=examples();result=g.w.shared.evaluate(model,data,'cpu')
@@ -59,7 +68,14 @@ class EvaluationTests(unittest.TestCase):
     for i,arm in enumerate(g.ARMS):
      (p/arm).mkdir();rows=[dict(source=dict(family='GSM' if j<200 else 'MATH',original_question_sha256=str(j)),effective_tokens=j%3+1,nll_sum=(j%3+1)*(2+i*.1)) for j in range(400)]
      (p/arm/'result.json').write_text(json.dumps(dict(status='PASS',evaluations={'300':{'samples':rows}})))
-   r=analyze(paths)['results']['overall']['comparisons']['current_C-random']
+   result=analyze(paths)
+   r=result['results']['overall']['comparisons']['current_C-random']
+   self.assertIsNone(r['primary_ci97_5'])
+   self.assertIsNotNone(result['results']['overall']['comparisons']['current_DE-static_DE']['primary_ci97_5'])
+   from unittest.mock import patch
+   with patch('global84_step100_rank_statistics.ARMS',tuple(reversed(g.ARMS))):
+    reordered=analyze(paths)
+   self.assertEqual(result['results']['overall']['comparisons'],reordered['results']['overall']['comparisons'])
    self.assertAlmostEqual(r['mean'],.2);self.assertAlmostEqual(r['ci95'][0],.2);self.assertAlmostEqual(r['ci95'][1],.2)
 
 if __name__=='__main__':unittest.main()

@@ -5,6 +5,9 @@ import numpy as np
 from minicpm_rank_gain_statistics import crossed_bootstrap
 from global84_step100_rank_gain import ARMS,w
 
+PRIMARY=(('current_C','static_C'),('current_DE','static_DE'))
+SECONDARY=(('current_C','random'),('current_DE','random'))+tuple((a,'base') for a in ARMS if a!='base')
+
 def analyze(paths):
     seen={};meta=None;tokens=None;sources=[];protocol=None
     for p in paths:
@@ -27,13 +30,15 @@ def analyze(paths):
         ids=[i for i,m in enumerate(meta) if family=='overall' or m['family']==family];v=x[:,:,:,ids];n=tokens[ids]
         draws=crossed_bootstrap(v,n,[meta[i]['original_question_sha256'] for i in ids],repeats=10000,seed=42)[:,0,:]
         means=v.sum(-1)[0]/n.sum();comparisons={}
-        for hi,lo in [(3,1),(4,1),(3,2),(4,2),(1,0),(2,0),(3,0),(4,0)]:
+        indices={name:i for i,name in enumerate(ARMS)}
+        for high,low in PRIMARY+SECONDARY:
+            hi,lo=indices[high],indices[low]
             diff=means[:,hi]-means[:,lo];sample=(v[0,:,hi]-v[0,:,lo])/n
             comparisons[f'{ARMS[hi]}-{ARMS[lo]}']=dict(per_seed=diff.tolist(),mean=float(diff.mean()),std=float(diff.std(ddof=1)),ci95=np.quantile(draws[:,hi]-draws[:,lo],[.025,.975]).tolist(),
-                primary_ci97_5=np.quantile(draws[:,hi]-draws[:,lo],[.0125,.9875]).tolist() if lo==1 and hi in (3,4) else None,per_question_seed_differences=sample.tolist())
+                primary_ci97_5=np.quantile(draws[:,hi]-draws[:,lo],[.0125,.9875]).tolist() if family=='overall' and (high,low) in PRIMARY else None,per_question_seed_differences=sample.tolist())
         out[family]=dict(per_seed_nll=means.tolist(),comparisons=comparisons)
     return dict(results=out,sources=sources,arms=ARMS,seed_order=[42,43,44],method='10000 paired crossed bootstrap: original-question groups and seed IDs',
-        caveat='Only three training seeds; intervals may be poorly calibrated. Dev previously used, not blind. Primary comparisons C/random and DE/random have Bonferroni97.5% intervals; others exploratory.')
+        caveat='Only three training seeds; intervals may be poorly calibrated. Dev previously used, not blind. Primary overall comparisons current_C/static_C and current_DE/static_DE have Bonferroni97.5% intervals; family subgroups and others exploratory.')
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--runs',type=Path,nargs=3,required=True);p.add_argument('--output-dir',type=Path,required=True);a=p.parse_args();a.output_dir.mkdir(parents=True,exist_ok=False)
