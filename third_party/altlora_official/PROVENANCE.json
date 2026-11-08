@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/LucasXinYu/AltLoRA",
+  "commit": "94b219882abcaa6004d2029fd8a09cd190a8a9aa",
+  "commit_evidence": "Local GitHub source ZIP comment; raw upstream optimizer file at this commit matches local SHA256",
+  "files": {
+    "AltLoRA-main/optimizer_new.py": "608990ef7fece310faa6bf14711b9966404c4f560759c6f2965608e9e08dd90f",
+    "AltLoRA-main/logtrainer.py": "ee050f5c5f2c2d39822f91be1498f8ebc614a62659fc21b3267ce92eb685d712"
+  },
+  "license_status": "No root LICENSE in supplied archive; upstream LICENSE at pinned commit returns HTTP404. No license invented or inferred from nested PEFT.",
+  "nested_license": "AltLoRA-main/peft/LICENSE retained verbatim; applies to bundled PEFT, not asserted to license optimizer_new.py",
+  "core_modifications": "none"
+}

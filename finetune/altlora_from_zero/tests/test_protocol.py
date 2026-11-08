@@ -3,6 +3,7 @@ import copy
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from altlora_from_zero.protocol import (
     read_rank_inventory, file_hash, learning_rate, expected_side,
@@ -26,14 +27,18 @@ class ProtocolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)/'plan.json'
             path.write_text(json.dumps(self.inventory()))
-            result = read_rank_inventory(path, file_hash(path))
+            history=Path(directory)/'history.json'
+            history.write_text(json.dumps({'dense_lora_param_budget':480256}))
+            patched=patch('altlora_from_zero.protocol.HISTORY_SHA256',file_hash(history))
+            patched.start();self.addCleanup(patched.stop)
+            result = read_rank_inventory(path, file_hash(path), historical_config=history)
             self.assertEqual(result['actual_parameters'], 480000)
             self.assertEqual(len(result['pattern']), 84)
-            with self.assertRaises(ValueError): read_rank_inventory(path, '0'*64)
+            with self.assertRaises(ValueError): read_rank_inventory(path, '0'*64, historical_config=history)
             for key, value in [('rank', 5), ('A_shape', [1, 256]), ('scaling', 99)]:
                 bad = self.inventory(); bad['common']['inventory']['modules'][0][key] = value
                 path.write_text(json.dumps(bad))
-                with self.assertRaises(ValueError): read_rank_inventory(path, file_hash(path))
+                with self.assertRaises(ValueError): read_rank_inventory(path, file_hash(path), historical_config=history)
 
     def test_all_2000_schedule_boundaries(self):
         counter = 0; update_a = True; side = 'both'

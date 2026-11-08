@@ -8,7 +8,9 @@ import random
 from collections import Counter
 from pathlib import Path
 
-VERSION = 'altlora-from-zero-2000-stage1'
+VERSION = 'altlora-from-zero-2000-v2'
+PLAN_SHA256 = 'a7fe38aef2b656b989a312bf75075c74297076d77775b1362604d8abe98661f6'
+HISTORY_SHA256 = '432d8b33b87bbf2c16905dc142e180b8f3177c034bcfdf6acbee9b1685d8be07'
 TRAIN_SHA256 = 'ab70c3ac6632d111dbdbfab7558d8c4e68ab2d6a0a605583fb2a7382f42032cc'
 STAGES = (0, 200, 400, 800, 1200, 1600, 2000)
 CHECKPOINT_STEPS = tuple(range(0, 2001, 200))
@@ -28,11 +30,19 @@ def file_hash(path):
     return digest.hexdigest()
 
 
-def read_rank_inventory(plan_path, expected_sha256):
+def read_rank_inventory(plan_path, expected_sha256=PLAN_SHA256, *, historical_config=None):
     """Only JSON inventory is read; the inventory's adapter path is never opened."""
     raw = Path(plan_path).read_bytes()
     if hashlib.sha256(raw).hexdigest() != expected_sha256:
         raise ValueError('Historical rank inventory SHA256 mismatch')
+    if historical_config is None:
+        raise ValueError('Trusted historical run_config is required for budget verification')
+    history_raw = Path(historical_config).read_bytes()
+    if hashlib.sha256(history_raw).hexdigest() != HISTORY_SHA256:
+        raise ValueError('Historical configuration SHA256 mismatch')
+    history = json.loads(history_raw)
+    if history.get('dense_lora_param_budget') != 480256:
+        raise ValueError('Historical budget mismatch')
     inventory = json.loads(raw)['common']['inventory']
     rows = inventory['modules']
     expected = {f'model.layers.{i}.self_attn.{kind}_proj'
@@ -65,7 +75,7 @@ def read_rank_inventory(plan_path, expected_sha256):
         raise ValueError('Historical rank histogram mismatch')
     if total != 480000 or inventory['old_total_parameters'] != total:
         raise ValueError('Actual parameter count mismatch')
-    return dict(pattern=pattern, actual_parameters=total, budget_limit=480256,
+    return dict(pattern=pattern, actual_parameters=total, budget_limit=history['dense_lora_param_budget'],
                 source_sha256=expected_sha256, rank_map_sha256=canonical_hash(pattern),
                 origin='Historical rank metadata only; no historical factors or optimizer loaded')
 
@@ -76,14 +86,20 @@ def training_order(train_path, seed=42):
     if hashlib.sha256(raw).hexdigest() != TRAIN_SHA256:
         raise ValueError('Training dataset SHA256 mismatch')
     samples = json.loads(raw)
-    if not isinstance(samples, list) or len(samples) != 2000:
-        raise ValueError('Expected exactly 2000 original training records')
+    if not isinstance(samples, list) or not samples:
+        raise ValueError('Training records must be a nonempty list')
     if seed != 42:
         raise ValueError('This protocol is restricted to seed42')
-    indices = list(range(len(samples)))
-    random.Random(seed).shuffle(indices)
+    indices = []
+    rng = random.Random(seed)
+    while len(indices) < 2000:
+        epoch = list(range(len(samples)))
+        rng.shuffle(epoch)
+        indices.extend(epoch)
+    indices = indices[:2000]
     manifest = dict(seed=seed, dataset_sha256=TRAIN_SHA256,
-                    order_algorithm='Python Random(seed).shuffle once; persist and reuse',
+                    order_algorithm='Python Random(seed), shuffled epochs truncated to 2000; NOT PyTorch DataLoader replay',
+                    dataset_records=len(samples),
                     historical_replay=False, optimizer_steps=2000,
                     samples=[dict(step=i+1, index=index,
                                   sample_sha256=canonical_hash(samples[index]))

@@ -1,0 +1,28 @@
+{
+  "model": "/home/hongchang/whf/models/MiniCPM5-2B",
+  "minimum_free_gpu_gib": 28,
+  "minimum_free_disk_gib": 40,
+  "base_hashes": {
+    "_INSTRUCTION_REMOVE_THIS_KEY": "Provide reviewed SHA256 for ALL json/safetensors/jinja/py/model files in the model directory; partial list fails"
+  },
+  "rank_plan": {
+    "path": "finetune/adaptive_lora/outputs/global84_v2_20261027_150526_2939895/probe/plan.json",
+    "sha256": "a7fe38aef2b656b989a312bf75075c74297076d77775b1362604d8abe98661f6"
+  },
+  "historical_config": {
+    "path": "finetune/adaptive_lora/outputs/metamath_pilot_geo1600_rebuilt_20261013_221250_seed42/run_config.json",
+    "sha256": "432d8b33b87bbf2c16905dc142e180b8f3177c034bcfdf6acbee9b1685d8be07"
+  },
+  "train": {
+    "path": "finetune/adaptive_lora/data/metamath_pilot_v1/train.json",
+    "sha256": "ab70c3ac6632d111dbdbfab7558d8c4e68ab2d6a0a605583fb2a7382f42032cc"
+  },
+  "source": {
+    "path": "/home/hongchang/whf/datasets/MetaMathQA/MetaMathQA-395K.jsonl",
+    "sha256": "919d28b189751943090acce31eb151b97b57419e5942b7adcc297914220cdf4d"
+  },
+  "probe": {"path": "REVIEW_REQUIRED_external_training_side_probe.json", "sha256": "REVIEW_REQUIRED"},
+  "probe_splits": {"construction": [0,1,2,3,4,5,6,7], "audit": [8,9,10,11,12,13,14,15]},
+  "gsm8k": {"path": "REVIEW_REQUIRED_official_test.jsonl", "sha256": "REVIEW_REQUIRED", "source_url": "https://github.com/openai/grade-school-math", "revision": "REVIEW_REQUIRED"},
+  "math500": {"path": "REVIEW_REQUIRED_math500.jsonl", "sha256": "REVIEW_REQUIRED", "source_url": "https://huggingface.co/datasets/HuggingFaceH4/MATH-500", "revision": "REVIEW_REQUIRED"}
+}

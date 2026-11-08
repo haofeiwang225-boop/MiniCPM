@@ -72,6 +72,16 @@ def adapter_inventory(adapter,model_dir):
 
 
 def collect_weight_gradients(model,targets,batches):
+    """Legacy token-only API and accumulation order remain unchanged."""
+    return _collect_weight_gradients(model,targets,batches,both=False)
+
+
+def collect_weight_gradients_both(model,targets,batches):
+    """Return ({question: name->Gq, token: name->Gt}, profile), one backward/sample."""
+    return _collect_weight_gradients(model,targets,batches,both=True)
+
+
+def _collect_weight_gradients(model,targets,batches,both):
     """One forward/backward per batch for ALL targets, no layerwise reruns.
 
     targets: ordered name -> original Dense-LoRA layer mapping.
@@ -102,6 +112,7 @@ def collect_weight_gradients(model,targets,batches):
     weight_hashes={name:tensor_hash(p) for name,p in weights.items()}
     # Never retain all 84 full gradients on GPU; no per-layer forward loop.
     accum={name:torch.zeros(p.shape,dtype=torch.float32,device='cpu') for name,p in weights.items()}
+    question={name:torch.zeros_like(g) for name,g in accum.items()} if both else None
     hooks=[]; rows=[]; seen={}; alpha=0.; current_batch=-1
     calls={name:0 for name in targets}
     started=time.perf_counter()
@@ -117,6 +128,7 @@ def collect_weight_gradients(model,targets,batches):
             host=parameter.grad.detach().to(device='cpu',dtype=torch.float32)
             require(torch.isfinite(host).all(),f'Nonfinite gradient: {name}, batch {current_batch}')
             accum[name].add_(host,alpha=alpha)
+            if both:question[name].add_(host,alpha=1/len(batches))
             parameter.grad=None
             seen[name]=True; calls[name]+=1
         return hook
@@ -139,6 +151,7 @@ def collect_weight_gradients(model,targets,batches):
                 del loss,output,inputs
             require(all(n==len(batches) for n in calls.values()),'Incomplete gradient counts')
             require(all(torch.isfinite(g).all() for g in accum.values()),'Nonfinite accumulated gradient')
+            if both:require(all(torch.isfinite(g).all() for g in question.values()),'Nonfinite question gradient')
     finally:
         for hook in hooks: hook.remove()
         for p,flag,grad in zip(params,flags,grads): p.requires_grad_(flag); p.grad=grad
@@ -157,6 +170,14 @@ def collect_weight_gradients(model,targets,batches):
             reserved=torch.cuda.memory_reserved(device),peak_allocated=torch.cuda.max_memory_allocated(device),
             peak_reserved=torch.cuda.max_memory_reserved(device)),
         memory_note='CUDA peaks are process high-water marks, not reset by this helper; caller may reset before probe.')
+    if both:
+        profile.update(gradient_weighting=dict(question='sum(grad(mean_masked_token_NLL_i))/K',
+            token='sum(n_i*grad(mean_masked_token_NLL_i))/sum(n_i)'),K=len(batches),
+            per_question_effective_tokens=counts,question_finite=True,token_finite=True,
+            question_gradient_fro_norm={n:float(g.double().norm()) for n,g in question.items()},
+            token_gradient_fro_norm={n:float(g.double().norm()) for n,g in accum.items()},
+            cpu_gradient_bytes=2*profile['cpu_gradient_bytes'])
+        return dict(question=question,token=accum),profile
     return accum,profile
 
 
